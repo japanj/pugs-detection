@@ -1,0 +1,20 @@
+name: pugs_detection
+channels:
+  - conda-forge
+dependencies:
+  - python=3.13.1
+  - black
+  - flake8
+  - isort
+  - pip
+  - ipython
+  - jupyterlab
+  - matplotlib
+  - notebook
+  - numpy
+  - pandas
+  - scikit-learn
+  - pip:
+    - python-dotenv
+    - mkdocs
+    - -e .
