@@ -6,6 +6,10 @@
 
 Public Urban Green Spaces Detection Workflow
 
+**Currently under development phase**
+
+To view the notebook, please go to https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/data_processing_osm_trial.ipynb 
+
 ## Project Organization
 
 ```
