@@ -1,6 +1,9 @@
 # Data (don't commit data since they are too large)
 /data/
 
+# Pytorch lightning logs
+/notebooks/lightning_logs/
+
 # Mac OS-specific storage files
 .DS_Store
 
