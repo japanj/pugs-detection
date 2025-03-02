@@ -14,7 +14,7 @@ Public Urban Green Spaces Detection Workflow
 
 To view the notebook, please go to https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/data_processing_osm_trial3.ipynb 
 
-**V.1 - OSM data processing**
+**V.1 - OSM data processing (removed)**
 
 To view the notebook, please go to https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/data_processing_osm_trial.ipynb 
 
