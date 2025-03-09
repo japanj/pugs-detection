@@ -12,6 +12,7 @@ import geopandas as gpd
 import pandas as pd
 import numpy as np
 import rasterio
+from IPython.display import display
 from rasterio.features import rasterize
 from scipy.ndimage import distance_transform_edt
 
@@ -41,6 +42,20 @@ def load_osm_data(file_path, crs):
         gdf = gdf.to_crs(epsg=crs)
 
     return gdf
+
+def print_basic_info(gdf):
+    """
+    Print basic information about the OSM data.
+
+    Parameters
+    ----------
+    gdf : GeoDataFrame
+        The OSM data as a GeoDataFrame.
+    """
+    # Print the basic information
+    print("Number of rows:", len(gdf))
+    print("Number of columns:", len(gdf.columns))
+    display(gdf.head())
 
 def print_classification_report(gdf):
     """
@@ -183,11 +198,12 @@ def classification_with_smaller_area(lulc_gdf):
         # after applying threshold, only 1 area is classified since some small polygon inside is unclassified.
         if (pub_area > nonpub_area) & (pub_area>=((50*total_area)/100)):
             # print('yes')
-            modified_lulc_gdf.loc[(modified_lulc_gdf['id_left']==i)&(modified_lulc_gdf['id_right'].isin(small_polygon_id)),'is_public'] = 'yes'
+            modified_lulc_gdf.loc[modified_lulc_gdf['id_left']==i,'is_public'] = 'yes'
         elif (pub_area < nonpub_area) & (nonpub_area>=((50*total_area)/100)):
             # print('no')
             check_big_polygon.append(i)
-            modified_lulc_gdf.loc[(modified_lulc_gdf['id_left']==i)&(modified_lulc_gdf['id_right'].isin(small_polygon_id)),'is_public'] = 'no'
+            print("larger polygon id:", i, "   small polygon id:", small_polygon_id) 
+            modified_lulc_gdf.loc[modified_lulc_gdf['id_left']==i,'is_public'] = 'no'
         
     return modified_lulc_gdf
         
