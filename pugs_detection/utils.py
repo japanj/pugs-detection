@@ -111,6 +111,19 @@ def calculate_poi_number(lulc_gdf, poi_gdf, osm_key):
 
     return modified_lulc_gdf
 
+def calculate_footpath_length(lulc_gdf, footpath_gdf):
+    # Avoid to change the original df
+    modified_lulc_gdf = lulc_gdf.copy()
+    # Drop duplicate so we can get the real number of POIs
+    lulc_gdf_wo_duplicate = lulc_gdf.drop_duplicates(subset=['id_left'])
+    
+    lulc_gdf_with_footpath = lulc_gdf_wo_duplicate.sjoin(footpath_gdf, how='left', predicate='intersects', rsuffix='_right2')
+    footpath_length_sum_gdf = lulc_gdf_with_footpath.groupby(by='id_left')['length'].sum().reset_index()
+    modified_lulc_gdf = modified_lulc_gdf.merge(footpath_length_sum_gdf, how='left', left_on='id_left', right_on='id_left')
+
+    return modified_lulc_gdf
+
+
 def create_estimated_area_dictionary(lulc_gdf):
     leisure_node_element_list = lulc_gdf[(lulc_gdf['element_right']=='node')&
                                          (lulc_gdf['id_left']!=lulc_gdf['id_right'])]['leisure_right'].unique().tolist()
