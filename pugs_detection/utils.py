@@ -116,7 +116,7 @@ def calculate_footpath_length(lulc_gdf, footpath_gdf):
     modified_lulc_gdf = lulc_gdf.copy()
     # Drop duplicate so we can get the real number of POIs
     lulc_gdf_wo_duplicate = lulc_gdf.drop_duplicates(subset=['id_left'])
-    
+
     lulc_gdf_with_footpath = lulc_gdf_wo_duplicate.sjoin(footpath_gdf, how='left', predicate='intersects', rsuffix='_right2')
     footpath_length_sum_gdf = lulc_gdf_with_footpath.groupby(by='id_left')['length'].sum().reset_index()
     modified_lulc_gdf = modified_lulc_gdf.merge(footpath_length_sum_gdf, how='left', left_on='id_left', right_on='id_left')
@@ -299,3 +299,10 @@ def create_sdt_raster(gdf, file_path, satellite_image_path):
             dst.write(signed_distance_transform, 1)
 
         print("Signed distance transform complete.")
+
+def contrast_stretch(array, lower_percentile=1, upper_percentile=99):
+    # Apply a percentile-based contrast stretch (ignore the extreme values so image isn't too dark or too bright)
+    lower = np.percentile(array, lower_percentile)
+    upper = np.percentile(array, upper_percentile)
+    array = np.clip(array, lower, upper) # clip -> limit the values in an array to specific range
+    return (array - lower) / (upper - lower)
