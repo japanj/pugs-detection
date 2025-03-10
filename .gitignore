@@ -1,5 +1,11 @@
-# Data
+# Data (don't commit data since they are too large)
 /data/
+
+# Pytorch lightning logs
+/notebooks/lightning_logs/
+
+# Folder for keep track of prediction results
+/reports/prediction_results_track/
 
 # Mac OS-specific storage files
 .DS_Store
@@ -170,3 +176,6 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# Ignore Cache files
+cache/
