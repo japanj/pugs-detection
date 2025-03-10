@@ -10,13 +10,16 @@ Public Urban Green Spaces Detection Workflow
 
 ## OSM data processing notebook viewer
 
+**V.3 - OSM data processing**
+To view the notebook, please go to https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/2_data_processing_osm.ipynb
+
 **V.2 - OSM data processing**
 
-To view the notebook, please go to https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/data_processing_osm_trial3.ipynb 
+To view the notebook, please go to https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/data_processing_osm_trial3.ipynb
 
 **V.1 - OSM data processing (removed)**
 
-To view the notebook, please go to https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/data_processing_osm_trial.ipynb 
+~~To view the notebook, please go to https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/data_processing_osm_trial.ipynb~~
 
 ## Project Organization
 
@@ -26,8 +29,7 @@ To view the notebook, please go to https://nbviewer.org/github/japanj/pugs-detec
 ├── README.md          <- The top-level README for developers using this project.
 ├── data
 │   ├── external       <- Data from third party sources.
-│   ├── interim        <- Intermediate data that has been transformed.
-│   ├── processed      <- The final, canonical data sets for modeling.
+│   ├── processed      <- The intermediate data from raw data processing.
 │   └── raw            <- The original, immutable data dump.
 │
 ├── docs               <- A default mkdocs project; see www.mkdocs.org for details
@@ -35,8 +37,8 @@ To view the notebook, please go to https://nbviewer.org/github/japanj/pugs-detec
 ├── models             <- Trained and serialized models, model predictions, or model summaries
 │
 ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-│                         the creator's initials, and a short `-` delimited description, e.g.
-│                         `1.0-jqp-initial-data-exploration`.
+│                         the creator's initials, and a short `_` delimited description, e.g.
+│                         `1_data_acquisition_osm`.
 │
 ├── pyproject.toml     <- Project configuration file with package metadata for 
 │                         public_urban_green_spaces_detection and configuration for tools like black
@@ -51,9 +53,11 @@ To view the notebook, please go to https://nbviewer.org/github/japanj/pugs-detec
 │
 ├── setup.cfg          <- Configuration file for flake8
 │
-└── pugs_detection   <- Source code for use in this project.
+└── pugs_detection     <- Source code for use in this project.
     │
     ├── __init__.py             <- Makes public_urban_green_spaces_detection a Python module
+    │
+    ├── utils.py                <- Store functions used within data processing step
     │
     ├── config.py               <- Store useful variables and configuration
     │
