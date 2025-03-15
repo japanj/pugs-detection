@@ -117,11 +117,14 @@ class FilteredGeoDataset(Dataset):
         
         # Compute the valid patches
         self.valid_bboxes = []
+        count = 0
         for bbox in self.sampler:
             sample = self.dataset[bbox]
             if _filter_patches(sample):
                 self.valid_bboxes.append(bbox)
                 # print("in")
+            count += 1
+            print(count)
         print(f"Found {len(self.valid_bboxes)} valid patches out of {len(self.sampler)} total patches")
     
     def __len__(self):
