@@ -12,6 +12,8 @@ import geopandas as gpd
 import pandas as pd
 import numpy as np
 import rasterio
+import torch
+from lightning.pytorch import seed_everything
 from IPython.display import display
 from rasterio.features import rasterize
 from scipy.ndimage import distance_transform_edt
@@ -123,8 +125,8 @@ def calculate_footpath_length(lulc_gdf, footpath_gdf):
 
     return modified_lulc_gdf
 
-
-def create_estimated_area_dictionary(lulc_gdf):
+# _ indicates internal use only (user shouldn't call it directly)
+def _create_estimated_area_dictionary(lulc_gdf):
     leisure_node_element_list = lulc_gdf[(lulc_gdf['element_right']=='node')&
                                          (lulc_gdf['id_left']!=lulc_gdf['id_right'])]['leisure_right'].unique().tolist()
     landuse_node_element_list = lulc_gdf[(lulc_gdf['element_right']=='node')&
@@ -172,7 +174,7 @@ def classification_with_smaller_area(lulc_gdf):
     # Avoid to change the original df
     modified_lulc_gdf = lulc_gdf.copy()
 
-    pc_avg_area = create_estimated_area_dictionary(modified_lulc_gdf)
+    pc_avg_area = _create_estimated_area_dictionary(modified_lulc_gdf)
     # Need to check the access tag of the small polygon -> so get unique big polygon first
     # Then, get access of small polygon
     unlabel_green_space = modified_lulc_gdf[modified_lulc_gdf['is_public'].isna()]
@@ -306,3 +308,16 @@ def contrast_stretch(array, lower_percentile=1, upper_percentile=99):
     upper = np.percentile(array, upper_percentile)
     array = np.clip(array, lower, upper) # clip -> limit the values in an array to specific range
     return (array - lower) / (upper - lower)
+
+# Min-max scaling to [-1, 1] range
+def normalize_sdt_minmax(sdt_array):
+    sdt_min = float(sdt_array.min())
+    sdt_max = float(sdt_array.max())
+    # Apply min-max formula scaled to [-1, 1]
+    normalized = 2 * (sdt_array - sdt_min) / (sdt_max - sdt_min) - 1
+    return normalized
+
+def set_all_seeds(seed=42):
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    seed_everything(42, workers=True)
