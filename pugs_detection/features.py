@@ -91,7 +91,10 @@ def create_image_tiles(output_folder_path, image_path, train_index_list, val_ind
 def _process_mask(mask, valid_area):
     mask = mask.numpy()
     valid_area = valid_area.numpy()
-    mask[~valid_area[0]] = 0
+    # change the valid area array position to be Red band (important for vegetation detection so I won't replace it)
+    valid_area_all = valid_area[0] | valid_area[1] | valid_area[2] | valid_area[3] | valid_area[4] | valid_area[5] | valid_area[6] | valid_area[7] | valid_area[8] | valid_area[9] | valid_area[10] | valid_area[11] | valid_area[12]
+    # mask[~valid_area[2]] = 0
+    mask[~valid_area_all] = 0
     result = torch.from_numpy(mask)
     return result
 
@@ -135,8 +138,7 @@ class FilteredGeoDataset(Dataset):
 
         # Select specific bands    
         sample['image'] = sample['image'][self.specific_bands]
-    
-        min_value = sample['image'].min().item()
+        min_value = sample['image'].min()
         valid_area = (sample['image']!=min_value) # create a mask of valid area
 
         # sample['image'], valid_area = contrast_stretch_patch(sample['image'])

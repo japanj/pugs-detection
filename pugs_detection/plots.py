@@ -18,7 +18,7 @@ def plot_image_tiles(image_path, image_tiles):
     data = rioxarray.open_rasterio(image_path)
     # Plot the original satellite image with bounding boxes for the 16 tiles
     plt.figure(figsize=(12, 12))
-    data.sel(band=[4, 3, 2]).plot.imshow()
+    data.sel(band=[4, 3, 2]).plot.imshow(robust=True)
     plt.axis('off')
 
     # Add bounding boxes for each tile
@@ -43,7 +43,7 @@ def plot_image_tiles(image_path, image_tiles):
     plt.title(f"Satellite Image with {len(image_tiles)} Tiles")
     plt.show()
 
-def visualize_from_torchgeo_dataloader(dataloader, num_samples=3, mode='original'):
+def visualize_from_torchgeo_dataloader(dataloader, num_samples=3, mode='original', replace_band_pos=None):
     """Visualize samples from a TorchGeo DataLoader with stack_samples"""
     set_all_seeds(42)
     # Get a batch from the dataloader
@@ -75,7 +75,7 @@ def visualize_from_torchgeo_dataloader(dataloader, num_samples=3, mode='original
         
 
         if mode != 'original':
-            image_additional_mask = image_np[13]
+            image_additional_mask = image_np[replace_band_pos]
             num_plots = 3
         else:
             num_plots = 2

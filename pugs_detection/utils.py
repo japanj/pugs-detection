@@ -302,12 +302,39 @@ def create_sdt_raster(gdf, file_path, satellite_image_path):
 
         print("Signed distance transform complete.")
 
+# def contrast_stretch(array, lower_percentile=1, upper_percentile=99):
+#     # Apply a percentile-based contrast stretch (ignore the extreme values so image isn't too dark or too bright)
+#     lower = np.percentile(array, lower_percentile)
+#     upper = np.percentile(array, upper_percentile)
+#     array = np.clip(array, lower, upper) # clip -> limit the values in an array to specific range
+#     return (array - lower) / (upper - lower)
+
 def contrast_stretch(array, lower_percentile=1, upper_percentile=99):
-    # Apply a percentile-based contrast stretch (ignore the extreme values so image isn't too dark or too bright)
-    lower = np.percentile(array, lower_percentile)
-    upper = np.percentile(array, upper_percentile)
-    array = np.clip(array, lower, upper) # clip -> limit the values in an array to specific range
-    return (array - lower) / (upper - lower)
+    normalized_img = array.copy()
+    
+    for i in range(array.sizes['band']):
+        # Get the band index and data
+        band_idx = array.band.values[i]  # Use actual band coordinate value
+        band = array.sel(band=band_idx).values
+        
+        # Calculate percentiles
+        lower = np.percentile(band, lower_percentile)
+        upper = np.percentile(band, upper_percentile)
+        
+        print(f"Band {i+1}: Lower {lower}, Upper {upper}")
+
+        if upper > lower:
+            normalized_img.loc[dict(band=band_idx)] = np.clip((band - lower) / (upper - lower), 0, 1)
+        else:
+            normalized_img.loc[dict(band=band_idx)] = np.zeros_like(band)
+    
+    return normalized_img
+
+# def contrast_stretch(array):
+#     # Apply a percentile-based contrast stretch (ignore the extreme values so image isn't too dark or too bright)
+#     image_norm = array / 10000
+#     image_norm = np.clip(image_norm, 0, 1)
+#     return image_norm
 
 # Min-max scaling to [-1, 1] range
 def normalize_sdt_minmax(sdt_array):
