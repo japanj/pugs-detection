@@ -10,6 +10,7 @@ Date: [YYYY-MM-DD]
 
 import rioxarray
 import numpy as np
+import torch
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from pugs_detection.utils import set_all_seeds
@@ -98,4 +99,114 @@ def visualize_from_torchgeo_dataloader(dataloader, num_samples=3, mode='original
                 axes[i].set_title('Additional info')
                 axes[i].axis('off')
         
+        plt.show()
+
+def visualize_predictions(model, test_loader, num_batches=5, samples_per_batch=4, mode='original'):
+    # Set model to evaluation mode
+    model.eval()
+    
+    # Iterate through batches
+    for batch_idx, batch in enumerate(test_loader):
+        if batch_idx >= num_batches:
+            break
+        
+        # Get data
+        images = batch["image"]
+        masks = batch["mask"]
+        
+        # Generate predictions
+        with torch.no_grad():
+            logits = model(images)
+            # Ensure predictions have the right shape
+            preds = torch.sigmoid(logits)
+            preds = (preds > 0.5).float()
+            
+            # Print shapes for debugging
+            print(f"Prediction shape: {preds.shape}")
+            print(f"Mask shape: {masks.shape}")
+        
+        # Create visualization
+        num_samples = min(samples_per_batch, images.shape[0])
+        if mode != 'original':
+            num_plots = 4
+        else:
+            num_plots = 3
+        
+        fig, axes = plt.subplots(num_samples, num_plots, figsize=(15, 5*num_samples))
+
+        if num_samples == 1:
+            axes = axes.reshape(1, 3)
+        
+        for i in range(num_samples):
+            # Get sample
+            img = images[i].cpu().numpy()
+            mask = masks[i].cpu().numpy()
+            pred = preds[i].cpu().numpy()
+            
+            print(f"Sample {i} - Image shape: {img.shape}, Mask shape: {mask.shape}, Pred shape: {pred.shape}")
+
+            # Create RGB visualization for the image
+            if img.shape[0] >= 13:
+                # Sentinel-2 RGB composite
+                rgb = np.stack([img[3], img[2], img[1]], axis=0)
+            else:
+                # Sentinel-2 RGB composite
+                rgb = np.stack([img[2], img[1], img[0]], axis=0)
+            rgb = np.transpose(rgb, (1, 2, 0))
+            
+            # Ensure mask is 2D for plotting
+            if mask.ndim > 2:
+                if mask.shape[0] == 1:
+                    # Single channel but in shape (1, H, W)
+                    mask = mask.squeeze(0)
+                else:
+                    # Multiple channels, take the first one
+                    mask = mask[0]
+            
+            # Ensure prediction is 2D for plotting
+            if pred.ndim > 2:
+                if pred.shape[0] == 1:
+                    # Single channel but in shape (1, H, W)
+                    pred = pred.squeeze(0)
+                else:
+                    pred = pred[1]
+                    print(np.max(pred))
+            
+            # Plot
+            for j in range(num_plots):
+                if j==0:
+                    axes[i, j].imshow(rgb)
+                    axes[i, j].set_title("Image")
+                    axes[i, j].axis("off")
+                if j==1:
+                    axes[i, j].imshow(mask, cmap="gray")
+                    axes[i, j].set_title("Ground Truth")
+                    axes[i, j].axis("off")
+                elif j==(num_plots-1):
+                    try:
+                        # axes[i, 3].imshow(pred, cmap="gray")
+                        # axes[i, 3].set_title("Prediction")
+                        # axes[i, 3].axis("off")
+                        axes[i, j].imshow(pred, cmap="gray")
+                        axes[i, j].set_title("Prediction")
+                        axes[i, j].axis("off")
+                    except Exception as e:
+                        print(f"Error plotting prediction: {e}")
+                        print(f"Prediction shape: {pred.shape}, dtype: {pred.dtype}")
+                        # Try alternate approach
+                        if pred.ndim > 2:
+                            pred_2d = pred.mean(axis=0)  # Average across channels
+                            axes[i, j].imshow(pred_2d, cmap="gray")
+                        else:
+                            # Create a blank image
+                            blank = np.zeros_like(mask)
+                            axes[i, j].imshow(blank, cmap="gray")
+                        axes[i, j].set_title("Prediction (Error)")
+                        axes[i, j].axis("off")
+                else:
+                    axes[i, j].imshow(img[9], cmap="gray")
+                    axes[i, j].set_title("Additional Info")
+                    axes[i, j].axis("off")
+
+        plt.tight_layout()
         plt.show()
