@@ -88,11 +88,14 @@ def create_image_tiles(output_folder_path, image_path, train_index_list, val_ind
 
     return tiles
 
-def _process_mask(mask, valid_area):
+def _process_mask(mask, valid_area, band_count):
     mask = mask.numpy()
     valid_area = valid_area.numpy()
     # change the valid area array position to be Red band (important for vegetation detection so I won't replace it)
-    valid_area_all = valid_area[0] | valid_area[1] | valid_area[2] | valid_area[3] | valid_area[4] | valid_area[5] | valid_area[6] | valid_area[7] | valid_area[8] | valid_area[9] | valid_area[10] | valid_area[11] | valid_area[12]
+    if band_count >= 13:
+        valid_area_all = valid_area[0] | valid_area[1] | valid_area[2] | valid_area[3] | valid_area[4] | valid_area[5] | valid_area[6] | valid_area[7] | valid_area[8] | valid_area[9] | valid_area[10] | valid_area[11] | valid_area[12]
+    else:
+        valid_area_all = valid_area[0] | valid_area[1] | valid_area[2] | valid_area[3] | valid_area[4] | valid_area[5] | valid_area[6] | valid_area[7] | valid_area[8]
     # mask[~valid_area[2]] = 0
     mask[~valid_area_all] = 0
     result = torch.from_numpy(mask)
@@ -117,6 +120,7 @@ class FilteredGeoDataset(Dataset):
         self.transform = transform
         self.bounds = dataset.bounds
         self.specific_bands = specific_bands
+        self.band_count = len(specific_bands)
         
         # Compute the valid patches
         self.valid_bboxes = []
@@ -125,7 +129,6 @@ class FilteredGeoDataset(Dataset):
             sample = self.dataset[bbox]
             if _filter_patches(sample):
                 self.valid_bboxes.append(bbox)
-                # print("in")
             count += 1
             print(count)
         print(f"Found {len(self.valid_bboxes)} valid patches out of {len(self.sampler)} total patches")
@@ -142,7 +145,7 @@ class FilteredGeoDataset(Dataset):
         valid_area = (sample['image']!=min_value) # create a mask of valid area
 
         # sample['image'], valid_area = contrast_stretch_patch(sample['image'])
-        sample['mask'] = _process_mask(sample['mask'], valid_area)
+        sample['mask'] = _process_mask(sample['mask'], valid_area, band_count)
         
         
         del sample["crs"]
@@ -192,9 +195,6 @@ def create_dataset_split(image_path, label_path, epsg_code, band_list, dataset_t
     image_ds = RasterDataset(paths=image_path, crs=CRS.from_epsg(epsg_code), res=10)
     label_ds = VectorDataset(paths=label_path, crs=CRS.from_epsg(epsg_code), res=10)
     combined_ds = image_ds & label_ds
-    # filter_ds = FilteredGeoDataset(dataset=combined_ds, stride=64, specific_bands=list(range(1, 14)))
-    # filter_ds = FilteredGeoDataset(dataset=combined_ds, stride=64, specific_bands=list(range(num_channels)))
-    # filter_ds = FilteredGeoDataset(dataset=combined_ds, stride=64, specific_bands=list(range(13)))
     filter_ds = FilteredGeoDataset(dataset=combined_ds, stride=64, specific_bands=band_list)
     if dataset_type == 'train':
         return AugmentedDataset(dataset=filter_ds, transform=transform_sequence)

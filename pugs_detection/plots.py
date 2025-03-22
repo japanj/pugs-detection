@@ -65,13 +65,12 @@ def visualize_from_torchgeo_dataloader(dataloader, num_samples=3, mode='original
         print(f"  Mask shape: {mask_np.shape}")
         print(f"  Green space percentage: {np.mean(mask_np):.2f}")
         
-        # For sentinel-2 data, use bands 4,3,2 (R,G,B) or 8,4,3 (NIR,R,G)
+        # For sentinel-2 data, use bands 4,3,2 (R,G,B)
         # Assuming bands are [C, H, W]
-        if image_np.shape[0] > 3:  # Multi-spectral image
+        if image_np.shape[0] >= 13:  # Multi-spectral image
             rgb = image_np[[3, 2, 1], :, :].transpose(1, 2, 0)  # Select 4,3,2 bands (RGB bands)
-            # rgb = image_np[[2, 1, 0], :, :].transpose(1, 2, 0)  # Select 4,3,2 bands (RGB bands)
         else:
-            rgb = image_np.transpose(1, 2, 0)
+            rgb = image_np[[2, 1, 0], :, :].transpose(1, 2, 0)  # Select 4,3,2 bands (RGB bands)
         
 
         if mode != 'original':

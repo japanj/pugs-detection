@@ -320,7 +320,7 @@ def contrast_stretch(array, lower_percentile=1, upper_percentile=99):
         # Calculate percentiles
         lower = np.percentile(band, lower_percentile)
         upper = np.percentile(band, upper_percentile)
-        
+
         print(f"Band {i+1}: Lower {lower}, Upper {upper}")
 
         if upper > lower:

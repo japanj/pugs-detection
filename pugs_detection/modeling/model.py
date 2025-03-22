@@ -38,14 +38,22 @@ def modify_first_layer(task, in_channels=14):
         padding=first_conv.padding,
         bias=first_conv.bias is not None
     )
-    
-    # Copy the original weights for the first 13 channels
-    with torch.no_grad():
-        new_conv.weight[:, :13] = original_weights
-        # Initialize the new channel(s) with small random values
-        if in_channels > 13:
-            nn.init.kaiming_normal_(new_conv.weight[:, 13:], mode='fan_out', nonlinearity='relu')
-            # nn.init.kaiming_normal_(new_conv.weight[:, 13:])
+
+    if in_channels >= 13:
+        # Copy the original weights for the first 13 channels
+        with torch.no_grad():
+            new_conv.weight[:, :13] = original_weights
+            # Initialize the new channel(s) with small random values
+            if in_channels > 13:
+                nn.init.kaiming_normal_(new_conv.weight[:, 13:], mode='fan_out', nonlinearity='relu')
+                # nn.init.kaiming_normal_(new_conv.weight[:, 13:])
+    else:
+        # Copy the original weights for the first 13 channels
+        with torch.no_grad():
+            new_conv.weight[:, :10] = original_weights
+            # Initialize the new channel(s) with small random values
+            if in_channels > 9:
+                nn.init.kaiming_normal_(new_conv.weight[:, 9:], mode='fan_out', nonlinearity='relu')
     
     # Replace the original conv with the new one
     if hasattr(model, 'encoder') and hasattr(model.encoder, 'conv1'):
