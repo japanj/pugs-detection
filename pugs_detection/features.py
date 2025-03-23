@@ -145,7 +145,7 @@ class FilteredGeoDataset(Dataset):
         valid_area = (sample['image']!=min_value) # create a mask of valid area
 
         # sample['image'], valid_area = contrast_stretch_patch(sample['image'])
-        sample['mask'] = _process_mask(sample['mask'], valid_area, band_count)
+        sample['mask'] = _process_mask(sample['mask'], valid_area, self.band_count)
         
         
         del sample["crs"]

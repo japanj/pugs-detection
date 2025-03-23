@@ -178,15 +178,12 @@ def visualize_predictions(model, test_loader, num_batches=5, samples_per_batch=4
                     axes[i, j].imshow(rgb)
                     axes[i, j].set_title("Image")
                     axes[i, j].axis("off")
-                if j==1:
+                elif j==1:
                     axes[i, j].imshow(mask, cmap="gray")
                     axes[i, j].set_title("Ground Truth")
                     axes[i, j].axis("off")
                 elif j==(num_plots-1):
                     try:
-                        # axes[i, 3].imshow(pred, cmap="gray")
-                        # axes[i, 3].set_title("Prediction")
-                        # axes[i, 3].axis("off")
                         axes[i, j].imshow(pred, cmap="gray")
                         axes[i, j].set_title("Prediction")
                         axes[i, j].axis("off")
