@@ -75,14 +75,14 @@ def visualize_from_torchgeo_dataloader(dataloader, num_samples=3, mode='original
         
 
         if mode != 'original':
-            image_additional_mask = image_np[replace_band_pos]
-            num_plots = 3
+            num_plots = 2 + len(replace_band_pos)
         else:
             num_plots = 2
         
         # Create a figure with two subplots
         fig, axes = plt.subplots(1, num_plots, figsize=(12, 6))
         
+        additional_info_pos = 0
         for i in range(num_plots):
             if i==0:
                 # Display the RGB image in the first subplot
@@ -95,13 +95,14 @@ def visualize_from_torchgeo_dataloader(dataloader, num_samples=3, mode='original
                 axes[i].axis('off')
             else:
                 # Display the mask in the second subplot
-                axes[i].imshow(image_additional_mask, cmap='gray')
+                axes[i].imshow(image_np[replace_band_pos[additional_info_pos]], cmap='gray')
                 axes[i].set_title('Additional info')
                 axes[i].axis('off')
+                additional_info_pos += 1
         
         plt.show()
 
-def visualize_predictions(model, test_loader, num_batches=5, samples_per_batch=4, mode='original'):
+def visualize_predictions(model, test_loader, num_batches=5, samples_per_batch=4, mode='original', replace_band_pos=None):
     # Set model to evaluation mode
     model.eval()
     
@@ -128,7 +129,7 @@ def visualize_predictions(model, test_loader, num_batches=5, samples_per_batch=4
         # Create visualization
         num_samples = min(samples_per_batch, images.shape[0])
         if mode != 'original':
-            num_plots = 4
+            num_plots = 3 + len(replace_band_pos)
         else:
             num_plots = 3
         
@@ -172,6 +173,7 @@ def visualize_predictions(model, test_loader, num_batches=5, samples_per_batch=4
                     pred = pred[1]
                     print(np.max(pred))
             
+            additional_info_pos = 0
             # Plot
             for j in range(num_plots):
                 if j==0:
@@ -201,9 +203,10 @@ def visualize_predictions(model, test_loader, num_batches=5, samples_per_batch=4
                         axes[i, j].set_title("Prediction (Error)")
                         axes[i, j].axis("off")
                 else:
-                    axes[i, j].imshow(img[9], cmap="gray")
+                    axes[i, j].imshow(img[replace_band_pos[additional_info_pos]], cmap="gray")
                     axes[i, j].set_title("Additional Info")
                     axes[i, j].axis("off")
+                    additional_info_pos += 1
 
         plt.tight_layout()
         plt.show()

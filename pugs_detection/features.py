@@ -18,6 +18,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import os
+import copy
 from torchgeo.datasets import RasterDataset, VectorDataset
 from torchgeo.samplers import GridGeoSampler
 from torch.utils.data import Dataset
@@ -155,33 +156,33 @@ class FilteredGeoDataset(Dataset):
     
 class AugmentedDataset(Dataset):
     """Dataset wrapper that applies multiple augmentations to increase sample count"""
-    def __init__(self, dataset, transform=None, num_augmentations=2):
+    def __init__(self, dataset, transform_list=None):
         self.dataset = dataset
-        self.transform = transform
-        self.num_augmentations = num_augmentations
+        self.transform_list = transform_list
     
     def __len__(self):
-        return len(self.dataset) * (self.num_augmentations + 1)  # Original + augmented versions
+        return len(self.dataset) * (len(self.transform_list) + 1)  # Original + augmented versions
     
     def __getitem__(self, idx):
         # Calculate original dataset index and augmentation version
-        dataset_idx = idx // (self.num_augmentations + 1)
-        aug_version = idx % (self.num_augmentations + 1)
+        dataset_idx = idx // (len(self.transform_list) + 1)
+        aug_version = idx % (len(self.transform_list) + 1)
         
         # Get original sample
         sample = self.dataset[dataset_idx]
         
         # If it's the first version (aug_version=0), return original
-        if aug_version == 0 or self.transform is None:
+        if aug_version == 0 or self.transform_list is None:
             return sample
         
         # Apply transformation
+        transform = self.transform_list[aug_version - 1]
+
         # Make a deep copy to avoid modifying the original
-        import copy
         sample_copy = copy.deepcopy(sample)
         
         # Apply the transformation
-        sample_copy = self.transform(sample_copy)
+        sample_copy = transform(sample_copy)
 
         # Ensure proper shape (remove batch dimension added by some transforms)
         sample_copy['image'] = sample_copy['image'].squeeze(0)
@@ -190,13 +191,13 @@ class AugmentedDataset(Dataset):
         return sample_copy
     
 # Create datasets for each split
-def create_dataset_split(image_path, label_path, epsg_code, band_list, dataset_type, transform_sequence):
+def create_dataset_split(image_path, label_path, epsg_code, band_list, dataset_type, transform_list):
     set_all_seeds(42)
     image_ds = RasterDataset(paths=image_path, crs=CRS.from_epsg(epsg_code), res=10)
     label_ds = VectorDataset(paths=label_path, crs=CRS.from_epsg(epsg_code), res=10)
     combined_ds = image_ds & label_ds
-    filter_ds = FilteredGeoDataset(dataset=combined_ds, stride=64, specific_bands=band_list)
+    filter_ds = FilteredGeoDataset(dataset=combined_ds, stride=128, specific_bands=band_list)
     if dataset_type == 'train':
-        return AugmentedDataset(dataset=filter_ds, transform=transform_sequence)
+        return AugmentedDataset(dataset=filter_ds, transform_list=transform_list)
     else:
         return filter_ds
