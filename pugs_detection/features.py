@@ -115,24 +115,30 @@ def _filter_patches(sample):
 # Custom dataset class that applies filtering
 class FilteredGeoDataset(Dataset):
     # stride is set as 64 for both x and y directions
-    def __init__(self, dataset, patch_size=256, stride=64, transform=None, specific_bands=list(range(13))):
+    def __init__(self, dataset, patch_size=256, stride=64, transform=None, specific_bands=list(range(13)), dataset_type='train'):
         self.dataset = dataset
         self.sampler = GridGeoSampler(dataset, size=(patch_size, patch_size), stride=stride)
         self.transform = transform
         self.bounds = dataset.bounds
         self.specific_bands = specific_bands
         self.band_count = len(specific_bands)
+        self.dataset_type = dataset_type
         
         # Compute the valid patches
         self.valid_bboxes = []
         count = 0
-        for bbox in self.sampler:
-            sample = self.dataset[bbox]
-            if _filter_patches(sample):
-                self.valid_bboxes.append(bbox)
-            count += 1
-            print(count)
-        print(f"Found {len(self.valid_bboxes)} valid patches out of {len(self.sampler)} total patches")
+        if self.dataset_type == 'train':
+            for bbox in self.sampler:
+                sample = self.dataset[bbox]
+                if _filter_patches(sample):
+                    self.valid_bboxes.append(bbox)
+                count += 1
+                print(count)
+            print(f"Found {len(self.valid_bboxes)} valid patches out of {len(self.sampler)} total patches")
+        else:
+            # For validation and test sets, use all patches
+            self.valid_bboxes = list(self.sampler)
+            print(f"Using all {len(self.valid_bboxes)} patches for {dataset_type} set")
     
     def __len__(self):
         return len(self.valid_bboxes)
@@ -196,7 +202,7 @@ def create_dataset_split(image_path, label_path, epsg_code, band_list, dataset_t
     image_ds = RasterDataset(paths=image_path, crs=CRS.from_epsg(epsg_code), res=10)
     label_ds = VectorDataset(paths=label_path, crs=CRS.from_epsg(epsg_code), res=10)
     combined_ds = image_ds & label_ds
-    filter_ds = FilteredGeoDataset(dataset=combined_ds, stride=128, specific_bands=band_list)
+    filter_ds = FilteredGeoDataset(dataset=combined_ds, stride=128, specific_bands=band_list, dataset_type=dataset_type)
     if dataset_type == 'train':
         return AugmentedDataset(dataset=filter_ds, transform_list=transform_list)
     else:
