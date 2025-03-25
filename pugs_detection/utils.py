@@ -330,11 +330,30 @@ def contrast_stretch(array, lower_percentile=1, upper_percentile=99):
     
     return normalized_img
 
-# def contrast_stretch(array):
-#     # Apply a percentile-based contrast stretch (ignore the extreme values so image isn't too dark or too bright)
-#     image_norm = array / 10000
-#     image_norm = np.clip(image_norm, 0, 1)
-#     return image_norm
+# def contrast_stretch_std(array):
+#     normalized_img = array.copy()
+    
+#     for i in range(array.sizes['band']):
+#         # Get the band index and data
+#         band_idx = array.band.values[i]  # Use actual band coordinate value
+#         band = array.sel(band=band_idx).values
+        
+#         # Calculate percentiles
+#         band_new = (band-np.mean(band))/np.std(band)
+
+#         print(f"Band {i+1} new val: Mean {np.mean(band_new)}, Std {np.std(band_new)}")
+#         print(f"Band {i+1}: low {np.min(band_new)}, max {np.max(band_new)}")
+    
+#     return normalized_img
+
+def contrast_stretch_dn(array):
+    result = array.copy()
+    # Apply a percentile-based contrast stretch (ignore the extreme values so image isn't too dark or too bright)
+    array_new = np.where(array.values < 0, 0, array.values)
+    image_norm = array_new / 10000
+    image_norm = np.clip(image_norm, 0, 1)
+    result.values = image_norm
+    return result
 
 # Min-max scaling to [-1, 1] range
 def normalize_sdt_minmax(sdt_array):
