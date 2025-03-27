@@ -103,14 +103,19 @@ def _process_mask(mask, valid_area, band_count):
     return result
 
 # Create a custom filtering function
-def _filter_patches(sample):
+def _filter_patches(sample, band_count):
     """Filter patches that contain only background or only PUGS"""
+    min_value = sample['image'].min()
+    valid_area = (sample['image']!=min_value) # create a mask of valid area
+    
+    sample['mask'] = _process_mask(sample['mask'], valid_area, band_count)
+    
     mask = sample['mask'].numpy()
     # Calculate percentage of green space in the mask
     green_percentage = np.mean(mask)
     
-    # Keep patches that have between 5% and 95% green space
-    return 0.05 < green_percentage < 0.95
+    # Filter the patches that has only background or only PUGS out
+    return 0 < green_percentage < 1
 
 # Custom dataset class that applies filtering
 class FilteredGeoDataset(Dataset):
@@ -130,7 +135,7 @@ class FilteredGeoDataset(Dataset):
         if self.dataset_type == 'train':
             for bbox in self.sampler:
                 sample = self.dataset[bbox]
-                if _filter_patches(sample):
+                if _filter_patches(sample, self.band_count):
                     self.valid_bboxes.append(bbox)
                 count += 1
                 print(count)
@@ -154,12 +159,17 @@ class FilteredGeoDataset(Dataset):
         # sample['image'], valid_area = contrast_stretch_patch(sample['image'])
         sample['mask'] = _process_mask(sample['mask'], valid_area, self.band_count)
         
-        
         del sample["crs"]
         del sample["bounds"]
 
         return sample
-    
+
+# def augmented_condition(sample):
+#     # Example: Only augment patches with <20% green space
+#     mask = sample['mask'].numpy()
+#     green_percentage = np.mean(mask)
+#     return green_percentage < 0.2
+
 class AugmentedDataset(Dataset):
     """Dataset wrapper that applies multiple augmentations to increase sample count"""
     def __init__(self, dataset, transform_list=None):
@@ -196,6 +206,53 @@ class AugmentedDataset(Dataset):
             
         return sample_copy
     
+# class AugmentedDataset(Dataset):
+#     """Dataset wrapper that applies multiple augmentations to increase sample count"""
+#     def __init__(self, dataset, transform_list=None, augmented_condition_fn=None):
+#         self.dataset = dataset
+#         self.transform_list = transform_list
+#         self.augmented_condition_fn = augmented_condition_fn
+
+#         # Pre-calculate which samples should be augmented
+#         self.augmentable_indices = []
+#         for i in range(len(dataset)):
+#             sample = dataset[i]
+#             if self.augmented_condition_fn(sample):
+#                 self.augmentable_indices.append(i)
+        
+#         # Calculate total length
+#         self.total_length = len(dataset) + len(self.augmentable_indices) * len(self.transform_list)
+
+#         # Create mapping from idx to (sample_idx, aug_idx)
+#         self.idx_mapping = []
+#         for i in range(len(dataset)):
+#             self.idx_mapping.append((i, -1))  # Original samples
+#             if i in self.augmentable_indices:
+#                 for j in range(len(self.transform_list)):
+#                     self.idx_mapping.append((i, j))  # Augmented versions
+
+#     def __len__(self):
+#         return self.total_length
+    
+#     def __getitem__(self, idx):
+#         sample_idx, aug_idx = self.idx_mapping[idx]
+#         sample = self.dataset[sample_idx]
+        
+#         # Return original if not augmented
+#         if aug_idx == -1:
+#             return sample
+        
+#         # Apply transformation
+#         transform = self.transform_list[aug_idx]
+#         sample_copy = copy.deepcopy(sample)
+#         sample_copy = transform(sample_copy)
+        
+#         # Ensure proper shape
+#         sample_copy['image'] = sample_copy['image'].squeeze(0)
+#         sample_copy['mask'] = sample_copy['mask'].squeeze(0)
+            
+#         return sample_copy
+    
 # Create datasets for each split
 def create_dataset_split(image_path, label_path, epsg_code, band_list, dataset_type, transform_list):
     set_all_seeds(42)
@@ -204,6 +261,7 @@ def create_dataset_split(image_path, label_path, epsg_code, band_list, dataset_t
     combined_ds = image_ds & label_ds
     filter_ds = FilteredGeoDataset(dataset=combined_ds, stride=128, specific_bands=band_list, dataset_type=dataset_type)
     if dataset_type == 'train':
+        # return AugmentedDataset(dataset=filter_ds, transform_list=transform_list, augmented_condition_fn=augmented_condition)
         return AugmentedDataset(dataset=filter_ds, transform_list=transform_list)
     else:
         return filter_ds
