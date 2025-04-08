@@ -17,6 +17,7 @@ from lightning.pytorch import seed_everything
 from IPython.display import display
 from rasterio.features import rasterize
 from scipy.ndimage import distance_transform_edt
+from rasterstats import zonal_stats
 
 def load_osm_data(file_path, crs):
     """
@@ -367,3 +368,201 @@ def set_all_seeds(seed=42):
     np.random.seed(seed)
     torch.manual_seed(seed)
     seed_everything(42, workers=True)
+
+
+############# Specific functions for ground truth exploration #############
+def find_non_overlap_area(gdf1, gdf2, threshold=0.5):
+    """
+    Find polygons in gdf1 that don't overlap significantly (>threshold) with any polygon in gdf2.
+    """
+    gdf1 = gdf1.copy()
+    gdf2 = gdf2.copy()
+
+    gdf1 = gdf1.reset_index(drop=True)
+    gdf2 = gdf2.reset_index(drop=True)
+
+    # Create a spatial index for faster processing
+    sindex = gdf2.sindex
+    
+    # Track which polygons to keep
+    indices_to_exclude = set()
+
+    for row1 in gdf1.itertuples():
+        geom1 = row1.geometry
+        area1 = geom1.area
+        idx1 = row1.Index
+        temp_overlap_area_2 = 0
+        
+        # Skip empty or invalid geometries
+        if not geom1.is_valid or geom1.is_empty:
+            indices_to_exclude.add(idx1)
+            continue
+        
+        # Find potential intersections using spatial index
+        possible_matches_idx = list(sindex.intersection(geom1.bounds))
+        possible_matches = gdf2.iloc[possible_matches_idx]
+        
+        # Check all potential matches
+        for row2 in possible_matches.itertuples():
+            geom2 = row2.geometry
+
+            # Skip if no intersection
+            if not geom1.intersects(geom2):
+                continue
+                
+            # Calculate intersection
+            intersection = geom1.intersection(geom2)
+            intersection_area = intersection.area
+            
+            # Calculate overlap percentage
+            overlap_pct1 = intersection_area / area1
+            
+            temp_overlap_area_2 += intersection_area
+
+            # If any overlap is greater than threshold, exclude this polygon
+            if overlap_pct1 >= threshold:
+                indices_to_exclude.add(idx1)
+                break
+            
+        if temp_overlap_area_2/area1 >= threshold:
+            indices_to_exclude.add(idx1)
+            
+    # Keep polygons that were not excluded
+    indices_to_keep = [i for i in range(len(gdf1)) if i not in indices_to_exclude]
+    
+    if not indices_to_keep:
+        return gpd.GeoDataFrame(geometry=[], crs=gdf1.crs)
+    
+    # Create result GeoDataFrame with the polygons to keep
+    result_gdf = gdf1.loc[indices_to_keep].copy()
+
+    return result_gdf
+
+def find_non_overlap_dataset(gdf1, gdf2, gdf3, threshold=0.5):
+    """
+    Find polygons in gdf1 that don't overlap significantly (>threshold) with any polygon in gdf2 or gdf3.
+    """
+    # Find non-overlapping polygons with respect to gdf2
+    non_overlap_gdf2 = find_non_overlap_area(gdf1, gdf2, threshold)
+    
+    # Find non-overlapping polygons with respect to gdf3
+    non_overlap_gdf3 = find_non_overlap_area(gdf1, gdf3, threshold)
+
+    non_overlap_dataset = gdf1[gdf1['geometry'].isin(non_overlap_gdf2['geometry']) & gdf1['geometry'].isin(non_overlap_gdf3['geometry'])].copy()
+    non_overlap_dataset = non_overlap_dataset.reset_index(drop=True)
+    
+    return non_overlap_dataset
+
+def get_non_overlap_area_insights(non_overlap_area_gdf, groupby_columns):
+    # Calculate non-overlapping areas of green and open spaces
+    total_area = non_overlap_area_gdf.area.sum()
+
+    # Group by category, sum areas, and calculate percentages
+    result_gdf = (
+        non_overlap_area_gdf
+        .assign(area_m2=non_overlap_area_gdf.area)  # Create area column
+        .groupby(groupby_columns)
+        .agg({
+            'area_m2': 'sum',  # Sum the areas
+            'geometry': 'count'  # Count records per category
+        })
+        .rename(columns={'geometry': 'count'})
+        .reset_index()
+        .assign(
+            area_pct=lambda df: round((df.area_m2/total_area) * 100, 2)  # Calculate percentage
+        )
+        .sort_values(by='area_pct', ascending=False)
+    ).reset_index(drop=True)
+
+    # Prepare columns for largest polygon info
+    result_gdf['largest_poly_area'] = 0.0
+    result_gdf['largest_poly_id'] = None
+    result_gdf['largest_poly_geometry'] = None
+    
+    # Find largest polygon for each group and add to results
+    for i, row in result_gdf.iterrows():
+        # Create filter for this group
+        if len(groupby_columns) == 1:
+            group_filter = non_overlap_area_gdf[groupby_columns[0]] == row[groupby_columns[0]]
+        else:
+            # For multiple columns
+            group_filter = None
+            for col in groupby_columns:
+                if group_filter is None:
+                    group_filter = non_overlap_area_gdf[col] == row[col]
+                else:
+                    group_filter = group_filter & (non_overlap_area_gdf[col] == row[col])
+        
+        group_data = non_overlap_area_gdf[group_filter]
+        
+        if len(group_data) > 0:
+            largest_idx = group_data.area.idxmax()
+            largest_poly = non_overlap_area_gdf.loc[largest_idx]
+            
+            # Add largest polygon info to results
+            result_gdf.at[i, 'largest_poly_area'] = largest_poly.geometry.area
+            result_gdf.at[i, 'largest_poly_id'] = largest_idx
+            result_gdf.at[i, 'largest_poly_geometry'] = largest_poly.geometry
+    
+    # Convert back to GeoDataFrame with the largest polygon geometries
+    geo_result = gpd.GeoDataFrame(
+        result_gdf, 
+        geometry='largest_poly_geometry',
+        crs=non_overlap_area_gdf.crs
+    )
+    
+    # Add percentage of largest polygon compared to total area for this group
+    # geo_result['largest_poly_pct'] = round((geo_result['largest_poly_area'] / geo_result['area_m2']) * 100, 2)
+    
+    return geo_result
+
+def add_ndvi_to_polygons(gdf, raster_path, ndvi_band_index=0):
+    """
+    Calculate average NDVI for each polygon in a GeoDataFrame,
+    where NDVI is one of the bands in a multi-band raster.
+    
+    Parameters:
+    -----------
+    gdf : GeoDataFrame
+        The polygons to calculate NDVI for
+    raster_path : str
+        Path to the raster file containing NDVI
+    ndvi_band_index : int
+        Index of the band containing NDVI (0-based, default is first band)
+        
+    Returns:
+    --------
+    GeoDataFrame with added columns for NDVI stats
+    """
+    # Make a copy to avoid modifying the original
+    result_gdf = gdf.copy()
+    
+    # Open the raster and read the NDVI band
+    with rasterio.open(raster_path) as src:
+        # Create an in-memory representation of the NDVI band
+        ndvi_data = src.read(ndvi_band_index)  # Band indices are 1-based in rasterio.read()
+        
+        # Create a temporary file path for the NDVI data
+        # This is needed because zonal_stats works with files or arrays with affine transforms
+        affine = src.transform
+        nodata = src.nodata
+        
+        # Calculate zonal statistics using the extracted NDVI band
+        ndvi_stats = zonal_stats(
+            result_gdf.geometry, 
+            ndvi_data,
+            affine=affine,
+            nodata=nodata,
+            stats=['mean']
+        )
+    
+    # Convert to DataFrame and add to the GeoDataFrame
+    ndvi_df = pd.DataFrame(ndvi_stats)
+    
+    # Add NDVI stats as new columns
+    result_gdf['ndvi_mean'] = ndvi_df['mean']
+    # result_gdf['ndvi_min'] = ndvi_df['min'] 
+    # result_gdf['ndvi_max'] = ndvi_df['max']
+    # result_gdf['ndvi_std'] = ndvi_df['std']
+    
+    return result_gdf
