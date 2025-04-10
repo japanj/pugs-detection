@@ -73,11 +73,15 @@ class FilteredGeoDataset(Dataset):
 
         # Select specific bands    
         sample['image'] = sample['image'][self.specific_bands]
-        min_value = sample['image'].min()
-        valid_area = (sample['image']!=min_value) # create a mask of valid area
+        # min_value = sample['image'].min()
+        nodata_value = -9999
+        valid_area = (sample['image']!=nodata_value) # create a mask of valid area
 
         # sample['image'], valid_area = contrast_stretch_patch(sample['image'])
         sample['mask'] = _process_mask(sample['mask'], valid_area, self.band_count)
+        
+        # replace nodata values with 0
+        sample['image'][sample['image'] == nodata_value] = 0
         
         del sample["crs"]
         del sample["bounds"]

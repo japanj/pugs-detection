@@ -17,7 +17,6 @@ from pugs_detection.utils import set_all_seeds
 
 def plot_image_tiles(image_path, image_tiles):
     data = rioxarray.open_rasterio(image_path)
-    # Plot the original satellite image with bounding boxes for the 16 tiles
     plt.figure(figsize=(12, 12))
     data.sel(band=[4, 3, 2]).plot.imshow(robust=True)
     plt.axis('off')
@@ -25,23 +24,24 @@ def plot_image_tiles(image_path, image_tiles):
     # Add bounding boxes for each tile
     ax = plt.gca()
     for idx, tile in enumerate(image_tiles):
-        tile_xmin, tile_xmax, tile_ymin, tile_ymax = tile
-        width = tile_xmax - tile_xmin
-        height = tile_ymax - tile_ymin
-        
-        # Create a rectangle patch
-        rect = patches.Rectangle((tile_xmin, tile_ymin), width, height, 
-                                linewidth=1, edgecolor='r', facecolor='none')
-        
-        # Add the rectangle to the plot
-        ax.add_patch(rect)
-        
-        # Add text label for the tile number
-        plt.text(tile_xmin + width/2, tile_ymin + height/2, f'Tile {idx+1}', 
-                ha='center', va='center', color='white', fontsize=10,
-                bbox=dict(facecolor='black', alpha=0.7, boxstyle='round,pad=0.2'))
+        if tile != 0:
+            tile_xmin, tile_xmax, tile_ymin, tile_ymax, valid_pct = tile
+            width = tile_xmax - tile_xmin
+            height = tile_ymax - tile_ymin
+            
+            # Create a rectangle patch
+            rect = patches.Rectangle((tile_xmin, tile_ymin), width, height, 
+                                    linewidth=1, edgecolor='r', facecolor='none')
+            
+            # Add the rectangle to the plot
+            ax.add_patch(rect)
+            
+            # Add text label for the tile number
+            plt.text(tile_xmin + width/2, tile_ymin + height/2, f'Tile {idx+1}', 
+                    ha='center', va='center', color='white', fontsize=10,
+                    bbox=dict(facecolor='black', alpha=0.7, boxstyle='round,pad=0.2'))
 
-    plt.title(f"Satellite Image with {len(image_tiles)} Tiles")
+    plt.title("Satellite Image with tiles")
     plt.show()
 
 def visualize_from_torchgeo_dataloader(dataloader, num_samples=3, mode='original', replace_band_pos=None):
