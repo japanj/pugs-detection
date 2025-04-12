@@ -12,7 +12,8 @@ Public Urban Green Spaces Detection Workflow
 | Notebook name                     | Link to view notebook |
 | --------------------------------- | --------------------- |
 | 2_data_processing_osm.ipynb       | https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/2_data_processing_osm.ipynb |
-| 3_ground_truth_exploration.ipynb  | https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/3_ground_truth_exploration.ipynb |
+| ~~3_ground_truth_exploration.ipynb~~  | ~~https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/3_ground_truth_exploration.ipynb~~ |
+| new_ground_truth_exploration.ipynb  | https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/new_ground_truth_exploration.ipynb |
 
 ## Project Organization
 
