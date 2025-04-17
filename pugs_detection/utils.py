@@ -374,23 +374,6 @@ def get_non_overlap_area_insights(non_overlap_area_gdf, groupby_columns):
     return geo_result
 
 def add_ndvi_to_polygons(gdf, raster_path, ndvi_band_index=0):
-    """
-    Calculate average NDVI for each polygon in a GeoDataFrame,
-    where NDVI is one of the bands in a multi-band raster.
-    
-    Parameters:
-    -----------
-    gdf : GeoDataFrame
-        The polygons to calculate NDVI for
-    raster_path : str
-        Path to the raster file containing NDVI
-    ndvi_band_index : int
-        Index of the band containing NDVI (0-based, default is first band)
-        
-    Returns:
-    --------
-    GeoDataFrame with added columns for NDVI stats
-    """
     # Make a copy to avoid modifying the original
     result_gdf = gdf.copy()
     
@@ -403,7 +386,7 @@ def add_ndvi_to_polygons(gdf, raster_path, ndvi_band_index=0):
         # This is needed because zonal_stats works with files or arrays with affine transforms
         affine = src.transform
         nodata = src.nodata
-        
+
         # Calculate zonal statistics using the extracted NDVI band
         ndvi_stats = zonal_stats(
             result_gdf.geometry, 
@@ -418,9 +401,6 @@ def add_ndvi_to_polygons(gdf, raster_path, ndvi_band_index=0):
     
     # Add NDVI stats as new columns
     result_gdf['ndvi_mean'] = ndvi_df['mean']
-    # result_gdf['ndvi_min'] = ndvi_df['min'] 
-    # result_gdf['ndvi_max'] = ndvi_df['max']
-    # result_gdf['ndvi_std'] = ndvi_df['std']
     
     return result_gdf
 
