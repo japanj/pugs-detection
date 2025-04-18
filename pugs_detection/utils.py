@@ -39,7 +39,7 @@ def load_osm_data(file_path, crs):
     # Set the CRS
     if gdf.crs is None:
         gdf = gdf.set_crs(epsg=crs)
-    else:
+    elif gdf.crs.to_epsg() != crs:
         gdf = gdf.to_crs(epsg=crs)
 
     return gdf
@@ -374,16 +374,12 @@ def get_non_overlap_area_insights(non_overlap_area_gdf, groupby_columns):
     return geo_result
 
 def add_ndvi_to_polygons(gdf, raster_path, ndvi_band_index=0):
-    # Make a copy to avoid modifying the original
     result_gdf = gdf.copy()
     
     # Open the raster and read the NDVI band
     with rasterio.open(raster_path) as src:
-        # Create an in-memory representation of the NDVI band
-        ndvi_data = src.read(ndvi_band_index)  # Band indices are 1-based in rasterio.read()
+        ndvi_data = src.read(ndvi_band_index)
         
-        # Create a temporary file path for the NDVI data
-        # This is needed because zonal_stats works with files or arrays with affine transforms
         affine = src.transform
         nodata = src.nodata
 
@@ -393,14 +389,13 @@ def add_ndvi_to_polygons(gdf, raster_path, ndvi_band_index=0):
             ndvi_data,
             affine=affine,
             nodata=nodata,
-            stats=['mean']
+            stats=['mean'],
         )
     
     # Convert to DataFrame and add to the GeoDataFrame
     ndvi_df = pd.DataFrame(ndvi_stats)
     
-    # Add NDVI stats as new columns
-    result_gdf['ndvi_mean'] = ndvi_df['mean']
+    result_gdf['ndvi_mean'] = ndvi_df['mean'].values.round(2)
     
     return result_gdf
 
@@ -560,3 +555,21 @@ def check_intersecting_point(point_dataset, polygon_dataset, buffer_distance=100
     points_joined = points_joined
 
     return points_joined
+
+def merge_datasets(gdf1, gdf2):
+    gdf1_copy = gdf1.copy()
+    gdf2_copy = gdf2.copy()
+
+    if "area" not in gdf1_copy.columns:
+        gdf1_copy["area"] = gdf1_copy.geometry.area
+    if "area" not in gdf2_copy.columns:
+        gdf2_copy["area"] = gdf2_copy.geometry.area
+
+    merged_dataset = pd.concat(
+        [gdf1_copy, gdf2_copy], ignore_index=True
+    )
+    merged_dataset = gpd.GeoDataFrame(
+        merged_dataset, geometry="geometry", crs=gdf1.crs
+    )
+
+    return merged_dataset

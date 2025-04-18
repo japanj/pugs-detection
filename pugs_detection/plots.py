@@ -13,6 +13,7 @@ import numpy as np
 import torch
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import folium
 from pugs_detection.utils import set_all_seeds
 
 def plot_image_tiles(image_path, image_tiles):
@@ -210,3 +211,48 @@ def visualize_predictions(model, test_loader, num_batches=5, samples_per_batch=4
 
         plt.tight_layout()
         plt.show()
+
+############# Specific functions for new ground truth exploration #############
+def visualize_map(gdf_list, column_list=None, name_list=None, tooltip_list=None, style_list=None, tile_list=None, marker_style=None, categorical=False):
+    # Create the base map with the first layer
+    m = gdf_list[0].explore(
+        column=column_list[0] if column_list is not None else None,
+        name=name_list[0] if name_list is not None else None,
+        style_kwds=style_list[0] if style_list is not None else None,
+        tooltip=tooltip_list[0] if tooltip_list is not None else True,
+        marker_kwds=marker_style[0] if marker_style is not None else {},
+        categorical=categorical
+    )
+
+    for i in range(1, len(gdf_list)):
+        # Add each GeoDataFrame to the map
+        gdf_list[i].explore(
+            m=m,
+            column=column_list[i] if column_list is not None else None,
+            name=name_list[i] if name_list is not None else None,
+            style_kwds=style_list[i] if style_list is not None else None,
+            tooltip=tooltip_list[i] if tooltip_list is not None else True,
+            marker_kwds=marker_style[i] if marker_style is not None else {},
+            categorical=categorical
+        )
+    
+    if tile_list is not None:
+        # Add tile layers if provided
+        for tile in tile_list:
+            if tile == 'OSM':
+                folium.TileLayer(
+                    tiles="OpenStreetMap", name="OpenStreetMap", overlay=False, control=True
+                ).add_to(m)
+            else:
+                folium.TileLayer(
+                    tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                    attr="Esri",
+                    name="Esri Satellite",
+                    overlay=False,
+                    control=True,
+                ).add_to(m)
+    
+    # Add layer controls
+    folium.LayerControl().add_to(m)
+
+    return m
