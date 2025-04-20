@@ -218,7 +218,7 @@ def visualize_map(gdf_list, column_list=None, name_list=None, tooltip_list=None,
     m = gdf_list[0].explore(
         column=column_list[0] if column_list is not None else None,
         name=name_list[0] if name_list is not None else None,
-        style_kwds=style_list[0] if style_list is not None else None,
+        style_kwds=style_list[0] if style_list is not None else {},
         tooltip=tooltip_list[0] if tooltip_list is not None else True,
         marker_kwds=marker_style[0] if marker_style is not None else {},
         categorical=categorical
@@ -230,7 +230,7 @@ def visualize_map(gdf_list, column_list=None, name_list=None, tooltip_list=None,
             m=m,
             column=column_list[i] if column_list is not None else None,
             name=name_list[i] if name_list is not None else None,
-            style_kwds=style_list[i] if style_list is not None else None,
+            style_kwds=style_list[i] if style_list is not None else {},
             tooltip=tooltip_list[i] if tooltip_list is not None else True,
             marker_kwds=marker_style[i] if marker_style is not None else {},
             categorical=categorical

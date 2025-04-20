@@ -573,3 +573,12 @@ def merge_datasets(gdf1, gdf2):
     )
 
     return merged_dataset
+
+def print_non_green_space_info(gdf, threshold=0):
+    print(f"Area of polygons with NDVI <= {threshold}:")
+    low_ndvi_area = gdf[gdf["ndvi_mean"] <= threshold].area.sum()
+    total_area = gdf.area.sum()
+    area_percentage = (low_ndvi_area / total_area) * 100 if total_area > 0 else 0
+    print(
+        f"Low NDVI value area: {low_ndvi_area:.2f} m² from {total_area:.2f} m² ({area_percentage:.2f}%)"
+    )
