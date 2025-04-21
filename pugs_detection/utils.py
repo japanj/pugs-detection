@@ -527,6 +527,8 @@ def calculate_category_overlap(gdf1, gdf2, category_column='sst_lv_3_liste'):
     # Sort by true overlap percentage
     result_df = result_df.sort_values('total_overlap_pct', ascending=False)
     
+    result_df = result_df.drop(columns=['count', 'total_area', 'overlap_area', 'min_overlap'])
+
     return result_df
 
 def check_intersecting_point(point_dataset, polygon_dataset, buffer_distance=100):
