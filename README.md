@@ -14,7 +14,7 @@ Public Urban Green Spaces Detection Workflow
 | 2_data_processing_osm.ipynb       | https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/2_data_processing_osm.ipynb | Processing OpenStreetMap data which is used in model training step for PUGS detection |
 | ~~3_ground_truth_exploration.ipynb~~  | ~~https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/3_ground_truth_exploration.ipynb~~ | ~~Deprecated ground truth analysis~~ |
 | new_ground_truth_exploration.ipynb  | https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/new_ground_truth_exploration.ipynb | Exploration of ground truth datasets |
-| process_ground_truth.ipynb  | https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/process_ground_truth.ipynb | Processing ground truth datasets and create one single ground truth |
+| ground_truth_creation.ipynb  | https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/ground_truth_creation.ipynb | Processing ground truth datasets and create one single ground truth |
 
 ## Project Organization
 
