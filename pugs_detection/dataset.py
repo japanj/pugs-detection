@@ -3,11 +3,14 @@ import torch
 import torch.nn as nn
 import numpy as np
 import copy
+import rasterio
 from torchgeo.datasets import RasterDataset, VectorDataset
 from torchgeo.samplers import GridGeoSampler
 from torch.utils.data import Dataset
 from pyproj import CRS
 from pugs_detection.utils import set_all_seeds
+from torch.utils.data import Dataset
+from rasterio.windows import Window
 
 def _process_mask(mask, valid_area, band_count):
     mask = mask.numpy()
@@ -176,6 +179,67 @@ class AugmentedDataset(Dataset):
 #         sample_copy['mask'] = sample_copy['mask'].squeeze(0)
             
 #         return sample_copy
+
+class PredictedImageDataset(Dataset):
+    def __init__(self, image_path, patch_size=256, stride=256, band_list_predict=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]):
+        self.image_path = image_path
+        self.patch_size = patch_size
+        self.stride = stride
+        self.band_list_predict = band_list_predict
+
+        # Open the image to get dimensions
+        with rasterio.open(image_path) as src:
+            self.height = src.height
+            self.width = src.width
+            self.count = src.count
+            self.transform = src.transform
+            self.crs = src.crs
+
+        # Create list of windows - all using Window objects
+        self.windows = []
+        for y in range(0, self.height - patch_size + 1, stride):
+            for x in range(0, self.width - patch_size + 1, stride):
+                self.windows.append(Window(x, y, patch_size, patch_size))
+
+        # Edge patches along bottom
+        if self.height % stride != 0:
+            last_y = self.height - patch_size
+            for x in range(0, self.width - patch_size + 1, stride):
+                self.windows.append(Window(x, last_y, patch_size, patch_size))
+
+        # Edge patches along right side
+        if self.width % stride != 0:
+            last_x = self.width - patch_size
+            for y in range(0, self.height - patch_size + 1, stride):
+                self.windows.append(Window(last_x, y, patch_size, patch_size))
+
+        # Corner patch (if needed)
+        if self.width % stride != 0 and self.height % stride != 0:
+            self.windows.append(
+                Window(
+                    self.width - patch_size,
+                    self.height - patch_size,
+                    patch_size,
+                    patch_size,
+                )
+            )
+
+    def __len__(self):
+        return len(self.windows)
+
+    def __getitem__(self, idx):
+        window = self.windows[idx]
+
+        with rasterio.open(self.image_path) as src:
+            # Read image data for this window
+            image = src.read(window=window)
+            # image = image[0:14, :, :]  # Select specific bands
+            image = image[self.band_list_predict]  # Select specific bands
+
+        return {
+            "image": image,
+            "window_info": window,  # Store coordinates as tuple
+        }
     
 # Create datasets for each split
 def create_dataset_split(image_path, label_path, epsg_code, band_list, dataset_type, transform_list):
