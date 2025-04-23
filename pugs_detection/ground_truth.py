@@ -1,0 +1,370 @@
+"""
+ground_truth.py
+
+This module contains functions for ground truth datasets exploration and 
+final ground truth dataset creation of public urban green spaces (PUGS).
+
+Author: Pitchaporn Likitpanjamanon
+Date: [YYYY-MM-DD]
+"""
+
+import geopandas as gpd
+import pandas as pd
+import rasterio
+from rasterstats import zonal_stats
+from shapely.ops import unary_union
+
+# To-do: delete functions that aren't used in the notebooks
+ 
+def find_non_overlap_area(gdf1, gdf2, threshold=0.5):
+    """
+    Find polygons in gdf1 that don't overlap significantly (>threshold) with any polygon in gdf2.
+    """
+    gdf1 = gdf1.copy()
+    gdf2 = gdf2.copy()
+
+    gdf1 = gdf1.reset_index(drop=True)
+    gdf2 = gdf2.reset_index(drop=True)
+
+    # Create a spatial index for faster processing
+    sindex = gdf2.sindex
+    
+    # Track which polygons to keep
+    indices_to_exclude = set()
+
+    for row1 in gdf1.itertuples():
+        geom1 = row1.geometry
+        area1 = geom1.area
+        idx1 = row1.Index
+        temp_overlap_area_2 = 0
+        
+        # Skip empty or invalid geometries
+        if not geom1.is_valid or geom1.is_empty:
+            indices_to_exclude.add(idx1)
+            continue
+        
+        # Find potential intersections using spatial index
+        possible_matches_idx = list(sindex.intersection(geom1.bounds))
+        possible_matches = gdf2.iloc[possible_matches_idx]
+        
+        # Check all potential matches
+        for row2 in possible_matches.itertuples():
+            geom2 = row2.geometry
+
+            # Skip if no intersection
+            if not geom1.intersects(geom2):
+                continue
+                
+            # Calculate intersection
+            intersection = geom1.intersection(geom2)
+            intersection_area = intersection.area
+            
+            # Calculate overlap percentage
+            overlap_pct1 = intersection_area / area1
+            
+            temp_overlap_area_2 += intersection_area
+
+            # If any overlap is greater than threshold, exclude this polygon
+            if overlap_pct1 >= threshold:
+                indices_to_exclude.add(idx1)
+                break
+            
+        if temp_overlap_area_2/area1 >= threshold:
+            indices_to_exclude.add(idx1)
+            
+    # Keep polygons that were not excluded
+    indices_to_keep = [i for i in range(len(gdf1)) if i not in indices_to_exclude]
+    
+    if not indices_to_keep:
+        return gpd.GeoDataFrame(geometry=[], crs=gdf1.crs)
+    
+    # Create result GeoDataFrame with the polygons to keep
+    result_gdf = gdf1.loc[indices_to_keep].copy()
+
+    return result_gdf
+
+def find_non_overlap_dataset(gdf1, gdf2, gdf3, threshold=0.5):
+    """
+    Find polygons in gdf1 that don't overlap significantly (>threshold) with any polygon in gdf2 or gdf3.
+    """
+    # Find non-overlapping polygons with respect to gdf2
+    non_overlap_gdf2 = find_non_overlap_area(gdf1, gdf2, threshold)
+    
+    # Find non-overlapping polygons with respect to gdf3
+    non_overlap_gdf3 = find_non_overlap_area(gdf1, gdf3, threshold)
+
+    non_overlap_dataset = gdf1[gdf1['geometry'].isin(non_overlap_gdf2['geometry']) & gdf1['geometry'].isin(non_overlap_gdf3['geometry'])].copy()
+    non_overlap_dataset = non_overlap_dataset.reset_index(drop=True)
+    
+    return non_overlap_dataset
+
+def get_non_overlap_area_insights(non_overlap_area_gdf, groupby_columns):
+    # Calculate non-overlapping areas of green and open spaces
+    total_area = non_overlap_area_gdf.area.sum()
+
+    # Group by category, sum areas, and calculate percentages
+    result_gdf = (
+        non_overlap_area_gdf
+        .assign(area_m2=non_overlap_area_gdf.area)  # Create area column
+        .groupby(groupby_columns)
+        .agg({
+            'area_m2': 'sum',  # Sum the areas
+            'geometry': 'count'  # Count records per category
+        })
+        .rename(columns={'geometry': 'count'})
+        .reset_index()
+        .assign(
+            area_pct=lambda df: round((df.area_m2/total_area) * 100, 2)  # Calculate percentage
+        )
+        .sort_values(by='area_pct', ascending=False)
+    ).reset_index(drop=True)
+
+    # Prepare columns for largest polygon info
+    result_gdf['largest_poly_area'] = 0.0
+    result_gdf['largest_poly_id'] = None
+    result_gdf['largest_poly_geometry'] = None
+    
+    # Find largest polygon for each group and add to results
+    for i, row in result_gdf.iterrows():
+        # Create filter for this group
+        if len(groupby_columns) == 1:
+            group_filter = non_overlap_area_gdf[groupby_columns[0]] == row[groupby_columns[0]]
+        else:
+            # For multiple columns
+            group_filter = None
+            for col in groupby_columns:
+                if group_filter is None:
+                    group_filter = non_overlap_area_gdf[col] == row[col]
+                else:
+                    group_filter = group_filter & (non_overlap_area_gdf[col] == row[col])
+        
+        group_data = non_overlap_area_gdf[group_filter]
+        
+        if len(group_data) > 0:
+            largest_idx = group_data.area.idxmax()
+            largest_poly = non_overlap_area_gdf.loc[largest_idx]
+            
+            # Add largest polygon info to results
+            result_gdf.at[i, 'largest_poly_area'] = largest_poly.geometry.area
+            result_gdf.at[i, 'largest_poly_id'] = largest_idx
+            result_gdf.at[i, 'largest_poly_geometry'] = largest_poly.geometry
+    
+    # Convert back to GeoDataFrame with the largest polygon geometries
+    geo_result = gpd.GeoDataFrame(
+        result_gdf, 
+        geometry='largest_poly_geometry',
+        crs=non_overlap_area_gdf.crs
+    )
+    
+    # Add percentage of largest polygon compared to total area for this group
+    # geo_result['largest_poly_pct'] = round((geo_result['largest_poly_area'] / geo_result['area_m2']) * 100, 2)
+    
+    return geo_result
+
+def add_ndvi_to_polygons(gdf, raster_path, ndvi_band_index=0):
+    result_gdf = gdf.copy()
+    
+    # Open the raster and read the NDVI band
+    with rasterio.open(raster_path) as src:
+        ndvi_data = src.read(ndvi_band_index)
+        
+        affine = src.transform
+        nodata = src.nodata
+
+        # Calculate zonal statistics using the extracted NDVI band
+        ndvi_stats = zonal_stats(
+            result_gdf.geometry, 
+            ndvi_data,
+            affine=affine,
+            nodata=nodata,
+            stats=['mean'],
+        )
+    
+    # Convert to DataFrame and add to the GeoDataFrame
+    ndvi_df = pd.DataFrame(ndvi_stats)
+    
+    result_gdf['ndvi_mean'] = ndvi_df['mean'].values.round(2)
+    
+    return result_gdf
+
+############# Specific functions for new ground truth exploration #############
+def find_overlap_area(gdf1, gdf2):
+    overlap_area_gdf = gdf1.sjoin(gdf2, how="left", predicate="intersects")
+    overlap_area_gdf.loc[~overlap_area_gdf["index_right"].isna(), "overlap"] = "yes"
+    overlap_area_gdf.loc[overlap_area_gdf["index_right"].isna(), "overlap"] = "no"
+
+    # Add area columns if they don't exist
+    if "area" not in overlap_area_gdf.columns:
+        overlap_area_gdf["area"] = overlap_area_gdf.geometry.area
+
+    # Calculate overlap percentage for rows with overlap = 'yes'
+    overlap_area_gdf["overlap_pct"] = 0.0
+    overlap_area_gdf["raw_overlap_area"] = 0.0
+
+    overlap_area_gdf = overlap_area_gdf.reset_index(drop=True)
+    # Get indices of overlapping rows
+    overlap_idx = overlap_area_gdf[overlap_area_gdf["overlap"] == "yes"].index
+    
+    # Process each overlapping row
+    for idx in overlap_idx:
+        row = overlap_area_gdf.loc[idx]
+        geom1 = row.geometry
+        geom2 = gdf2.loc[row.index_right].geometry
+        
+        # Calculate intersection
+        raw_overlap_area = geom1.intersection(geom2).area
+        overlap_pct = (raw_overlap_area / row.geometry.area) * 100
+        
+        # Assign values
+        overlap_area_gdf.loc[idx, "raw_overlap_area"] = raw_overlap_area
+        overlap_area_gdf.loc[idx, "overlap_pct"] = overlap_pct
+
+    return overlap_area_gdf
+
+def calculate_dataset_overlap(gdf1, gdf2):
+    gdf1_union = unary_union(gdf1.geometry)
+    gdf2_union = unary_union(gdf2.geometry)
+    
+    gdf1_area = gdf1_union.area
+    gdf2_area = gdf2_union.area
+    
+    intersection = gdf1_union.intersection(gdf2_union)
+    intersection_area = intersection.area
+    
+    gdf1_overlap_pct = (intersection_area / gdf1_area) * 100
+    gdf2_overlap_pct = (intersection_area / gdf2_area) * 100
+    
+    print(f"Dataset 1 overlap percentage: {gdf1_overlap_pct:.2f}%")
+    print(f"Dataset 2 overlap percentage: {gdf2_overlap_pct:.2f}%")
+
+def calculate_category_overlap(gdf1, gdf2, category_column='sst_lv_3_liste'):
+    stats_df = (
+        gdf1[gdf1["overlap"] == "yes"]
+        .groupby(category_column)
+        .agg(
+            count=("overlap_pct", "size"),
+            min_overlap=("overlap_pct", "min"),
+            max_overlap=("overlap_pct", "max"),
+            avg_overlap=("overlap_pct", "mean"),
+        )
+        .reset_index()
+    )
+    
+    # Round the statistical calculations
+    stats_df["min_overlap"] = stats_df["min_overlap"].round(2)
+    stats_df["max_overlap"] = stats_df["max_overlap"].round(2)
+    stats_df["avg_overlap"] = stats_df["avg_overlap"].round(2)
+
+    # Create a union of all geometries in gdf2
+    gdf2_union = unary_union(gdf2.geometry)
+    
+    # Prepare results
+    category_stats = []
+    
+    # For each category value
+    for category in gdf1[category_column].unique():
+        # Extract all polygons of this category
+        category_polygons = gdf1[gdf1[category_column] == category]
+        
+        # Skip if empty
+        if len(category_polygons) == 0:
+            continue
+        
+        # Create a union of all geometries in this category
+        category_union = unary_union(category_polygons.geometry)
+        category_area = category_union.area
+        
+        # Calculate intersection with gdf2
+        intersection = category_union.intersection(gdf2_union)
+        intersection_area = intersection.area
+        
+        # Calculate percentage
+        overlap_percentage = (intersection_area / category_area) * 100
+        
+        # Store results
+        category_stats.append({
+            'category': category,
+            'total_area': category_area,
+            'overlap_area': intersection_area,
+            'total_overlap_pct': overlap_percentage,
+        })
+    
+    # Convert to DataFrame
+    geo_df = pd.DataFrame(category_stats)
+    
+    # Merge the statistical data with the geometric overlap data
+    result_df = pd.merge(
+        geo_df,
+        stats_df,
+        left_on='category',
+        right_on=category_column,
+        how='outer'
+    )
+    
+    # Clean up merged dataframe
+    if category_column != 'category':
+        result_df = result_df.drop(category_column, axis=1)
+    
+    # Round values for display
+    result_df['total_overlap_pct'] = result_df['total_overlap_pct'].round(2)
+    
+    # Sort by true overlap percentage
+    result_df = result_df.sort_values('total_overlap_pct', ascending=False)
+    
+    result_df = result_df.drop(columns=['count', 'total_area', 'overlap_area', 'min_overlap'])
+
+    return result_df
+
+def check_intersecting_point(point_dataset, polygon_dataset, buffer_distance=100):
+    buffer_distance = buffer_distance
+
+    point_park_garden_buffered = point_dataset.copy()
+    point_park_garden_buffered["geometry"] = point_dataset.geometry.buffer(
+        buffer_distance
+    )
+
+    points_joined = point_park_garden_buffered.sjoin(
+        polygon_dataset, how="inner", predicate="intersects"
+    )
+
+    # Count unique points that intersect
+    unique_intersecting_points = points_joined.index.nunique()
+
+    # Get total count of points
+    total_points = len(point_park_garden_buffered)
+
+    intersection_percentage = unique_intersecting_points / total_points * 100
+
+    print(
+        f"Points intersecting with dataset: {unique_intersecting_points} out of {total_points} ({intersection_percentage:.2f}%)"
+    )
+    points_joined = points_joined
+
+    return points_joined
+
+def merge_datasets(gdf1, gdf2):
+    gdf1_copy = gdf1.copy()
+    gdf2_copy = gdf2.copy()
+
+    if "area" not in gdf1_copy.columns:
+        gdf1_copy["area"] = gdf1_copy.geometry.area
+    if "area" not in gdf2_copy.columns:
+        gdf2_copy["area"] = gdf2_copy.geometry.area
+
+    merged_dataset = pd.concat(
+        [gdf1_copy, gdf2_copy], ignore_index=True
+    )
+    merged_dataset = gpd.GeoDataFrame(
+        merged_dataset, geometry="geometry", crs=gdf1.crs
+    )
+
+    return merged_dataset
+
+def print_non_green_space_info(gdf, threshold=0):
+    print(f"Area of polygons with NDVI <= {threshold}:")
+    low_ndvi_area = gdf[gdf["ndvi_mean"] <= threshold].area.sum()
+    total_area = gdf.area.sum()
+    area_percentage = (low_ndvi_area / total_area) * 100 if total_area > 0 else 0
+    print(
+        f"Low NDVI value area: {low_ndvi_area:.2f} m² from {total_area:.2f} m² ({area_percentage:.2f}%)"
+    )

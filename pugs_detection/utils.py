@@ -12,9 +12,10 @@ import geopandas as gpd
 import pandas as pd
 import numpy as np
 import rasterio
+import torch
+from lightning.pytorch import seed_everything
 from IPython.display import display
-from rasterio.features import rasterize
-from scipy.ndimage import distance_transform_edt
+from rasterstats import zonal_stats
 
 def load_osm_data(file_path, crs):
     """
@@ -38,7 +39,7 @@ def load_osm_data(file_path, crs):
     # Set the CRS
     if gdf.crs is None:
         gdf = gdf.set_crs(epsg=crs)
-    else:
+    elif gdf.crs.to_epsg() != crs:
         gdf = gdf.to_crs(epsg=crs)
 
     return gdf
@@ -123,8 +124,8 @@ def calculate_footpath_length(lulc_gdf, footpath_gdf):
 
     return modified_lulc_gdf
 
-
-def create_estimated_area_dictionary(lulc_gdf):
+# _ indicates internal use only (user shouldn't call it directly)
+def _create_estimated_area_dictionary(lulc_gdf):
     leisure_node_element_list = lulc_gdf[(lulc_gdf['element_right']=='node')&
                                          (lulc_gdf['id_left']!=lulc_gdf['id_right'])]['leisure_right'].unique().tolist()
     landuse_node_element_list = lulc_gdf[(lulc_gdf['element_right']=='node')&
@@ -172,7 +173,7 @@ def classification_with_smaller_area(lulc_gdf):
     # Avoid to change the original df
     modified_lulc_gdf = lulc_gdf.copy()
 
-    pc_avg_area = create_estimated_area_dictionary(modified_lulc_gdf)
+    pc_avg_area = _create_estimated_area_dictionary(modified_lulc_gdf)
     # Need to check the access tag of the small polygon -> so get unique big polygon first
     # Then, get access of small polygon
     unlabel_green_space = modified_lulc_gdf[modified_lulc_gdf['is_public'].isna()]
@@ -219,90 +220,8 @@ def classification_with_smaller_area(lulc_gdf):
             modified_lulc_gdf.loc[modified_lulc_gdf['id_left']==i,'is_public'] = 'no'
         
     return modified_lulc_gdf
-        
-def create_binary_mask(gdf, file_path, satellite_image_path):
-    with rasterio.open(satellite_image_path) as src:
-        transform = src.transform
-        width = src.width
-        height = src.height
-        crs = src.crs
 
-        # Create an empty raster with the same properties as the satellite image
-        out_shape = (height, width)
-        raster = np.zeros(out_shape, dtype='uint8')
-
-        # Rasterize the polygons
-        rasterized = rasterize(
-            [(geom, 1) for geom in gdf.geometry],
-            out_shape=out_shape,
-            transform=transform,
-            fill=0,
-            all_touched=True,
-            dtype='uint8'
-        )
-        
-        # Save the raster to a file
-        with rasterio.open(
-            file_path,
-            'w',
-            driver='GTiff',
-            height=height,
-            width=width,
-            count=1,
-            dtype=raster.dtype,
-            crs=gdf.crs,
-            transform=transform,
-        ) as dst:
-            dst.write(rasterized, 1)
-
-    print("Rasterization complete.")
-
-def create_sdt_raster(gdf, file_path, satellite_image_path):
-    with rasterio.open(satellite_image_path) as src:
-        transform = src.transform
-        width = src.width
-        height = src.height
-
-        # Create an empty raster with the same properties as the satellite image
-        out_shape = (height, width)
-        raster = np.zeros(out_shape, dtype='uint8')
-        
-        # Rasterize the polygons
-        raster = rasterize(
-            [(geom, 1) for geom in gdf.geometry],
-            out_shape=(height, width),
-            transform=transform,
-            fill=0,
-            all_touched=True,
-            dtype='uint8'
-        )
-
-        # Compute the distance transform for the inside and outside of the polygons
-        distance_inside = distance_transform_edt(raster) # Calculate the nearest distance from each pixel inside polygon to the nearest pixel outside polygon
-        distance_outside = distance_transform_edt(1 - raster) # Calculate the nearest distance from each pixel outside polygon to the nearest pixel inside polygon
-
-        # Create the signed distance transform
-        signed_distance_transform = distance_inside - distance_outside
-
-        # Save the signed distance transform to a file
-        with rasterio.open(
-            file_path,
-            'w',
-            driver='GTiff',
-            height=height,
-            width=width,
-            count=1,
-            dtype=signed_distance_transform.dtype,
-            crs=gdf.crs,
-            transform=transform,
-        ) as dst:
-            dst.write(signed_distance_transform, 1)
-
-        print("Signed distance transform complete.")
-
-def contrast_stretch(array, lower_percentile=1, upper_percentile=99):
-    # Apply a percentile-based contrast stretch (ignore the extreme values so image isn't too dark or too bright)
-    lower = np.percentile(array, lower_percentile)
-    upper = np.percentile(array, upper_percentile)
-    array = np.clip(array, lower, upper) # clip -> limit the values in an array to specific range
-    return (array - lower) / (upper - lower)
+def set_all_seeds(seed=42):
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    seed_everything(42, workers=True)

@@ -8,19 +8,13 @@ Public Urban Green Spaces Detection Workflow
 
 **Note: this project is currently under development phase**
 
-## OSM data processing notebook viewer
-
-**V.3 - OSM data processing**
-
-To view the notebook, please go to https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/2_data_processing_osm.ipynb
-
-**V.2 - OSM data processing**
-
-To view the notebook, please go to https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/data_processing_osm_trial3.ipynb
-
-**V.1 - OSM data processing (removed)**
-
-~~To view the notebook, please go to https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/data_processing_osm_trial.ipynb~~
+## Notebook viewer
+| Notebook name         | Link to view notebook | Description           |
+| --------------------- | --------------------- | --------------------- |
+| 2_data_processing_osm.ipynb       | https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/2_data_processing_osm.ipynb | Processing OpenStreetMap data which is used in model training step for PUGS detection |
+| ~~3_ground_truth_exploration.ipynb~~  | ~~https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/3_ground_truth_exploration.ipynb~~ | ~~Deprecated ground truth analysis~~ |
+| new_ground_truth_exploration.ipynb  | https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/new_ground_truth_exploration.ipynb | Exploration of ground truth datasets |
+| ground_truth_creation.ipynb  | https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/ground_truth_creation.ipynb | Processing ground truth datasets and create one single ground truth |
 
 ## Project Organization
 

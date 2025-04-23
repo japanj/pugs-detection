@@ -6,6 +6,7 @@
 
 # Folder for keep track of prediction results
 /reports/prediction_results_track/
+/reports/visualization/
 
 # Mac OS-specific storage files
 .DS_Store
