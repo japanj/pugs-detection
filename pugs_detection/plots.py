@@ -342,7 +342,7 @@ def visualize_area(original_image_path, prediction_path, ground_truth_path=None,
     with rasterio.open(original_image_path) as src:
         window = Window(x_coord, y_coord, window_size, window_size)
         original = src.read(window=window)
-        print(f"Original shape: {original.shape}")
+        # print(f"Original shape: {original.shape}")
         
     # Open prediction
     with rasterio.open(prediction_path) as src:
@@ -355,7 +355,7 @@ def visualize_area(original_image_path, prediction_path, ground_truth_path=None,
         try:
             with rasterio.open(ground_truth_path) as src:
                 ground_truth = src.read(1, window=window)
-                print(f"Ground truth shape: {ground_truth.shape}")
+                # print(f"Ground truth shape: {ground_truth.shape}")
         except Exception as e:
             print(f"Error loading ground truth: {e}")
     
@@ -388,45 +388,6 @@ def visualize_area(original_image_path, prediction_path, ground_truth_path=None,
     axes[idx_pred].imshow(prediction, cmap='gray')
     axes[idx_pred].set_title("Model Prediction", fontsize=14)
     axes[idx_pred].axis('off')
-    
-    # Plot comparison overlay
-    # last_idx = 3 if ground_truth is not None else 2
-    # last_idx = 1
-    # axes[last_idx].imshow(rgb_data)
-    
-    # Add semi-transparent overlays
-    # if ground_truth is not None:
-    #     # Create masked ground truth
-    #     gt_mask = np.ma.masked_where(ground_truth == 0, ground_truth)
-    #     axes[last_idx].imshow(gt_mask, cmap='cividis', label='Ground Truth', alpha=0.5)
-        
-    #     # Create masked prediction
-    #     pred_mask = np.ma.masked_where(prediction == 0, prediction)
-    #     axes[last_idx].imshow(pred_mask, cmap='RdBu', label='Prediction', alpha=0.5)
-        
-    #     # Add borders using contour
-    #     axes[last_idx].contour(ground_truth, levels=[0.5], colors='black', linewidths=1.5)
-    #     axes[last_idx].contour(prediction, levels=[0.5], colors='black', linewidths=1.5)
-
-    #     # Add a legend
-    #     from matplotlib.patches import Patch
-    #     legend_elements = [
-    #         Patch(facecolor='Navy', label='Ground Truth'),
-    #         Patch(facecolor='Red', label='Prediction')
-    #     ]
-    #     axes[last_idx].legend(
-    #         handles=legend_elements, 
-    #         bbox_to_anchor=(1.05, 1),  # Position (x,y) relative to the axes
-    #         loc='upper left',          # Which part of the legend to align
-    #         borderaxespad=0.           # Small padding
-    #     )
-    #     axes[last_idx].set_title("Overlay Comparison", fontsize=14)
-    # else:
-    #     mask = np.ma.masked_where(prediction == 0, prediction)
-    #     axes[last_idx].imshow(mask)
-    #     axes[last_idx].set_title("Prediction Overlay", fontsize=14)
-        
-    # axes[last_idx].axis('off')
     
     plt.tight_layout()
     return fig

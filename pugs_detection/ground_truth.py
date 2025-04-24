@@ -14,7 +14,6 @@ import rasterio
 from rasterstats import zonal_stats
 from shapely.ops import unary_union
 
-# To-do: delete functions that aren't used in the notebooks
 def add_ndvi_to_polygons(gdf, raster_path, ndvi_band_index=0):
     result_gdf = gdf.copy()
     

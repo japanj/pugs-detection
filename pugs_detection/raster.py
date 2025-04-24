@@ -336,3 +336,9 @@ def normalize_sdt_minmax(sdt_array):
     # Apply min-max formula scaled to [-1, 1]
     normalized = 2 * (sdt_array - sdt_min) / (sdt_max - sdt_min) - 1
     return normalized
+
+def min_max_normalize(data):
+    """Scale data to 0-1 range using min-max normalization"""
+    min_val = data.min().values
+    max_val = data.max().values
+    return (data - min_val) / (max_val - min_val)

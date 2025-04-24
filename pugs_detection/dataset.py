@@ -1,9 +1,8 @@
-import torchgeo
 import torch
-import torch.nn as nn
 import numpy as np
 import copy
 import rasterio
+from tqdm import tqdm
 from torchgeo.datasets import RasterDataset, VectorDataset
 from torchgeo.samplers import GridGeoSampler
 from torch.utils.data import Dataset
@@ -55,13 +54,16 @@ class FilteredGeoDataset(Dataset):
         # Compute the valid patches
         self.valid_bboxes = []
         count = 0
+        
+        # Get total number of patches for progress bar
+        total_patches = len(self.sampler)
+
         if self.dataset_type == 'train':
-            for bbox in self.sampler:
+            for bbox in tqdm(self.sampler, desc=f"Filtering patches for {dataset_type}", total=total_patches, unit="patch"):
                 sample = self.dataset[bbox]
                 if _filter_patches(sample, self.band_count):
                     self.valid_bboxes.append(bbox)
                 count += 1
-                print(count)
             print(f"Found {len(self.valid_bboxes)} valid patches out of {len(self.sampler)} total patches")
         else:
             # For validation and test sets, use all patches
@@ -90,12 +92,6 @@ class FilteredGeoDataset(Dataset):
         del sample["bounds"]
 
         return sample
-
-# def augmented_condition(sample):
-#     # Example: Only augment patches with <20% green space
-#     mask = sample['mask'].numpy()
-#     green_percentage = np.mean(mask)
-#     return green_percentage < 0.2
 
 class AugmentedDataset(Dataset):
     """Dataset wrapper that applies multiple augmentations to increase sample count"""
@@ -132,53 +128,6 @@ class AugmentedDataset(Dataset):
         sample_copy['mask'] = sample_copy['mask'].squeeze(0)
             
         return sample_copy
-    
-# class AugmentedDataset(Dataset):
-#     """Dataset wrapper that applies multiple augmentations to increase sample count"""
-#     def __init__(self, dataset, transform_list=None, augmented_condition_fn=None):
-#         self.dataset = dataset
-#         self.transform_list = transform_list
-#         self.augmented_condition_fn = augmented_condition_fn
-
-#         # Pre-calculate which samples should be augmented
-#         self.augmentable_indices = []
-#         for i in range(len(dataset)):
-#             sample = dataset[i]
-#             if self.augmented_condition_fn(sample):
-#                 self.augmentable_indices.append(i)
-        
-#         # Calculate total length
-#         self.total_length = len(dataset) + len(self.augmentable_indices) * len(self.transform_list)
-
-#         # Create mapping from idx to (sample_idx, aug_idx)
-#         self.idx_mapping = []
-#         for i in range(len(dataset)):
-#             self.idx_mapping.append((i, -1))  # Original samples
-#             if i in self.augmentable_indices:
-#                 for j in range(len(self.transform_list)):
-#                     self.idx_mapping.append((i, j))  # Augmented versions
-
-#     def __len__(self):
-#         return self.total_length
-    
-#     def __getitem__(self, idx):
-#         sample_idx, aug_idx = self.idx_mapping[idx]
-#         sample = self.dataset[sample_idx]
-        
-#         # Return original if not augmented
-#         if aug_idx == -1:
-#             return sample
-        
-#         # Apply transformation
-#         transform = self.transform_list[aug_idx]
-#         sample_copy = copy.deepcopy(sample)
-#         sample_copy = transform(sample_copy)
-        
-#         # Ensure proper shape
-#         sample_copy['image'] = sample_copy['image'].squeeze(0)
-#         sample_copy['mask'] = sample_copy['mask'].squeeze(0)
-            
-#         return sample_copy
 
 class PredictedImageDataset(Dataset):
     def __init__(self, image_path, patch_size=256, stride=256, band_list_predict=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]):

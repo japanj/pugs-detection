@@ -13,6 +13,7 @@ dependencies:
   - numpy=1.26.4
   - scipy=1.15.1
   - scikit-learn=1.6.1
+  - ipywidgets=8.1.6
   - seaborn=0.13.2 # plot confusion matrix
   - pip # TBD
   - pip: # TBD
