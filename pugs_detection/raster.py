@@ -16,7 +16,7 @@ import numpy as np
 from rasterio.features import rasterize
 from scipy.ndimage import distance_transform_edt
 
-def create_image_tiles(output_folder_path, image_path, train_index_list, val_index_list, test_index_list, valid_data_threshold=0.5):
+def create_image_tiles(output_folder_path, image_path, train_index_list, val_index_list, test_index_list, valid_data_threshold=0.3):
     """
     Create train/val/test tiles from a satellite image, filtering out tiles with insufficient valid data.
     
