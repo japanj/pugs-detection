@@ -204,6 +204,7 @@ def visualize_predictions(
     samples_per_batch=4,
     mode="original",
     replace_band_pos=None,
+    output_dir=None,
 ):
     # Set model to evaluation mode
     model.eval()
@@ -250,15 +251,6 @@ def visualize_predictions(
             print(
                 f"Sample {i} - Image shape: {img.shape}, Mask shape: {mask.shape}, Pred shape: {pred.shape}"
             )
-
-            # Create RGB visualization for the image
-            # if img.shape[0] >= 13:
-            #     # Sentinel-2 RGB composite
-            #     rgb = np.stack([img[3], img[2], img[1]], axis=0)
-            # else:
-            #     # Sentinel-2 RGB composite
-            #     rgb = np.stack([img[2], img[1], img[0]], axis=0)
-            # rgb = np.transpose(rgb, (1, 2, 0))
 
             rgb = enhance_satellite_rgb(img)
             # Ensure mask is 2D for plotting
@@ -318,7 +310,19 @@ def visualize_predictions(
                     additional_info_pos += 1
 
         plt.tight_layout()
+
+        # Save the figure if output_dir is provided
+        if output_dir:
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+            fig_path = os.path.join(output_dir, f"batch_{batch_idx}.png")
+            fig.savefig(fig_path, dpi=300, bbox_inches="tight")
+
+        # Show the figure
         plt.show()
+
+        # Close the figure to free memory
+        plt.close(fig)
 
 def visualize_area(original_image_path, prediction_path, ground_truth_path=None, 
                    x_coord=0, y_coord=0, window_size=256):
