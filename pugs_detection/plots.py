@@ -15,7 +15,10 @@ import torch
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import folium
+import pandas as pd
+import seaborn as sns
 import os
+from matplotlib.ticker import MaxNLocator
 from rasterio.windows import Window
 from tqdm import tqdm
 from pugs_detection.utils import set_all_seeds
@@ -462,3 +465,71 @@ def visualize_whole_image(original_image_path, prediction_path, ground_truth_pat
             print(f"Error visualizing window at ({x},{y}): {e}")
     
     return f"Completed visualization of {len(positions)} windows"
+
+def plot_loss_graph(metrics_path, loss_graph_path):
+    # Read the metrics CSV file
+    df = pd.read_csv(metrics_path)
+
+    # Create a figure with appropriate size
+    fig = plt.figure(figsize=(12, 6))
+    sns.set_style("whitegrid")
+
+    # Plot mean training loss per epoch
+    train_df = df.groupby("epoch")["train_loss"].mean().reset_index()
+    plt.plot(
+        train_df["epoch"],
+        train_df["train_loss"],
+        "b-",
+        marker="o",
+        markersize=4,
+        linewidth=2,
+        label="Training Loss (Mean)",
+    )
+
+    # Plot validation loss - filter rows where val_loss exists
+    val_df = df[df["val_loss"].notna()].copy()
+    plt.plot(
+        val_df["epoch"],
+        val_df["val_loss"],
+        "r-",
+        marker="o",
+        markersize=6,
+        linewidth=2,
+        label="Validation Loss",
+    )
+
+    # Add labels and title
+    plt.xlabel("Epochs", fontsize=14)
+    plt.ylabel("Loss", fontsize=14)
+    plt.title("Training and Validation Loss Over Epochs", fontsize=16)
+    plt.legend(fontsize=12)
+    plt.grid(True)
+
+    # Adjust axis for better visualization
+    plt.xlim(left=0)
+    plt.ylim(bottom=0)
+
+    # Set x-axis to integer ticks only
+    ax = plt.gca()
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+    # Add vertical line at best validation performance
+    best_epoch = val_df.loc[val_df["val_loss"].idxmin()]["epoch"]
+    plt.axvline(
+        x=best_epoch,
+        color="g",
+        linestyle="--",
+        alpha=0.7,
+        label=f"Best model (epoch {int(best_epoch)})",
+    )
+
+    plt.tight_layout()
+    plt.savefig(loss_graph_path, dpi=300, bbox_inches='tight')
+    plt.show()
+    plt.close(fig)
+
+    # Print best epoch stats
+    best_row = val_df[val_df["epoch"] == best_epoch].iloc[0]
+    print(f"Best model at epoch {int(best_epoch)}:")
+    print(f"  Val Loss: {best_row['val_loss']:.4f}")
+    print(f"  Val Jaccard: {best_row['val_BinaryJaccardIndex']:.4f}")

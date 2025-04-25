@@ -27,8 +27,11 @@ def _process_mask(mask, valid_area, band_count):
 # Create a custom filtering function
 def _filter_patches(sample, band_count):
     """Filter patches that contain only background or only PUGS"""
-    min_value = sample['image'].min()
-    valid_area = (sample['image']!=min_value) # create a mask of valid area
+    # min_value = sample['image'].min()
+    # valid_area = (sample['image']!=min_value) # create a mask of valid area
+    
+    nodata_value = -9999
+    valid_area = (sample['image']!=nodata_value) 
     
     sample['mask'] = _process_mask(sample['mask'], valid_area, band_count)
     
@@ -53,7 +56,6 @@ class FilteredGeoDataset(Dataset):
         
         # Compute the valid patches
         self.valid_bboxes = []
-        count = 0
         
         # Get total number of patches for progress bar
         total_patches = len(self.sampler)
@@ -63,7 +65,6 @@ class FilteredGeoDataset(Dataset):
                 sample = self.dataset[bbox]
                 if _filter_patches(sample, self.band_count):
                     self.valid_bboxes.append(bbox)
-                count += 1
             print(f"Found {len(self.valid_bboxes)} valid patches out of {len(self.sampler)} total patches")
         else:
             # For validation and test sets, use all patches
