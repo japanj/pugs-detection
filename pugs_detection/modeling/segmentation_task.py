@@ -2,7 +2,6 @@ from torchgeo.trainers import SemanticSegmentationTask
 import segmentation_models_pytorch as smp
 import torch.nn as nn
 from torch import Tensor
-from torchmetrics import MetricCollection
 from torchmetrics import Accuracy, JaccardIndex, MetricCollection
 from typing import Any
 

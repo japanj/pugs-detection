@@ -8,6 +8,10 @@
 /reports/prediction_results_track/
 /reports/visualization/
 
+# Models checkpoints
+/models/checkpoints/
+/models/test_result/
+
 # Mac OS-specific storage files
 .DS_Store
 
