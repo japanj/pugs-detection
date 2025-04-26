@@ -11,9 +11,32 @@ Date: [YYYY-MM-DD]
 import geopandas as gpd
 import pandas as pd
 import rasterio
+import requests
 from rasterstats import zonal_stats
 from shapely.ops import unary_union
 
+def download_ground_truth_data(url, params=None, og_crs=4326, new_crs=32633):
+    try:
+        # Make the request
+        response = requests.get(url, params=params, timeout=60)
+
+        # Check if the request was successful
+        response.raise_for_status()
+
+        gdf = gpd.read_file(response.content)
+        
+        # Convert to a consistent CRS
+        if gdf.crs is not None:
+            gdf = gdf.to_crs(new_crs)
+        else:
+            gdf = gdf.set_crs(og_crs)
+            gdf = gdf.to_crs(new_crs)
+        print(f"Dataset CRS: {gdf.crs}")
+        return gdf
+    except requests.exceptions.RequestException as e:
+        print(f"Error making request to WFS service: {e}")
+        return None
+    
 def add_ndvi_to_polygons(gdf, raster_path, ndvi_band_index=0):
     result_gdf = gdf.copy()
     
