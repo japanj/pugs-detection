@@ -27,7 +27,7 @@ class CustomSegmentationTask(SemanticSegmentationTask):
                 self.criterion = smp.losses.JaccardLoss(mode="binary")
             case "focal":
                 self.criterion = smp.losses.FocalLoss(
-                    "binary", ignore_index=ignore_index, normalized=True
+                    mode="binary", ignore_index=ignore_index, normalized=True
                 )
 
     def configure_metrics(self) -> None:
