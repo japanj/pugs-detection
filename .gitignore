@@ -5,8 +5,8 @@
 /notebooks/lightning_logs/
 
 # Folder for keep track of prediction results
-/reports/prediction_results_track/
-/reports/visualization/
+/reports/prediction result/
+/reports/figures/gt_vs_pred/
 
 # Models checkpoints
 /models/checkpoints/
