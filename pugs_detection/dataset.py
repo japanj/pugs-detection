@@ -1,13 +1,15 @@
-import torchgeo
 import torch
-import torch.nn as nn
 import numpy as np
 import copy
+import rasterio
+from tqdm import tqdm
 from torchgeo.datasets import RasterDataset, VectorDataset
 from torchgeo.samplers import GridGeoSampler
 from torch.utils.data import Dataset
 from pyproj import CRS
 from pugs_detection.utils import set_all_seeds
+from torch.utils.data import Dataset
+from rasterio.windows import Window
 
 def _process_mask(mask, valid_area, band_count):
     mask = mask.numpy()
@@ -25,8 +27,11 @@ def _process_mask(mask, valid_area, band_count):
 # Create a custom filtering function
 def _filter_patches(sample, band_count):
     """Filter patches that contain only background or only PUGS"""
-    min_value = sample['image'].min()
-    valid_area = (sample['image']!=min_value) # create a mask of valid area
+    # min_value = sample['image'].min()
+    # valid_area = (sample['image']!=min_value) # create a mask of valid area
+    
+    nodata_value = -9999
+    valid_area = (sample['image']!=nodata_value) 
     
     sample['mask'] = _process_mask(sample['mask'], valid_area, band_count)
     
@@ -51,14 +56,15 @@ class FilteredGeoDataset(Dataset):
         
         # Compute the valid patches
         self.valid_bboxes = []
-        count = 0
+        
+        # Get total number of patches for progress bar
+        total_patches = len(self.sampler)
+
         if self.dataset_type == 'train':
-            for bbox in self.sampler:
+            for bbox in tqdm(self.sampler, desc=f"Filtering patches for {dataset_type}", total=total_patches, unit="patch"):
                 sample = self.dataset[bbox]
                 if _filter_patches(sample, self.band_count):
                     self.valid_bboxes.append(bbox)
-                count += 1
-                print(count)
             print(f"Found {len(self.valid_bboxes)} valid patches out of {len(self.sampler)} total patches")
         else:
             # For validation and test sets, use all patches
@@ -87,12 +93,6 @@ class FilteredGeoDataset(Dataset):
         del sample["bounds"]
 
         return sample
-
-# def augmented_condition(sample):
-#     # Example: Only augment patches with <20% green space
-#     mask = sample['mask'].numpy()
-#     green_percentage = np.mean(mask)
-#     return green_percentage < 0.2
 
 class AugmentedDataset(Dataset):
     """Dataset wrapper that applies multiple augmentations to increase sample count"""
@@ -129,53 +129,67 @@ class AugmentedDataset(Dataset):
         sample_copy['mask'] = sample_copy['mask'].squeeze(0)
             
         return sample_copy
-    
-# class AugmentedDataset(Dataset):
-#     """Dataset wrapper that applies multiple augmentations to increase sample count"""
-#     def __init__(self, dataset, transform_list=None, augmented_condition_fn=None):
-#         self.dataset = dataset
-#         self.transform_list = transform_list
-#         self.augmented_condition_fn = augmented_condition_fn
 
-#         # Pre-calculate which samples should be augmented
-#         self.augmentable_indices = []
-#         for i in range(len(dataset)):
-#             sample = dataset[i]
-#             if self.augmented_condition_fn(sample):
-#                 self.augmentable_indices.append(i)
-        
-#         # Calculate total length
-#         self.total_length = len(dataset) + len(self.augmentable_indices) * len(self.transform_list)
+class PredictedImageDataset(Dataset):
+    def __init__(self, image_path, patch_size=256, stride=256, band_list_predict=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]):
+        self.image_path = image_path
+        self.patch_size = patch_size
+        self.stride = stride
+        self.band_list_predict = band_list_predict
 
-#         # Create mapping from idx to (sample_idx, aug_idx)
-#         self.idx_mapping = []
-#         for i in range(len(dataset)):
-#             self.idx_mapping.append((i, -1))  # Original samples
-#             if i in self.augmentable_indices:
-#                 for j in range(len(self.transform_list)):
-#                     self.idx_mapping.append((i, j))  # Augmented versions
+        # Open the image to get dimensions
+        with rasterio.open(image_path) as src:
+            self.height = src.height
+            self.width = src.width
+            self.count = src.count
+            self.transform = src.transform
+            self.crs = src.crs
 
-#     def __len__(self):
-#         return self.total_length
-    
-#     def __getitem__(self, idx):
-#         sample_idx, aug_idx = self.idx_mapping[idx]
-#         sample = self.dataset[sample_idx]
-        
-#         # Return original if not augmented
-#         if aug_idx == -1:
-#             return sample
-        
-#         # Apply transformation
-#         transform = self.transform_list[aug_idx]
-#         sample_copy = copy.deepcopy(sample)
-#         sample_copy = transform(sample_copy)
-        
-#         # Ensure proper shape
-#         sample_copy['image'] = sample_copy['image'].squeeze(0)
-#         sample_copy['mask'] = sample_copy['mask'].squeeze(0)
-            
-#         return sample_copy
+        # Create list of windows - all using Window objects
+        self.windows = []
+        for y in range(0, self.height - patch_size + 1, stride):
+            for x in range(0, self.width - patch_size + 1, stride):
+                self.windows.append(Window(x, y, patch_size, patch_size))
+
+        # Edge patches along bottom
+        if self.height % stride != 0:
+            last_y = self.height - patch_size
+            for x in range(0, self.width - patch_size + 1, stride):
+                self.windows.append(Window(x, last_y, patch_size, patch_size))
+
+        # Edge patches along right side
+        if self.width % stride != 0:
+            last_x = self.width - patch_size
+            for y in range(0, self.height - patch_size + 1, stride):
+                self.windows.append(Window(last_x, y, patch_size, patch_size))
+
+        # Corner patch (if needed)
+        if self.width % stride != 0 and self.height % stride != 0:
+            self.windows.append(
+                Window(
+                    self.width - patch_size,
+                    self.height - patch_size,
+                    patch_size,
+                    patch_size,
+                )
+            )
+
+    def __len__(self):
+        return len(self.windows)
+
+    def __getitem__(self, idx):
+        window = self.windows[idx]
+
+        with rasterio.open(self.image_path) as src:
+            # Read image data for this window
+            image = src.read(window=window)
+            # image = image[0:14, :, :]  # Select specific bands
+            image = image[self.band_list_predict]  # Select specific bands
+
+        return {
+            "image": image,
+            "window_info": window,  # Store coordinates as tuple
+        }
     
 # Create datasets for each split
 def create_dataset_split(image_path, label_path, epsg_code, band_list, dataset_type, transform_list):
