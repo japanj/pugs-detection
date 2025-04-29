@@ -11,9 +11,9 @@ Public Urban Green Spaces Detection Workflow
 ## Project Organization
 
 ```
-├── LICENSE             <- Open-source license if one is chosen
+├── LICENSE             <- Open-source license of the project
 ├── Makefile            <- Makefile with convenience commands like `make data` or `make train`
-├── README.md           <- The top-level README for developers using this project.
+├── README.md           <- The top-level README for users.
 ├── data
 │   ├── processed       <- The intermediate data from raw data processing.
 │   └── raw             <- The original, immutable data dump.
@@ -46,23 +46,30 @@ Public Urban Green Spaces Detection Workflow
     │
     ├── modeling                
     │   ├── __init__.py
-    │   ├── model.py                 <- Customize the model architecture
+    │   ├── model.py                 <- Customized model architecture
     │   ├── predict.py               <- Code to run model inference with trained models          
-    │   ├── segmentation_task.py     <- Customize SegmentationTask from torchgeo library
-    │   └── evaluation.py            <- Code to run create the confusion matrix
+    │   ├── segmentation_task.py     <- Customized SegmentationTask (customize from torchgeo library)
+    │   └── evaluation.py            <- Function to create the confusion matrix
     │
-    ├── __init__.py          <- Makes public_urban_green_spaces_detection a Python module
-    ├── utils.py             <- Store functions used within data processing step
-    ├── dataset.py           <- Scripts to download or generate data
-    ├── ground_truth.py      <- Code to create features for modeling
-    ├── osm.py               <-
-    ├── raster.py            <-
-    └── plots.py             <- Code to create all visualizations
+    ├── __init__.py          
+    ├── utils.py             <- Common functions used across different notebooks
+    ├── dataset.py           <- Dataset classes and dataset creation functions
+    ├── ground_truth.py      <- Functions to create features for modeling
+    ├── osm.py               <- Functions related to OSM data including loading and processing OSM data
+    ├── raster.py            <- Functions to create and process raster data
+    └── plots.py             <- Functions to create all visualizations
 ```
 
 ## Datasets
+| Dataset name         | Source         | Description        | License       |
+| -------------------- | -------------- | ------------------ | ------------- |
+| Sentinel-2 image | Copernicus Data Space Ecosystem | TBD | The data is regulated under EU law (Commission Delegated Regulation (EU) No 1159/2013) which based on a principle of full, open and free access. |
+| OSM data | OSM | TBD | [Open Data Commons Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/) |
+| Ground truth data  | European Union's Copernicus Land Monitoring Service, Dresden Open Data Portal | TBD | 1. The data is regulated under EU law (Commission Delegated Regulation (EU) No 1159/2013) which based on a principle of full, open and free access. <br> 2. test |
 
-## Hardware and Software (e.g. OS) Spec
+More details about each ground truth dataset can be found in `4_ground_truth_exploration.ipynb` notebook.
+
+## Hardware and Software Specifications
 
 I use Windows Subsystem for Linux (WSL) to work on and run the workflow.
 ```
@@ -86,3 +93,5 @@ Disk storage: 1 TB
 | ground_truth_creation.ipynb  | https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/ground_truth_creation.ipynb | Processing ground truth datasets and create one single ground truth |
 
 ## License
+
+## Contact

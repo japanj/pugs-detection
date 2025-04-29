@@ -132,70 +132,6 @@ def create_image_tiles(output_folder_path, image_path, train_index_list, val_ind
     print(f"Processing complete: {valid_tile_count} valid tiles created, {skipped_tile_count} tiles skipped")
     return tiles
 
-# def create_image_tiles(output_folder_path, image_path, train_index_list, val_index_list, test_index_list):
-#     # Check directory existence
-#     try:
-#         os.makedirs(output_folder_path, exist_ok=True)
-#     except FileExistsError:
-#         # Directory already exists
-#         pass
-
-#     # Open the raster data
-#     rds = rioxarray.open_rasterio(image_path)
-
-#     # Get the bounds of the image
-#     xmin, ymin, xmax, ymax = rds.rio.bounds()
-
-#     # Calculate the width and height of each tile
-#     print("width:", xmax - xmin, "height:", ymax - ymin)
-#     base_tile_width = (xmax - xmin) // 5
-#     base_tile_height = (ymax - ymin) // 5
-#     print("tile width:", base_tile_width, "tile height:", base_tile_height)
-
-#     # Create 25 tiles (5x5 grid) with special handling for the last column/row
-#     tiles = []
-#     for i in range(5):
-#         for j in range(5):
-#             # For columns 0-3, use regular spacing
-#             tile_xmin = xmin + i * base_tile_width
-            
-#             # For the last column, extend to the edge
-#             if i == 4:
-#                 tile_xmax = xmax
-#             else:
-#                 tile_xmax = xmin + (i + 1) * base_tile_width
-            
-#             # For the last row, extend to the edge
-#             tile_ymin = ymin + j * base_tile_height
-#             if j == 4:
-#                 tile_ymax = ymax
-#             else:
-#                 tile_ymax = ymin + (j + 1) * base_tile_height
-            
-#             tiles.append([tile_xmin, tile_xmax, tile_ymin, tile_ymax])
-
-#     # Save image tiles to different output folders
-#     for idx, tile in enumerate(tiles):
-#         tile_xmin, tile_xmax, tile_ymin, tile_ymax = tile
-
-#         # Clip the raster to this tile and save it
-#         if (idx+1) in train_index_list:
-#             subfolder_path = os.path.join(output_folder_path, 'train')
-#             os.makedirs(subfolder_path, exist_ok=True)
-#         elif (idx+1) in val_index_list:
-#             subfolder_path = os.path.join(output_folder_path, 'val')
-#             os.makedirs(subfolder_path, exist_ok=True)
-#         else:
-#             subfolder_path = os.path.join(output_folder_path, 'test')
-#             os.makedirs(subfolder_path, exist_ok=True)
-
-#         tile_rds = rds.rio.clip_box(minx=tile_xmin, miny=tile_ymin, maxx=tile_xmax, maxy=tile_ymax)
-#         tile_file_path = os.path.join(subfolder_path, f'tile_{idx + 1}.geotiff')
-#         tile_rds.rio.to_raster(tile_file_path, driver='GTiff')
-#         print(f"Tile {idx + 1} saved to {tile_file_path}")
-
-#     return tiles
-
 def create_binary_mask(gdf, file_path, satellite_image_path):
     with rasterio.open(satellite_image_path) as src:
         transform = src.transform
@@ -276,13 +212,6 @@ def create_sdt_raster(gdf, file_path, satellite_image_path):
 
         print("Signed distance transform complete.")
 
-# def contrast_stretch(array, lower_percentile=1, upper_percentile=99):
-#     # Apply a percentile-based contrast stretch (ignore the extreme values so image isn't too dark or too bright)
-#     lower = np.percentile(array, lower_percentile)
-#     upper = np.percentile(array, upper_percentile)
-#     array = np.clip(array, lower, upper) # clip -> limit the values in an array to specific range
-#     return (array - lower) / (upper - lower)
-
 def contrast_stretch(array, lower_percentile=1, upper_percentile=99):
     normalized_img = array.copy()
     
@@ -303,22 +232,6 @@ def contrast_stretch(array, lower_percentile=1, upper_percentile=99):
             normalized_img.loc[dict(band=band_idx)] = np.zeros_like(band)
     
     return normalized_img
-
-# def contrast_stretch_std(array):
-#     normalized_img = array.copy()
-    
-#     for i in range(array.sizes['band']):
-#         # Get the band index and data
-#         band_idx = array.band.values[i]  # Use actual band coordinate value
-#         band = array.sel(band=band_idx).values
-        
-#         # Calculate percentiles
-#         band_new = (band-np.mean(band))/np.std(band)
-
-#         print(f"Band {i+1} new val: Mean {np.mean(band_new)}, Std {np.std(band_new)}")
-#         print(f"Band {i+1}: low {np.min(band_new)}, max {np.max(band_new)}")
-    
-#     return normalized_img
 
 def contrast_stretch_dn(array):
     result = array.copy()

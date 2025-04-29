@@ -25,7 +25,7 @@ def print_basic_info(gdf):
     # Print the basic information
     print("Number of rows:", len(gdf))
     print("Number of columns:", len(gdf.columns))
-    display(gdf.head())
+    display(gdf.head(3))
 
 def set_all_seeds(seed=42):
     np.random.seed(seed)
