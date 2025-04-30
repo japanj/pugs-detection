@@ -58,11 +58,13 @@ Public Urban Green Spaces Detection Workflow
 ```
 
 ## Datasets
-| Dataset name         | Source         | Description        | License       |
-| -------------------- | -------------- | ------------------ | ------------- |
-| Sentinel-2 image | Copernicus Data Space Ecosystem | TBD | The data is regulated under EU law (Commission Delegated Regulation (EU) No 1159/2013) which based on a principle of full, open and free access. |
+| Dataset name         | Source         | Description        | Data License       |
+| -------------------- | -------------- | ------------------ | ------------------ |
+| Sentinel-2 image | Copernicus Data Space Ecosystem | TBD | The data is regulated under EU law (Commission Delegated Regulation (EU) No 1159/2013) which based on a principle of full, open and free access. <br> More details about data policy: https://sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice |
 | OSM data | OSM | TBD | [Open Data Commons Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/) |
-| Ground truth data  | European Union's Copernicus Land Monitoring Service, Dresden Open Data Portal | TBD | 1. The data is regulated under EU law (Commission Delegated Regulation (EU) No 1159/2013) which based on a principle of full, open and free access. <br> 2. test |
+| Ground truth data  | European Union's Copernicus Land Monitoring Service | TBD | The data is regulated under EU law (Commission Delegated Regulation (EU) No 1159/2013) which based on a principle of full, open and free access. <br> More details about data policy: https://land.copernicus.eu/en/data-policy |
+| Ground truth data  | Dresden Open Data Portal | TBD | [dl-de/by-2-0](https://www.govdata.de/dl-de/by-2-0) |
+| Ground truth data  | Author | TBD | [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/) |
 
 More details about each ground truth dataset can be found in ...
 
@@ -79,8 +81,11 @@ Disk storage: 1 TB
 ```
 
 ## Prerequisites
-1. Install conda
-2. Clone the repository
+1. User need to have Conda installed. If user have not installed Conda yet, please visit the [installation guide](https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html) from Conda.
+2. User need to clone this repository or download ZIP file of this repository. To clone the repository, user can use the below command.
+    ```
+    git clone https://github.com/japanj/pugs-detection.git
+    ```
 
 ## Set up the environment
 1. Create the environment with required dependencies for this project
@@ -95,6 +100,10 @@ Disk storage: 1 TB
 (Optional) User can check all the installed libraries or dependencies by using `conda list` command. 
 
 ## Steps to run the workflow
+
+All the notebooks are available in `notebooks` folder. The **number at the beginning of the notebooks' name indicate the order of execution**. Each notebook has different requirements or dependecies which are described in the notebooks.
+
+To get the reproducible result in data processing till model evaluation result step, user can skip the data acquisition notebooks (`1_data_acquisition_ground_truth.ipynb`, `1_data_acquisition_osm.ipynb`, and `1_data_acquisition_satellite_image.ipynb`) since there might be a chance the **different data retrieving time** can lead to slightly different dataset, e.g. OSM data.
 
 
 ## Notebook viewer

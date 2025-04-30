@@ -1,8 +1,31 @@
+"""
+evaluation.py
+
+This module contains functions for generating confusion matrix.
+
+Author: Pitchaporn Likitpanjamanon
+Date: [YYYY-MM-DD]
+"""
+
 from sklearn.metrics import confusion_matrix
 import numpy as np
 import torch
 
+
 def generate_confusion_matrix(model, test_loader):
+    """
+    Generate confusion matrix
+
+    Parameters:
+    -----------
+    model : numpy array
+        Multi-band satellite image with shape [bands, height, width]
+
+    Returns:
+    --------
+    rgb : numpy array
+        Enhanced RGB image with values from 0-1, shape [height, width, 3]
+    """
     # Set model to evaluation mode
     model.eval()
 

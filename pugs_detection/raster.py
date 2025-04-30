@@ -141,7 +141,7 @@ def create_binary_mask(gdf, file_path, satellite_image_path):
 
         # Create an empty raster with the same properties as the satellite image
         out_shape = (height, width)
-        raster = np.zeros(out_shape, dtype='uint8')
+        raster = np.zeros(out_shape, dtype='int16')
 
         # Rasterize the polygons
         rasterized = rasterize(
@@ -150,7 +150,7 @@ def create_binary_mask(gdf, file_path, satellite_image_path):
             transform=transform,
             fill=0,
             all_touched=True,
-            dtype='uint8'
+            dtype='int16'
         )
         
         # Save the raster to a file
