@@ -12,7 +12,6 @@ Public Urban Green Spaces Detection Workflow
 
 ```
 ├── LICENSE             <- Open-source license of the project
-├── Makefile            <- Makefile with convenience commands like `make data` or `make train`
 ├── README.md           <- The top-level README for users.
 ├── data
 │   ├── processed       <- The intermediate data from raw data processing.
@@ -40,8 +39,6 @@ Public Urban Green Spaces Detection Workflow
 ├── environment.yml     <- The requirements file for reproducing the analysis environment, e.g.
 │                          generated with `pip freeze > requirements.txt`
 │
-├── setup.cfg           <- Configuration file for flake8
-│
 └── pugs_detection      <- Source code for use in this project.
     │
     ├── modeling                
@@ -67,11 +64,11 @@ Public Urban Green Spaces Detection Workflow
 | OSM data | OSM | TBD | [Open Data Commons Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/) |
 | Ground truth data  | European Union's Copernicus Land Monitoring Service, Dresden Open Data Portal | TBD | 1. The data is regulated under EU law (Commission Delegated Regulation (EU) No 1159/2013) which based on a principle of full, open and free access. <br> 2. test |
 
-More details about each ground truth dataset can be found in `4_ground_truth_exploration.ipynb` notebook.
+More details about each ground truth dataset can be found in ...
 
 ## Hardware and Software Specifications
 
-I use Windows Subsystem for Linux (WSL) to work on and run the workflow.
+Windows Subsystem for Linux (WSL) is used to develop and run the workflow.
 ```
 Host Operating System (OS): Windows 11 (64-bit OS, x64-based processor)
 Workflow Environment: WSL2 (Ubuntu 22.04.3 LTS)
@@ -81,11 +78,27 @@ RAM: 32 GB
 Disk storage: 1 TB
 ```
 
+## Prerequisites
+1. Install conda
+2. Clone the repository
+
 ## Set up the environment
+1. Create the environment with required dependencies for this project
+
+    ```
+    conda env create -f environment.yml
+    ```
+2. Activate the environment
+    ```
+    conda activate pugs-detection
+    ```
+(Optional) User can check all the installed libraries or dependencies by using `conda list` command. 
 
 ## Steps to run the workflow
 
+
 ## Notebook viewer
+(Move to another notebook)
 | Notebook name         | Link to view notebook | Description           |
 | --------------------- | --------------------- | --------------------- |
 | 2_data_processing_osm.ipynb | https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/2_data_processing_osm.ipynb | Processing OpenStreetMap data which is used in model training step for PUGS detection |
@@ -94,4 +107,9 @@ Disk storage: 1 TB
 
 ## License
 
+This repository is released under MIT License and The data used in this project is under various license, e.g. .
+More detail about license of data used in this project: ...
+
 ## Contact
+
+If there is any further questions or issues related to work, please feel free to open an issues in GitHub or contact m.p.likitpanjamanon@student.utwente.nl

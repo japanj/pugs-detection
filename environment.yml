@@ -1,4 +1,4 @@
-name: pugs_detection
+name: pugs-detection
 channels:
   - conda-forge
 dependencies:
@@ -17,5 +17,4 @@ dependencies:
   - seaborn=0.13.2 # plot confusion matrix
   - pip # TBD
   - pip: # TBD
-    - python-dotenv
     - mkdocs
