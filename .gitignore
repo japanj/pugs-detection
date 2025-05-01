@@ -1,5 +1,6 @@
 # Data (don't commit data since they are too large)
-/data/
+/data/processed/
+/data/raw/
 
 # Pytorch lightning logs
 /notebooks/lightning_logs/

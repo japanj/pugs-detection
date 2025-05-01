@@ -58,15 +58,15 @@ Public Urban Green Spaces Detection Workflow
 ```
 
 ## Datasets
-| Dataset name         | Source         | Description        | Data License       |
+| Main input data      | Source         | Description        | Data License       |
 | -------------------- | -------------- | ------------------ | ------------------ |
 | Sentinel-2 image | Copernicus Data Space Ecosystem | TBD | The data is regulated under EU law (Commission Delegated Regulation (EU) No 1159/2013) which based on a principle of full, open and free access. <br> More details about data policy: https://sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice |
 | OSM data | OSM | TBD | [Open Data Commons Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/) |
-| Ground truth data  | European Union's Copernicus Land Monitoring Service | TBD | The data is regulated under EU law (Commission Delegated Regulation (EU) No 1159/2013) which based on a principle of full, open and free access. <br> More details about data policy: https://land.copernicus.eu/en/data-policy |
-| Ground truth data  | Dresden Open Data Portal | TBD | [dl-de/by-2-0](https://www.govdata.de/dl-de/by-2-0) |
-| Ground truth data  | Author | TBD | [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/) |
+| Ground truth data | European Union's Copernicus Land Monitoring Service | TBD | The data is regulated under EU law (Commission Delegated Regulation (EU) No 1159/2013) which based on a principle of full, open and free access. <br> More details about data policy: https://land.copernicus.eu/en/data-policy |
+| Ground truth data | Dresden Open Data Portal | TBD | [dl-de/by-2-0](https://www.govdata.de/dl-de/by-2-0) |
+| Ground truth data | Author | TBD | [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/) |
 
-More details about each ground truth dataset can be found in ...
+More details about input data and output data can be found in ...
 
 ## Hardware and Software Specifications
 Windows Subsystem for Linux (WSL) is used to develop and run the workflow.
@@ -107,8 +107,7 @@ To get the reproducible result in data processing till model evaluation result s
 
 
 ## License
-This repository is released under MIT License (see `LICENSE` file) and The data used in this project is under various license, e.g. .
-More detail about license of data used in this project: ...
+This repository is released under MIT License (see `LICENSE` file) and The data used in this project is under various licenses. Please visit (document) to see more detail about license of data used in this project.
 
 ## Contact
 If there is any further questions or issues related to work, please feel free to open an issues in GitHub or contact m.p.likitpanjamanon@student.utwente.nl
