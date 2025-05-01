@@ -1,19 +1,11 @@
 """
 osm.py
 
-This module contains functions for feature engineering, 
-including image normalization and patch generation for deep learning model.
+This module contains functions for loading and processing OpenStreetMap (OSM) data.
 
 Author: Pitchaporn Likitpanjamanon
-Date: [YYYY-MM-DD]
+Date: 01-05-2025
 """
-
-# probably move the functions below to this file
-# - calculate_poi_number
-# - calculate_footpath_length
-# - _create_estimated_area_dictionary
-# - classification_with_smaller_area
-# - add_ndvi_to_polygons
 
 import geopandas as gpd
 import pandas as pd
@@ -23,15 +15,15 @@ def load_osm_data(file_path, crs):
     """
     Load OSM data from a file and convert it to a GeoDataFrame.
 
-    Parameters
-    ----------
+    Parameters:
+    -----------
     file_path : str
         The path to the OSM data file.
-    crs : str
+    crs : int
         The coordinate reference system (CRS) of the data.
 
-    Returns
-    -------
+    Returns:
+    --------
     gdf : GeoDataFrame
         The OSM data as a GeoDataFrame.
     """
@@ -50,10 +42,10 @@ def print_classification_report(gdf):
     """
     Print a classification report for the OSM data.
 
-    Parameters
-    ----------
+    Parameters:
+    -----------
     gdf : GeoDataFrame
-        The OSM data as a GeoDataFrame.
+        GeoDataFrame of the OSM data
     """
     total_green_area = gdf['area_left'].sum()
 
@@ -72,8 +64,8 @@ def calculate_poi_number(lulc_gdf, poi_gdf, osm_key):
     """
     Calculate the number of points of interest (POIs) within each LULC space.
 
-    Parameters
-    ----------
+    Parameters:
+    -----------
     lulc_gdf : GeoDataFrame
         The LULC data as a GeoDataFrame.
     poi_gdf : GeoDataFrame
@@ -81,8 +73,8 @@ def calculate_poi_number(lulc_gdf, poi_gdf, osm_key):
     osm_key : str
         The OSM key to use for grouping the POIs.
     
-    Returns
-    -------
+    Returns:
+    --------
     lulc_gdf : GeoDataFrame
         The LULC data with the number of POIs within each LULC space.
     """
@@ -101,7 +93,21 @@ def calculate_poi_number(lulc_gdf, poi_gdf, osm_key):
     return modified_lulc_gdf
 
 def calculate_footpath_length(lulc_gdf, footpath_gdf):
-    # Avoid to change the original df
+    """
+    Calculate the total length of footpaths within each LULC space
+
+    Parameters:
+    -----------
+    lulc_gdf : GeoDataFrame
+        GeoDataFrame of the LULC data
+    footpath_gdf : GeoDataFrame
+        GeoDataFrame of the footpath data
+    
+    Returns:
+    --------
+    modified_lulc_gdf : GeoDataFrame
+        The LULC data with the total length of footpaths within each LULC space
+    """
     modified_lulc_gdf = lulc_gdf.copy()
     # Drop duplicate so we can get the real number of POIs
     lulc_gdf_wo_duplicate = lulc_gdf.drop_duplicates(subset=['id_left'])
@@ -114,6 +120,20 @@ def calculate_footpath_length(lulc_gdf, footpath_gdf):
 
 # _ indicates internal use only (user shouldn't call it directly)
 def _create_estimated_area_dictionary(lulc_gdf):
+    """
+    Create a dictionary of estimated area for each leisure/landuse tag
+    based on the area of the polygon
+
+    Parameters:
+    -----------
+    lulc_gdf : GeoDataFrame
+        GeoDataFrame of the LULC data
+
+    Returns:
+    --------
+    pc_avg_area : dict
+        Dictionary of estimated area for each leisure/landuse tag
+    """
     leisure_node_element_list = lulc_gdf[(lulc_gdf['element_right']=='node')&
                                          (lulc_gdf['id_left']!=lulc_gdf['id_right'])]['leisure_right'].unique().tolist()
     landuse_node_element_list = lulc_gdf[(lulc_gdf['element_right']=='node')&
@@ -158,7 +178,21 @@ def _create_estimated_area_dictionary(lulc_gdf):
     return pc_avg_area
 
 def classification_with_smaller_area(lulc_gdf):
-    # Avoid to change the original df
+    """
+    Use the smaller area of the polygon to classify the larger polygon
+    based on the percentage of public and non-public areas
+    (If 50% of the smaller area is public, classify the larger polygon as public)
+
+    Parameters:
+    -----------
+    lulc_gdf : GeoDataFrame
+        GeoDataFrame of the LULC data
+
+    Returns:
+    --------
+    modified_lulc_gdf : GeoDataFrame
+        The LULC data with the access classification based on the smaller area
+    """
     modified_lulc_gdf = lulc_gdf.copy()
 
     pc_avg_area = _create_estimated_area_dictionary(modified_lulc_gdf)

@@ -5,7 +5,7 @@ This module contains functions for ground truth datasets exploration and
 final ground truth dataset creation of public urban green spaces (PUGS).
 
 Author: Pitchaporn Likitpanjamanon
-Date: [YYYY-MM-DD]
+Date: 01-05-2025
 """
 
 import geopandas as gpd
@@ -16,6 +16,26 @@ from rasterstats import zonal_stats
 from shapely.ops import unary_union
 
 def download_ground_truth_data(url, params=None, og_crs=4326, new_crs=32633):
+    """
+    Download ground truth data from a WFS service or OGC API 
+    and convert to a GeoDataFrame
+
+    Parameters:
+    ----------
+    url : str
+        URL of the WFS service or OGC API endpoint
+    params : dict
+        Parameters for the request (e.g., filter, version)
+    og_crs : int
+        Original CRS of the data
+    new_crs : int
+        Desired CRS for the output GeoDataFrame
+    
+    Returns:
+    -------
+    gdf : GeoDataFrame
+        GeoDataFrame containing the downloaded data
+    """
     try:
         # Make the request
         response = requests.get(url, params=params, timeout=60)
@@ -35,9 +55,26 @@ def download_ground_truth_data(url, params=None, og_crs=4326, new_crs=32633):
         return gdf
     except requests.exceptions.RequestException as e:
         print(f"Error making request to WFS service: {e}")
-        return None
+        raise
     
 def add_ndvi_to_polygons(gdf, raster_path, ndvi_band_index=0):
+    """
+    Calculate average NDVI values for polygons in a GeoDataFrame
+
+    Parameters:
+    ----------
+    gdf : GeoDataFrame
+        GeoDataFrame containing the polygons
+    raster_path : str
+        Path to the raster file containing NDVI data
+    ndvi_band_index : int
+        Band index for NDVI data in the raster
+    
+    Returns:
+    -------
+    result_gdf : GeoDataFrame
+        GeoDataFrame with an additional column for NDVI mean values
+    """
     result_gdf = gdf.copy()
     
     # Open the raster and read the NDVI band
@@ -64,6 +101,21 @@ def add_ndvi_to_polygons(gdf, raster_path, ndvi_band_index=0):
     return result_gdf
 
 def find_overlap_area(gdf1, gdf2):
+    """
+    Find the overlapping area between two GeoDataFrames
+
+    Parameters:
+    ----------
+    gdf1 : GeoDataFrame
+        First GeoDataFrame
+    gdf2 : GeoDataFrame
+        Second GeoDataFrame
+    
+    Returns:
+    -------
+    overlap_area_gdf : GeoDataFrame
+        GeoDataFrame containing the overlapping areas and their percentages
+    """
     overlap_area_gdf = gdf1.sjoin(gdf2, how="left", predicate="intersects")
     overlap_area_gdf.loc[~overlap_area_gdf["index_right"].isna(), "overlap"] = "yes"
     overlap_area_gdf.loc[overlap_area_gdf["index_right"].isna(), "overlap"] = "no"
@@ -97,6 +149,17 @@ def find_overlap_area(gdf1, gdf2):
     return overlap_area_gdf
 
 def calculate_dataset_overlap(gdf1, gdf2):
+    """
+    Calculate the overlap percentage between two GeoDataFrames
+    and report the overlapping percentage
+    
+    Parameters:
+    ----------
+    gdf1 : GeoDataFrame
+        First GeoDataFrame.
+    gdf2 : GeoDataFrame
+        Second GeoDataFrame.
+    """
     gdf1_union = unary_union(gdf1.geometry)
     gdf2_union = unary_union(gdf2.geometry)
     
@@ -113,6 +176,23 @@ def calculate_dataset_overlap(gdf1, gdf2):
     print(f"Dataset 2 overlap percentage: {gdf2_overlap_pct:.2f}%")
 
 def calculate_category_overlap(gdf1, gdf2, category_column='sst_lv_3_liste'):
+    """
+    Calculate the overlap percentage for each area type in gdf1
+
+    Parameters:
+    ----------
+    gdf1 : GeoDataFrame
+        First GeoDataFrame with area type information
+    gdf2 : GeoDataFrame
+        Second GeoDataFrame
+    category_column : str
+        The area type column name for grouping
+    
+    Returns:
+    -------
+    result_df : DataFrame
+        DataFrame containing the overlap statistics for each area type
+    """
     stats_df = (
         gdf1[gdf1["overlap"] == "yes"]
         .groupby(category_column)
@@ -191,6 +271,24 @@ def calculate_category_overlap(gdf1, gdf2, category_column='sst_lv_3_liste'):
     return result_df
 
 def check_intersecting_point(point_dataset, polygon_dataset, buffer_distance=100):
+    """
+    Check the intersection of points with polygons in a GeoDataFrame.
+
+    Parameters:
+    ----------
+    point_dataset : GeoDataFrame
+        GeoDataFrame of point dataset
+    polygon_dataset : GeoDataFrame
+        GeoDataFrame of area/polygon dataset
+    buffer_distance : int
+        Buffer distance in meters to create a buffer around points
+        to check for intersection with polygons
+    
+    Returns:
+    -------
+    points_joined : GeoDataFrame
+        GeoDataFrame containing points that intersect with the polygons
+    """
     buffer_distance = buffer_distance
 
     point_park_garden_buffered = point_dataset.copy()
@@ -213,11 +311,25 @@ def check_intersecting_point(point_dataset, polygon_dataset, buffer_distance=100
     print(
         f"Points intersecting with dataset: {unique_intersecting_points} out of {total_points} ({intersection_percentage:.2f}%)"
     )
-    points_joined = points_joined
 
     return points_joined
 
 def merge_datasets(gdf1, gdf2):
+    """
+    Merge two GeoDataFrames
+
+    Parameters:
+    ----------
+    gdf1 : GeoDataFrame
+        First GeoDataFrame
+    gdf2 : GeoDataFrame
+        Second GeoDataFrame
+
+    Returns:
+    -------
+    merged_dataset : GeoDataFrame
+        Merged GeoDataFrame
+    """
     gdf1_copy = gdf1.copy()
     gdf2_copy = gdf2.copy()
 
@@ -236,6 +348,17 @@ def merge_datasets(gdf1, gdf2):
     return merged_dataset
 
 def print_non_green_space_info(gdf, threshold=0):
+    """
+    Print information about polygons that has average NDVI values below a threshold
+    and print the percentage of Low NDVI area out
+
+    Parameters:
+    ----------
+    gdf : GeoDataFrame
+        GeoDataFrame containing the polygons
+    threshold : float
+        NDVI threshold for filtering polygons
+    """
     print(f"Area of polygons with NDVI <= {threshold}:")
     low_ndvi_area = gdf[gdf["ndvi_mean"] <= threshold].area.sum()
     total_area = gdf.area.sum()

@@ -6,7 +6,7 @@ including processing the pixel values and
 creating image tiles, binary mask, and signed-distance transform raster.
 
 Author: Pitchaporn Likitpanjamanon
-Date: [YYYY-MM-DD]
+Date: 01-05-2025
 """
 
 import rioxarray
@@ -18,14 +18,15 @@ from scipy.ndimage import distance_transform_edt
 
 def create_image_tiles(output_folder_path, image_path, train_index_list, val_index_list, test_index_list, valid_data_threshold=0.3):
     """
-    Create train/val/test tiles from a satellite image, filtering out tiles with insufficient valid data.
+    Create train/val/test tiles from a satellite image
+    and filtering out tiles with insufficient valid data
     
     Parameters:
     -----------
     output_folder_path : str
         Path to save output tiles
     image_path : str
-        Path to the satellite image (possibly clipped)
+        Path to the satellite image
     train_index_list : list
         List of tile indices for training set
     val_index_list : list
@@ -34,6 +35,11 @@ def create_image_tiles(output_folder_path, image_path, train_index_list, val_ind
         List of tile indices for test set
     valid_data_threshold : float
         Minimum percentage of valid data required in a tile (0.0-1.0)
+    
+    Returns:
+    --------
+    tiles : list
+        List of tile information including coordinates and valid data percentage
     """
     # Check directory existence
     try:
@@ -133,6 +139,19 @@ def create_image_tiles(output_folder_path, image_path, train_index_list, val_ind
     return tiles
 
 def create_binary_mask(gdf, file_path, satellite_image_path):
+    """
+    Create a binary mask raster from public urban green space (PUGS) 
+    polygons in a GeoDataFrame
+
+    Parameters:
+    -----------
+    gdf : GeoDataFrame
+        The input GeoDataFrame containing PUGS polygons
+    file_path : str
+        Path to save the binary mask raster
+    satellite_image_path : str
+        Path to the satellite image for reference
+    """
     with rasterio.open(satellite_image_path) as src:
         transform = src.transform
         width = src.width
@@ -170,6 +189,18 @@ def create_binary_mask(gdf, file_path, satellite_image_path):
     print("Rasterization complete.")
 
 def create_sdt_raster(gdf, file_path, satellite_image_path):
+    """
+    Create a signed distance transform (SDT) raster from PUGS polygons
+
+    Parameters:
+    -----------
+    gdf : GeoDataFrame
+        The input GeoDataFrame containing PUGS polygons
+    file_path : str
+        Path to save SDT raster
+    satellite_image_path : str
+        Path to the satellite image for dimension or metadata reference
+    """
     with rasterio.open(satellite_image_path) as src:
         transform = src.transform
         width = src.width
@@ -213,6 +244,23 @@ def create_sdt_raster(gdf, file_path, satellite_image_path):
         print("Signed distance transform complete.")
 
 def contrast_stretch(array, lower_percentile=1, upper_percentile=99):
+    """
+    Normalize the pixel values of a raster image using percentile-based contrast stretching
+
+    Parameters:
+    -----------
+    array : xarray.DataArray
+        The input raster image as an xarray DataArray
+    lower_percentile : int
+        The lower percentile for contrast stretching
+    upper_percentile : int
+        The upper percentile for contrast stretching
+
+    Returns:
+    --------
+    normalized_img: xarray.DataArray
+        The normalized raster image
+    """
     normalized_img = array.copy()
     
     for i in range(array.sizes['band']):
@@ -234,6 +282,19 @@ def contrast_stretch(array, lower_percentile=1, upper_percentile=99):
     return normalized_img
 
 def contrast_stretch_dn(array):
+    """
+    Normalize the pixel values of a raster image by dividing 10000
+
+    Parameters:
+    -----------
+    array : xarray.DataArray
+        The input raster image as an xarray DataArray
+
+    Returns:
+    --------
+    result: xarray.DataArray
+        The normalized raster image
+    """
     result = array.copy()
     # Apply a percentile-based contrast stretch (ignore the extreme values so image isn't too dark or too bright)
     array_new = np.where(array.values < 0, 0, array.values)
@@ -242,16 +303,20 @@ def contrast_stretch_dn(array):
     result.values = image_norm
     return result
 
-# Min-max scaling to [-1, 1] range
-def normalize_sdt_minmax(sdt_array):
-    sdt_min = float(sdt_array.min())
-    sdt_max = float(sdt_array.max())
-    # Apply min-max formula scaled to [-1, 1]
-    normalized = 2 * (sdt_array - sdt_min) / (sdt_max - sdt_min) - 1
-    return normalized
-
 def min_max_normalize(data):
-    """Scale data to 0-1 range using min-max normalization"""
+    """
+    Scale data to 0-1 range using min-max normalization
+
+    Parameters:
+    -----------
+    data : xarray.DataArray
+        The input data as an xarray DataArray
+
+    Returns:
+    --------
+    xarray.DataArray
+        The normalized data as an xarray DataArray
+    """
     min_val = data.min().values
     max_val = data.max().values
     return (data - min_val) / (max_val - min_val)

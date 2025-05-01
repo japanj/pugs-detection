@@ -4,13 +4,12 @@ evaluation.py
 This module contains functions for generating confusion matrix.
 
 Author: Pitchaporn Likitpanjamanon
-Date: [YYYY-MM-DD]
+Date: 01-05-2025
 """
 
 from sklearn.metrics import confusion_matrix
 import numpy as np
 import torch
-
 
 def generate_confusion_matrix(model, test_loader):
     """
@@ -18,13 +17,13 @@ def generate_confusion_matrix(model, test_loader):
 
     Parameters:
     -----------
-    model : numpy array
-        Multi-band satellite image with shape [bands, height, width]
+    model : CustomSegmentationTask
+        Model to be evaluated
 
     Returns:
     --------
-    rgb : numpy array
-        Enhanced RGB image with values from 0-1, shape [height, width, 3]
+    cm : numpy array
+        Confusion matrix of the predictions
     """
     # Set model to evaluation mode
     model.eval()

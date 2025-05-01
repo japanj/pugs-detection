@@ -1,4 +1,4 @@
-# Public Urban Green Spaces Detection
+# Public Urban Green Spaces (PUGS) Detection Workflow
 
 <a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
@@ -7,9 +7,9 @@
 Public Urban Green Spaces Detection Workflow
 
 ## Overview of the workflow
+(Insert the picture/diagram of workflow overview)
 
 ## Project Organization
-
 ```
 ├── LICENSE             <- Open-source license of the project
 ├── README.md           <- The top-level README for users.
@@ -69,7 +69,6 @@ Public Urban Green Spaces Detection Workflow
 More details about each ground truth dataset can be found in ...
 
 ## Hardware and Software Specifications
-
 Windows Subsystem for Linux (WSL) is used to develop and run the workflow.
 ```
 Host Operating System (OS): Windows 11 (64-bit OS, x64-based processor)
@@ -100,25 +99,16 @@ Disk storage: 1 TB
 (Optional) User can check all the installed libraries or dependencies by using `conda list` command. 
 
 ## Steps to run the workflow
-
 All the notebooks are available in `notebooks` folder. The **number at the beginning of the notebooks' name indicate the order of execution**. Each notebook has different requirements or dependecies which are described in the notebooks.
 
 To get the reproducible result in data processing till model evaluation result step, user can skip the data acquisition notebooks (`1_data_acquisition_ground_truth.ipynb`, `1_data_acquisition_osm.ipynb`, and `1_data_acquisition_satellite_image.ipynb`) since there might be a chance the **different data retrieving time** can lead to slightly different dataset, e.g. OSM data.
 
+## Results
 
-## Notebook viewer
-(Move to another notebook)
-| Notebook name         | Link to view notebook | Description           |
-| --------------------- | --------------------- | --------------------- |
-| 2_data_processing_osm.ipynb | https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/2_data_processing_osm.ipynb | Processing OpenStreetMap data which is used in model training step for PUGS detection |
-| new_ground_truth_exploration.ipynb  | https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/new_ground_truth_exploration.ipynb | Exploration of ground truth datasets |
-| ground_truth_creation.ipynb  | https://nbviewer.org/github/japanj/pugs-detection/blob/dev/notebooks/ground_truth_creation.ipynb | Processing ground truth datasets and create one single ground truth |
 
 ## License
-
-This repository is released under MIT License and The data used in this project is under various license, e.g. .
+This repository is released under MIT License (see `LICENSE` file) and The data used in this project is under various license, e.g. .
 More detail about license of data used in this project: ...
 
 ## Contact
-
 If there is any further questions or issues related to work, please feel free to open an issues in GitHub or contact m.p.likitpanjamanon@student.utwente.nl

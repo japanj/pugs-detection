@@ -1,3 +1,13 @@
+"""
+dataset.py
+
+This module contains classes to create datasets for training, validation, and testing 
+and functions to create the dataset. 
+
+Author: Pitchaporn Likitpanjamanon
+Date: 01-05-2025
+"""
+
 import torch
 import numpy as np
 import copy
@@ -12,9 +22,25 @@ from torch.utils.data import Dataset
 from rasterio.windows import Window
 
 def _process_mask(mask, valid_area, band_count):
+    """
+    Process the mask to remove invalid areas by setting those areas to 0.
+
+    Parameters:
+    -----------
+    mask : torch.Tensor
+        The mask tensor to be processed.
+    valid_area : torch.Tensor
+        The valid area tensor indicating valid pixels.
+    band_count : int
+        The number of bands in the dataset.
+    
+    Returns:
+    --------
+    result: torch.Tensor
+        The processed mask with invalid areas set to 0.
+    """
     mask = mask.numpy()
     valid_area = valid_area.numpy()
-    # change the valid area array position to be Red band (important for vegetation detection so I won't replace it)
     if band_count >= 13:
         valid_area_all = valid_area[0] | valid_area[1] | valid_area[2] | valid_area[3] | valid_area[4] | valid_area[5] | valid_area[6] | valid_area[7] | valid_area[8] | valid_area[9] | valid_area[10] | valid_area[11] | valid_area[12]
     else:
@@ -24,9 +50,23 @@ def _process_mask(mask, valid_area, band_count):
     result = torch.from_numpy(mask)
     return result
 
-# Create a custom filtering function
 def _filter_patches(sample, band_count):
-    """Filter patches that contain only background or only PUGS"""
+    """
+    Filter patches that contain only background or only PUGS out
+    to keep the dataset balanced
+
+    Parameters:
+    -----------
+    sample : dict
+        The sample dictionary containing image and mask data.
+    band_count : int
+        The number of bands in the dataset.
+
+    Returns:
+    --------
+    bool
+        True if the patch contains both background and PUGS. Otherwise, return False.
+    """
     # min_value = sample['image'].min()
     # valid_area = (sample['image']!=min_value) # create a mask of valid area
     
@@ -42,9 +82,27 @@ def _filter_patches(sample, band_count):
     # Filter the patches that has only background or only PUGS out
     return 0 < green_percentage < 1
 
-# Custom dataset class that applies filtering
 class FilteredGeoDataset(Dataset):
-    # stride is set as 64 for both x and y directions
+    """
+    Dataset wrapper that filters patches based on the presence of PUGS
+    and background. It uses a grid sampling approach to create patches
+    from the input dataset.
+
+    Parameters:
+    -----------
+    dataset : IntersectionDataset
+        The input dataset containing the images and masks.
+    patch_size : int
+        The size of the patches to be created.
+    stride : int
+        The stride used for sampling patches.
+    transform : callable
+        A function/transform to apply to the sample.
+    specific_bands : list
+        List of specific bands to be used from the dataset.
+    dataset_type : str
+        The type of dataset ('train', 'validation', 'test').
+    """
     def __init__(self, dataset, patch_size=256, stride=64, transform=None, specific_bands=list(range(13)), dataset_type='train'):
         self.dataset = dataset
         self.sampler = GridGeoSampler(dataset, size=(patch_size, patch_size), stride=stride)
@@ -95,7 +153,16 @@ class FilteredGeoDataset(Dataset):
         return sample
 
 class AugmentedDataset(Dataset):
-    """Dataset wrapper that applies multiple augmentations to increase sample count"""
+    """
+    Dataset wrapper that applies multiple augmentations to the original dataset.
+
+    Parameters:
+    -----------
+    dataset : FilteredGeoDataset
+        The original dataset containing images and masks.
+    transform_list : list
+        List of transformations to apply to the dataset.
+    """
     def __init__(self, dataset, transform_list=None):
         self.dataset = dataset
         self.transform_list = transform_list
@@ -131,6 +198,20 @@ class AugmentedDataset(Dataset):
         return sample_copy
 
 class PredictedImageDataset(Dataset):
+    """
+    Dataset for the whole area prediction using a trained model.
+
+    Parameters:
+    -----------
+    image_path : str
+        Path to the input image.
+    patch_size : int
+        Size of the patches to be created.
+    stride : int
+        Stride used for sampling patches.
+    band_list_predict : list
+        List of the image's bands/channels.
+    """
     def __init__(self, image_path, patch_size=256, stride=256, band_list_predict=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]):
         self.image_path = image_path
         self.patch_size = patch_size
@@ -191,8 +272,30 @@ class PredictedImageDataset(Dataset):
             "window_info": window,  # Store coordinates as tuple
         }
     
-# Create datasets for each split
 def create_dataset_split(image_path, label_path, epsg_code, band_list, dataset_type, transform_list):
+    """
+    Create a dataset for training, validation, or testing.
+
+    Parameters:
+    -----------
+    image_path : str
+        Path to the input image.
+    label_path : str
+        Path to the PUGS ground truth vector file.
+    epsg_code : int
+        EPSG code for the coordinate reference system.
+    band_list : list
+        List of the image's bands/channels.
+    dataset_type : str
+        Type of dataset ('train', 'validation', 'test').
+    transform_list : list
+        List of transformations to apply to the dataset.
+
+    Returns:
+    --------
+    Dataset (either AugmentedDataset or FilteredGeoDataset depending on dataset_type)
+        The created dataset to be used for training, validation, or testing
+    """
     set_all_seeds(42)
     image_ds = RasterDataset(paths=image_path, crs=CRS.from_epsg(epsg_code), res=10)
     label_ds = VectorDataset(paths=label_path, crs=CRS.from_epsg(epsg_code), res=10)

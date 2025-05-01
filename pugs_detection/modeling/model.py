@@ -4,14 +4,30 @@ model.py
 This module contains functions for model architecture modification.
 
 Author: Pitchaporn Likitpanjamanon
-Date: [YYYY-MM-DD]
+Date: 01-05-2025
 """
 
 import torchgeo
 import torch
 import torch.nn as nn
 
-def modify_first_layer(task, in_channels=14):    
+def modify_first_layer(task, in_channels=14):
+    """
+    Modifies the first convolutional layer of a given model
+    to accommodate a different number of input channels.
+
+    Parameters:
+    -----------
+    task: CustomSegmentationTask
+        Model to be modified
+    in_channels: int
+        Number of input channels for the first convolutional layer
+    
+    Returns:
+    --------
+    task : CustomSegmentationTask
+        Modified model with updated first convolutional layer
+    """
     # Get the model from the task
     model = task.model
     
@@ -46,11 +62,10 @@ def modify_first_layer(task, in_channels=14):
             # Initialize the new channel(s) with small random values
             if in_channels > 13:
                 nn.init.kaiming_normal_(new_conv.weight[:, 13:], mode='fan_out', nonlinearity='relu')
-                # nn.init.kaiming_normal_(new_conv.weight[:, 13:])
     else:
-        # Copy the original weights for the first 13 channels
+        # Copy the original weights for the first 10 channels
         with torch.no_grad():
-            new_conv.weight[:, :10] = original_weights
+            new_conv.weight[:, :9] = original_weights
             # Initialize the new channel(s) with small random values
             if in_channels > 9:
                 nn.init.kaiming_normal_(new_conv.weight[:, 9:], mode='fan_out', nonlinearity='relu')

@@ -1,8 +1,34 @@
+"""
+predict.py
+
+This module contains functions for predicting the whole area using a trained model.
+
+Author: Pitchaporn Likitpanjamanon
+Date: 01-05-2025
+"""
+
 import numpy as np
 import torch
 from tqdm import tqdm
 
 def predict_whole_area(model, inference_dataset, inference_loader):
+    """
+    Predict the whole area using a trained model.
+
+    Parameters:
+    -----------
+    model : CustomSegmentationTask
+        Trained model to be used for inference
+    inference_dataset : PredictedImageDataset
+        Dataset containing the images to be predicted
+    inference_loader : DataLoader
+        DataLoader for the inference dataset
+    
+    Returns:
+    --------
+    prediction_map : numpy array
+        Array containing the predicted values for the whole area
+    """
     # Create output array
     prediction_map = np.zeros(
         (inference_dataset.height, inference_dataset.width), dtype=np.float32
