@@ -14,7 +14,7 @@ This workflow encompass from data acquisition to model evaluation step. The fina
 
 ![Flowchart of the workflow](reports/figures/diagram/update_main_workflow.jpg)
 
-The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbone**. The model used pre-trained model from TorchGeo library. More details about model training can be found in [Model folder document](/models/README.md).
+The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbone**. The model used pre-trained weight from TorchGeo library. More details about model training can be found in [Model folder document](/models/README.md).
 
 ## Project Organization
 ```

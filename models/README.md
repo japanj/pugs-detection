@@ -31,10 +31,17 @@ Each folder (`version_<number>`) contains the model performance on test set of e
 | version_7 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | 14 channels | Focal loss |
 | version_8 | 1. Sentinel-2 image <br> 2. SDT raster | 14 channels | Focal loss |
 
+*PUGS = Public Urban Green Space, OSM = OpenStreetMap, SDT = Signed-distance transform, BCE = Binary Cross Entropy*
+
 **Hyperparameters setup**
 - Epochs = 50
 - Learning rate = 0.0001
-- Pre-trained weight (for Sentinel-2 image) = [ResNet50_Weights.SENTINEL2_ALL_MOCO](https://torchgeo.readthedocs.io/en/stable/api/models.html#sentinel-2)
-  Note: This weight is available in Torchgeo library and originally from https://github.com/zhu-xlab/SSL4EO-S12 and it is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode.en).
+- Pre-trained weight (for Sentinel-2 image) = [ResNet50_Weights.SENTINEL2_ALL_MOCO](https://torchgeo.readthedocs.io/en/stable/api/models.html#sentinel-2) <br>
+  *Note: This weight is available in Torchgeo library and originally from https://github.com/zhu-xlab/SSL4EO-S12 and it is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode.en).*
 - Optimizer = AdamW
 - Early stopping: patience = 10
+
+*Note: Weight for additional data from OSM (PUGS binary mask and SDT) is initialized by using Kaiming He initialization (He et al., 2015)*
+
+**Reference:**
+- He, K., Zhang, X., Ren, S., & Sun, J. (2015, February 6). Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification. arXiv.org. https://arxiv.org/abs/1502.01852v1
