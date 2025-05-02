@@ -30,7 +30,7 @@ This folder contains all input data used by the workflow and output data from th
 
 #### Ground Truth Data
 | File | Source | Description | Dataset URL | Download date | Temporal extent | Last modified date |
-|------|--------|-------------|-------------| ------------- | --------------- |
+|------|--------|-------------|-------------| ------------- | --------------- | ------------------ |
 | `ground truth/ DE009L2_DRESDEN_UA2018_v013.gpkg` | Copernicus Land Monitoring Service | Land cover and land use data in Functional Urban Areas (FUA) in Europe (Dresden specific) | [Urban Atlas Land Cover/Land use 2018](https://land.copernicus.eu/en/products/urban-atlas/urban-atlas-2018) | 18/02/2025 | 2017-2019 | - |
 | `ground truth/ green_and_openspaces_dataset.geojson` | Dresden Open Data Portal | Green and Open spaces in Dresden | [Grün- und Freiflächen](https://kommisdd.dresden.de/net3/public/ogc.ashx?Service=IKX&NodeId=1638&RenderHint=TargetHTML) <br> (Green and open spaces) | 30/04/2025 | - | 23/05/2024 |
 | `ground truth/ leisure_area_dataset.geojson` | Dresden Open Data Portal | Recreational and leisure areas in Dresden | [Nutzungsarten (Strukturtypen) – Kartierung](https://kommisdd.dresden.de/net3/public/ogc.ashx?Service=IKX&NodeId=1059&RenderHint=TargetHTML) <br> (Types of use - structure types - Mapping) | 30/04/2025 | - | - |
