@@ -22,8 +22,8 @@ flowchart TD
 - Data Acquisition notebooks can be skipped and user can use the provided raw data to get the reproducible result in data processing till model evaluation result step.
 
 ## Data Locations
-- Input and output data for these notebooks are stored in the `../data/` folder.
-- For details on the data structure and file organization, see `../data/README.md` (change to link).
+- Input and output data for these notebooks are stored in the top-level `data` folder.
+- For details on the all data used in this project, see [Data folder document](../data/README.md).
 
 ## Notebook List
 | Notebook name         |  Description           |
@@ -41,3 +41,5 @@ flowchart TD
 
 ## Note
 In the data acquisition notebooks, some data sources require users to have an account in order to download data and some dataset require users to download them manually. All details are listed inside the notebooks.
+
+(probably add some instructions for specific notebooks, e.g. model_training and model_evaluation notebook on changing params step)

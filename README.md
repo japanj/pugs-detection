@@ -20,7 +20,8 @@ The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbon
 ```
 ├── LICENSE             <- Open-source license of the project
 ├── README.md           <- The top-level README for users.
-├── data
+├── data                <- All input datasets used in the workflow, including both raw data 
+│   │                      and processed data generated during data preparation steps
 │   ├── processed       <- The intermediate data from raw data processing.
 │   └── raw             <- The original, immutable data dump.
 │
@@ -70,7 +71,7 @@ The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbon
 | Ground truth data | Dresden Open Data Portal | TBD | [dl-de/by-2-0](https://www.govdata.de/dl-de/by-2-0) |
 | Ground truth data | Author | TBD | [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/) |
 
-More details about input data and output data can be found in [Data folder documentation](/data/README.md)
+More details about input data can be found in [Data folder documentation](/data/README.md)
 
 ## Hardware and Software Specifications
 Windows Subsystem for Linux (WSL) is used to develop and run the workflow.
@@ -111,7 +112,10 @@ To get the reproducible result in data processing till model evaluation result s
 (Attach the result table, example of prediction output, some figure?, link to analysis notebook?)
 
 ## License
-This repository is released under MIT License (see `LICENSE` file) and The data used in this project is under various licenses. Please visit [Data license](/data/README.md#data-license) to see more detail about license of data used in this project.
+It can be separated into three sections:
+1. This repository is released under [MIT License](/LICENSE).
+2. The data used in this project is under various licenses. Please visit [Data license](/data/README.md#data-license) to see more detail about license of data used in this project.
+3. The model weights, prediction output, and all figures are licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode.en).
 
 ## Contact
 If there is any further questions or issues related to work, please feel free to open an issues in GitHub or contact m.p.likitpanjamanon@student.utwente.nl

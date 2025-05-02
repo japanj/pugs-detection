@@ -15,6 +15,3 @@ dependencies:
   - scikit-learn=1.6.1
   - ipywidgets=8.1.6
   - seaborn=0.13.2 # plot confusion matrix
-  - pip # TBD
-  - pip: # TBD
-    - mkdocs

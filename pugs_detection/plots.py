@@ -245,7 +245,7 @@ def visualize_predictions(
     num_batches=5,
     samples_per_batch=4,
     mode="original",
-    additional_band_pos=None,
+    replace_band_pos=None,
     output_dir=None,
 ):
     """
@@ -296,7 +296,7 @@ def visualize_predictions(
         # Create visualization
         num_samples = min(samples_per_batch, images.shape[0])
         if mode != "original":
-            num_plots = 3 + len(additional_band_pos)
+            num_plots = 3 + len(replace_band_pos)
         else:
             num_plots = 3
 
@@ -366,7 +366,7 @@ def visualize_predictions(
                         axes[i, j].axis("off")
                 else:
                     axes[i, j].imshow(
-                        img[additional_band_pos[additional_info_pos]], cmap="gray"
+                        img[replace_band_pos[additional_info_pos]], cmap="gray"
                     )
                     axes[i, j].set_title("Additional Info")
                     axes[i, j].axis("off")
@@ -414,6 +414,9 @@ def visualize_area(original_image_path, prediction_path, ground_truth_path=None,
     # Open prediction
     with rasterio.open(prediction_path) as src:
         prediction = src.read(1, window=window)
+        pred_nodata = src.nodata
+        if pred_nodata is not None:
+            prediction = np.where(prediction == pred_nodata, 0, prediction)  # Set nodata to 0
         # print(f"Prediction shape: {prediction.shape}")
     
     # Load ground truth if provided
@@ -422,6 +425,9 @@ def visualize_area(original_image_path, prediction_path, ground_truth_path=None,
         try:
             with rasterio.open(ground_truth_path) as src:
                 ground_truth = src.read(1, window=window)
+                gt_nodata = src.nodata
+                if gt_nodata is not None:
+                    ground_truth = np.where(ground_truth == gt_nodata, 0, ground_truth)  # Set nodata to 0
                 # print(f"Ground truth shape: {ground_truth.shape}")
         except Exception as e:
             print(f"Error loading ground truth: {e}")
