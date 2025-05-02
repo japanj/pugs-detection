@@ -101,14 +101,18 @@ There are four main licenses that applied to the data in this project.
 
 The following attributions are provided to give credit to the original data sources used in this project:
 
-1. **Original data and derivative works from Sentinel-2 data**  
+1. **Original data and derivative works from Sentinel-2 data**
+
    Contains modified Copernicus Sentinel data [2025].
 
-2. **Original data and derivative works from EUA dataset**  
+2. **Original data and derivative works from EUA dataset**
+
    Generated using European Union's Copernicus Land Monitoring Service information; https://doi.org/10.2909/fb4dffa1-6ceb-4cc0-8372-1ed354c285e6
 
-3. **Original data and derivative works from OpenStreetMap (OSM)** 
+3. **Original data and derivative works from OpenStreetMap (OSM)**
+
    Contains information from OpenStreetMap (OSM), which is made available here under the Open Database License (ODbL).
 
-4. **Original data and derivative works from Dresden Open Data Portal**  
+4. **Original data and derivative works from Dresden Open Data Portal**
+
    Data made available in Dresden Open Data Portal is licensed under dl-de/by-2-0.
