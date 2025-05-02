@@ -4,10 +4,17 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
 
-Public Urban Green Spaces Detection Workflow
+This project provides a reproducible workflow for PUGS detection, using open-source technology, by integrating Sentinel-2 image and OpenStreetMap (OSM) data with a deep learning method.
+
+The study area in this project is **Dresden, Germany**.
 
 ## Overview of the workflow
-(Insert the picture/diagram of workflow overview)
+
+This workflow encompass from data acquisition to model evaluation step. The final output of this workflow is the **binary mask of PUGS** in the study or target area.
+
+![Flowchart of the workflow](reports/figures/diagram/update_main_workflow.jpg)
+
+The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbone**. The model used pre-trained model from TorchGeo library. More details about model training can be found in [Model folder document](/models/README.md).
 
 ## Project Organization
 ```
@@ -16,8 +23,6 @@ Public Urban Green Spaces Detection Workflow
 ├── data
 │   ├── processed       <- The intermediate data from raw data processing.
 │   └── raw             <- The original, immutable data dump.
-│
-├── docs                <- A default mkdocs project; see www.mkdocs.org for details
 │
 ├── models              <- Trained and serialized (saved) models, model evaluations, and
 │   │                      model hyperparameters log
@@ -36,10 +41,9 @@ Public Urban Green Spaces Detection Workflow
 │   └── figures         <- Generated graphics and figures to be used in reporting
 │       └── loss graph  <- Training and validation loss graph for each experiment
 │
-├── environment.yml     <- The requirements file for reproducing the analysis environment, e.g.
-│                          generated with `pip freeze > requirements.txt`
+├── environment.yml     <- The requirements file for reproducing the analysis environment
 │
-└── pugs_detection      <- Source code for use in this project.
+└── pugs_detection      <- Main Python package containing modules and utilities for PUGS detection workflow
     │
     ├── modeling                
     │   ├── __init__.py
@@ -66,7 +70,7 @@ Public Urban Green Spaces Detection Workflow
 | Ground truth data | Dresden Open Data Portal | TBD | [dl-de/by-2-0](https://www.govdata.de/dl-de/by-2-0) |
 | Ground truth data | Author | TBD | [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/) |
 
-More details about input data and output data can be found in ...
+More details about input data and output data can be found in [Data folder documentation](/data/README.md)
 
 ## Hardware and Software Specifications
 Windows Subsystem for Linux (WSL) is used to develop and run the workflow.
@@ -104,10 +108,10 @@ All the notebooks are available in `notebooks` folder. The **number at the begin
 To get the reproducible result in data processing till model evaluation result step, user can skip the data acquisition notebooks (`1_data_acquisition_ground_truth.ipynb`, `1_data_acquisition_osm.ipynb`, and `1_data_acquisition_satellite_image.ipynb`) since there might be a chance the **different data retrieving time** can lead to slightly different dataset, e.g. OSM data.
 
 ## Results
-
+(Attach the result table, example of prediction output, some figure?, link to analysis notebook?)
 
 ## License
-This repository is released under MIT License (see `LICENSE` file) and The data used in this project is under various licenses. Please visit (document) to see more detail about license of data used in this project.
+This repository is released under MIT License (see `LICENSE` file) and The data used in this project is under various licenses. Please visit [Data license](/data/README.md#data-license) to see more detail about license of data used in this project.
 
 ## Contact
 If there is any further questions or issues related to work, please feel free to open an issues in GitHub or contact m.p.likitpanjamanon@student.utwente.nl

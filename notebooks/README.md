@@ -10,9 +10,9 @@ flowchart TD
     B[1_data_acquisition_osm] --> E[2_data_processing_osm]
     C[1_data_acquisition_satellite_image] --> F[3_data_processing_satellite_image]
     D --> G[4_ground_truth_exploration]
-    G --> H[4_ground_truth_creation]
-    H --> I[5_model_training]
-    I --> J[6_model_evaluation]
+    G --> H[5_ground_truth_creation]
+    H --> I[6_model_training]
+    I --> J[7_model_evaluation]
     E --> F
     F --> I
 ```
