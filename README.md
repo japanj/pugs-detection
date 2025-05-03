@@ -114,7 +114,7 @@ To get the reproducible result in data processing till model evaluation result s
 ## License
 It can be separated into three sections:
 1. This repository is released under [MIT License](/LICENSE).
-2. The data used in this project is under various licenses. Please visit [Data license](/data/README.md#data-license) to see more detail about license of data used in this project.
+2. The data used in this project is under various licenses. Please visit [Data license section](/data/README.md#data-license) to see more detail about license of data used in this project.
 3. The model weights, prediction output, and all figures are licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode.en).
 
 ## Contact

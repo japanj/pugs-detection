@@ -15,6 +15,7 @@ flowchart TD
     I --> J[7_model_evaluation]
     E --> F
     F --> I
+    J --> K[8_result_analysis]
 ```
 
 ## How to execute the notebooks
@@ -35,9 +36,10 @@ flowchart TD
 | 2_data_processing_osm.ipynb | Derive public urban green space (PUGS) from OSM data |
 | 3_data_processing_satellite_image.ipynb | Pre-process Sentinel-2 image and stack additional raster derived from OSM data with Sentinel-2 image |
 | 4_ground_truth_exploration.ipynb | Explore all ground truth dataset to make a decision on which ground truth datasets should be used to create single ground truth dataset |
-| 4_ground_truth_creation.ipynb | Create single ground truth dataset |
-| 5_model_training.ipynb | Train the model |
-| 6_model_evalution.ipynb | Evaluate the model performace and save the output from model prediction |
+| 5_ground_truth_creation.ipynb | Create single ground truth dataset |
+| 6_model_training.ipynb | Train the model |
+| 7_model_evalution.ipynb | Evaluate the model performace and save the output from model prediction |
+| 8_result_analysis.ipynb | TBD |
 
 ## Note
 In the data acquisition notebooks, some data sources require users to have an account in order to download data and some dataset require users to download them manually. All details are listed inside the notebooks.
