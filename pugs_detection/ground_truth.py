@@ -1,8 +1,9 @@
 """
 ground_truth.py
 
-This module contains functions for ground truth datasets exploration and 
-final ground truth dataset creation of public urban green spaces (PUGS).
+This module contains functions for ground truth datasets exploration, 
+final ground truth dataset creation of public urban green spaces (PUGS), 
+and any groun truth dataset processing.
 
 Author: Pitchaporn Likitpanjamanon
 Date: 01-05-2025
@@ -366,3 +367,38 @@ def print_non_green_space_info(gdf, threshold=0):
     print(
         f"Low NDVI value area: {low_ndvi_area:.2f} m² from {total_area:.2f} m² ({area_percentage:.2f}%)"
     )
+
+def merge_overlapping_polygons(gdf, threshold=0.5):
+    # Use spatial index for efficient overlap search
+    gdf = gdf.reset_index(drop=True)
+    sindex = gdf.sindex
+    merged = []
+    id_poly1 = []
+    id_poly2_merged = []
+    list_merged_id = set()
+    for i, poly1 in gdf.iterrows():
+        group = [poly1.geometry]
+        id_poly2 = []
+        possible_matches_index = list(sindex.intersection(poly1.geometry.bounds))
+        for j in possible_matches_index:
+            if j <= i:
+                continue
+            poly2 = gdf.iloc[j]
+            inter = poly1.geometry.intersection(poly2.geometry)
+            poly1_area = poly1.geometry.area
+            poly2_area = poly2.geometry.area
+            if not inter.is_empty:
+                overlap_pct_poly1 = (inter.area / poly1_area)
+                overlap_pct_poly2 = (inter.area / poly2_area)
+                if (overlap_pct_poly1 > threshold) or (overlap_pct_poly2 > threshold):
+                    id_poly2.append(poly2.unique_id)
+                    list_merged_id.add(poly2.unique_id)
+                    group.append(poly2.geometry)
+        merged.append(unary_union(group))
+        id_poly1.append(poly1.unique_id)
+        id_poly2_merged.append(id_poly2)
+    merged_gdf = gpd.GeoDataFrame(geometry=merged, crs=gdf.crs)
+    merged_gdf['id_poly1'] = id_poly1
+    merged_gdf['id_poly2'] = id_poly2_merged
+
+    return merged_gdf
