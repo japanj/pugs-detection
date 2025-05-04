@@ -14,7 +14,7 @@ This workflow encompass from data acquisition to model evaluation step. The fina
 
 ![Flowchart of the workflow](reports/figures/diagram/update_main_workflow.jpg)
 
-The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbone**. The model used pre-trained weight from TorchGeo library. More details about model training can be found in [Model folder document](/models/README.md).
+The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbone**. The model used pre-trained weight from [TorchGeo library](https://github.com/microsoft/torchgeo). More details about model training can be found in [Model folder document](/models/README.md).
 
 ## Project Organization
 ```
@@ -36,12 +36,16 @@ The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbon
 ├── pyproject.toml      <- Project configuration file with package metadata for 
 │                          public_urban_green_spaces_detection and configuration for tools like black
 │
-├── references          <- Data dictionaries, manuals, and all other explanatory materials.
+├── results             <- Results from model prediction
+│   ├── clipped_prediction      <- 
+│   ├── fn_fp_maps
+│   ├── others
+│   └── whole_area_prediction
 │
 ├── reports             <- Generated analysis (e.g. HTML, PDF, LaTeX, etc.)
-│   └── figures         <- Generated graphics and figures to be used in reporting
-│       └── loss graph  <- Training and validation loss graph for each experiment
-│
+│   ├── figures         <- Generated graphics and figures to be used in reporting
+│   └── notebook html   <- Notebooks in HTML format
+│   
 ├── environment.yml     <- The requirements file for reproducing the analysis environment
 │
 └── pugs_detection      <- Main Python package containing modules and utilities for PUGS detection workflow
@@ -65,11 +69,11 @@ The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbon
 ## Datasets
 | Main input data      | Source         | Description        | Data License       |
 | -------------------- | -------------- | ------------------ | ------------------ |
-| Sentinel-2 image | Copernicus Data Space Ecosystem | TBD | The data is regulated under EU law (Commission Delegated Regulation (EU) No 1159/2013) which based on a principle of full, open and free access. <br> More details about data policy: https://sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice |
-| OSM data | OSM | TBD | [Open Data Commons Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/) |
-| Ground truth data | European Union's Copernicus Land Monitoring Service | TBD | The data is regulated under EU law (Commission Delegated Regulation (EU) No 1159/2013) which based on a principle of full, open and free access. <br> More details about data policy: https://land.copernicus.eu/en/data-policy |
-| Ground truth data | Dresden Open Data Portal | TBD | [dl-de/by-2-0](https://www.govdata.de/dl-de/by-2-0) |
-| Ground truth data | Author | TBD | [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/) |
+| Sentinel-2 image | Copernicus Data Space Ecosystem | High-resolution and multi-spectral satellite image. It includes 13 bands and spatial resolution is 10m, 20m, and 60m depending on the wavelength | The data is regulated under EU law (Commission Delegated Regulation (EU) No 1159/2013) which based on a principle of full, open and free access. <br> More details about data policy: [Sentinel-2 Data Policy](https://sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice) |
+| OSM data | OSM | Areas/polygons related to green spaces, Point of Interest (POI) such as bench, and footpath network | [Open Data Commons Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/) |
+| Ground truth data | European Union's Copernicus Land Monitoring Service (CLMS) | Provide land cover and land use data in Functional Urban Areas (FUA) (This dataset is downloaded by specifying only Dresden area) | The data is regulated under EU law (Commission Delegated Regulation (EU) No 1159/2013) which based on a principle of full, open and free access. <br> More details about data policy: [CLMS Data Policy](https://land.copernicus.eu/en/data-policy) |
+| Ground truth data | Dresden Open Data Portal | Datasets related to PUGS | [dl-de/by-2-0](https://www.govdata.de/dl-de/by-2-0) |
+| Ground truth data | Author | Manually digitized boundary of Park Zwirnmühle | [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/) |
 
 More details about input data can be found in [Data folder documentation](/data/README.md)
 
@@ -83,6 +87,7 @@ GPU: NVIDIA RTX A500
 RAM: 32 GB
 Disk storage: 1 TB
 ```
+Conda Version: 24.11.3
 
 ## Prerequisites
 1. User need to have Conda installed. If user have not installed Conda yet, please visit the [installation guide](https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html) from Conda.
@@ -104,12 +109,32 @@ Disk storage: 1 TB
 (Optional) User can check all the installed libraries or dependencies by using `conda list` command. 
 
 ## Steps to run the workflow
-All the notebooks are available in `notebooks` folder. The **number at the beginning of the notebooks' name indicate the order of execution**. Each notebook has different requirements or dependecies which are described in the notebooks.
+All the notebooks are available in [notebooks folder](/notebooks/). The **number at the beginning of the notebooks' name indicate the order of execution**. Each notebook has different requirements or dependecies which are described in the notebooks.
 
 To get the reproducible result in data processing till model evaluation result step, user can skip the data acquisition notebooks (`1_data_acquisition_ground_truth.ipynb`, `1_data_acquisition_osm.ipynb`, and `1_data_acquisition_satellite_image.ipynb`) since there might be a chance the **different data retrieving time** can lead to slightly different dataset, e.g. OSM data.
 
+More details about notebooks folder, please visit [notebooks folder document](/notebooks/README.md)
+
 ## Results
-(Attach the result table, example of prediction output, some figure?, link to analysis notebook?)
+The result of different model training experiments are shown in the table below. To see the detail of Model experiment setup, please visit [Model Experiment Setup document](/models/README.md#model-experiment-setup).
+| Version folder | input  | Loss function | Jaccard index (IoU) | Precision | Recall | F1 score | Accuracy |
+| -------------- | ------ | ------------- | ------------------- | --------- | ------ | -------- | -------- |
+| version_0 | 1. Sentinel-2 image | Jaccard loss | 0.7724 | 0.8949 | 0.8495 | 0.8716 | 0.9614 |
+| **version_1** | **1. Sentinel-2 image** <br> **2. PUGS binary mask derived from OSM** | **Jaccard loss** | **0.7767** | 0.9058 | 0.8449 | **0.8743** | 0.9625 |
+| version_2 | 1. Sentinel-2 image <br> 2. SDT raster | Jaccard loss | 0.7652 | 0.8910 | 0.8442 | 0.8670 | 0.96 |
+| version_3 | 1. Sentinel-2 image | BCE | 0.7546 | 0.8963 | 0.8268 | 0.8601 | 0.9585 |
+| version_4 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | BCE | 0.7596 | 0.9159 | 0.8165 | 0.8633 | 0.9601 |
+| version_5 | 1. Sentinel-2 image <br> 2. SDT raster | BCE | 0.7483 | 0.8821 | 0.8315 | 0.8560 | 0.9568 |
+| version_6 | 1. Sentinel-2 image | Focal loss | 0.7209 | 0.8622 | 0.8148 | 0.8378 | 0.9513 |
+| version_7 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | Focal loss | 0.7409 | 0.8865 | 0.8186 | 0.8512 | 0.9558 |
+| version_8 | 1. Sentinel-2 image <br> 2. SDT raster | Focal loss | 0.7259 | 0.8818 | 0.8041 | 0.8412 | 0.9531 |
+
+From the result, the best model is using Sentinel-2 image along with PUGS binary mask derived from OSM with Jaccard loss function. 
+
+**Example of the results**
+(upload gt_vs_pred folder first)
+
+For the full details of model prediction output, please visit [results folder](/results/).
 
 ## License
 It can be separated into three sections:

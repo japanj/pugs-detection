@@ -1,4 +1,4 @@
-# Models folder
+# models folder
 
 This folder contains various model checkpoints and default model performance metrics (accuracy, Jaccard index, loss) from Torchgeo library.
 

@@ -1,4 +1,4 @@
-# Data folder
+# data folder
 
 This folder contains all input datasets used in the workflow, including both raw data and processed data generated during data preparation steps. It does **not** store model prediction outputs. The model prediction outputs are saved in the top-level `results` folder (link to folder).
 
@@ -31,7 +31,7 @@ This folder contains all input datasets used in the workflow, including both raw
 #### Ground Truth Data
 | File | Source | Description | Dataset URL | Download date | Temporal extent | Last modified date |
 |------|--------|-------------|-------------| ------------- | --------------- | ------------------ |
-| `ground truth/ DE009L2_DRESDEN_UA2018_v013.gpkg` | Copernicus Land Monitoring Service | Land cover and land use data in Functional Urban Areas (FUA) in Europe (Dresden specific) | [Urban Atlas Land Cover/Land use 2018](https://land.copernicus.eu/en/products/urban-atlas/urban-atlas-2018) | 18/02/2025 | 2017-2019 | - |
+| `ground truth/ DE009L2_DRESDEN_UA2018_v013.gpkg` | Copernicus Land Monitoring Service | Land cover and land use data in Functional Urban Areas (FUA) (This dataset is downloaded by specifying only Dresden area) | [Urban Atlas Land Cover/Land use 2018](https://land.copernicus.eu/en/products/urban-atlas/urban-atlas-2018) | 18/02/2025 | 2017-2019 | - |
 | `ground truth/ green_and_openspaces_dataset.geojson` | Dresden Open Data Portal | Green and Open spaces in Dresden | [Grün- und Freiflächen](https://kommisdd.dresden.de/net3/public/ogc.ashx?Service=IKX&NodeId=1638&RenderHint=TargetHTML) <br> (Green and open spaces) | 30/04/2025 | - | 23/05/2024 |
 | `ground truth/ leisure_area_dataset.geojson` | Dresden Open Data Portal | Recreational and leisure areas in Dresden | [Nutzungsarten (Strukturtypen) – Kartierung](https://kommisdd.dresden.de/net3/public/ogc.ashx?Service=IKX&NodeId=1059&RenderHint=TargetHTML) <br> (Types of use - structure types - Mapping) | 30/04/2025 | - | - |
 | `ground truth/ park_an_der_zwirnmuhle_polygon.geojson` | Author | Boundary of Park Zwirnmühle (Manually digitized) | - | - | - | 29/04/2025 |

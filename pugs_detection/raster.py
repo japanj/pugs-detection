@@ -323,8 +323,18 @@ def min_max_normalize(data):
 
 def save_inference_map(gt_raster_path, pred_raster_path, mode, output_path):
     """
-    Save the FN or FP map as a GeoTIFF file.
-    mode: "fn" for False Negative, "fp" for False Positive
+    Save the False Negative (FN) or False Positive (FP) map as a GeoTIFF file.
+    
+    Parameters:
+    -----------
+    gt_raster_path : str
+        Path to the ground truth raster file
+    pred_raster_path : str
+        Path to the model prediction raster file
+    mode : str
+        Mode for the mask, either 'fn' or 'fp'
+    output_path : str
+        Path to save the output raster file
     """
     with rasterio.open(gt_raster_path) as src_gt, rasterio.open(pred_raster_path) as src_pred:
         window = src_gt.window(*src_gt.bounds).intersection(src_pred.window(*src_pred.bounds))

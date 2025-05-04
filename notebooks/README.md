@@ -1,4 +1,4 @@
-# Notebooks folder
+# notebooks folder
 
 This folder contains Jupyter notebooks for each step of the Public Urban Green Spaces (PUGS) detection workflow.
 
@@ -39,9 +39,11 @@ flowchart TD
 | 5_ground_truth_creation.ipynb | Create single ground truth dataset |
 | 6_model_training.ipynb | Train the model |
 | 7_model_evalution.ipynb | Evaluate the model performace and save the output from model prediction |
-| 8_result_analysis.ipynb | TBD |
+| 8_result_analysis.ipynb | Further prediction result analysis |
+
+## Notebook-specific instructions
+- `6_model_training.ipynb`: To change model parameters (e.g., learning rate, batch size) as listed in [Model experiment setup](/models/README.md#model-experiment-setup), edit the **Set variables section** in the notebook.
+- `7_model_evaluation.ipynb`: To evaluate different model checkpoints, change the model checkpoint path and version folder in the **Set variables section** in the notebook. More details about the model checkpoint files and model experiment setup can be found in [Model folder](/models/README.md).
 
 ## Note
 In the data acquisition notebooks, some data sources require users to have an account in order to download data and some dataset require users to download them manually. All details are listed inside the notebooks.
-
-(probably add some instructions for specific notebooks, e.g. model_training and model_evaluation notebook on changing params step)

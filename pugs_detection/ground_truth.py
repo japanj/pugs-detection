@@ -369,6 +369,21 @@ def print_non_green_space_info(gdf, threshold=0):
     )
 
 def merge_overlapping_polygons(gdf, threshold=0.5):
+    """
+    Merge (dissolve) overlapping polygons in a GeoDataFrame based on a specified overlap threshold.
+
+    Parameters:
+    ----------
+    gdf : GeoDataFrame
+        GeoDataFrame containing the polygons to be merged
+    threshold : float
+        Overlap threshold for merging polygons (0-1)
+    
+    Returns:
+    -------
+    merged_gdf : GeoDataFrame
+        GeoDataFrame containing the merged polygons
+    """
     # Use spatial index for efficient overlap search
     gdf = gdf.reset_index(drop=True)
     sindex = gdf.sindex
