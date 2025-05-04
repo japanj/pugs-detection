@@ -320,3 +320,46 @@ def min_max_normalize(data):
     min_val = data.min().values
     max_val = data.max().values
     return (data - min_val) / (max_val - min_val)
+
+def save_inference_map(gt_raster_path, pred_raster_path, mode, output_path):
+    """
+    Save the FN or FP map as a GeoTIFF file.
+    mode: "fn" for False Negative, "fp" for False Positive
+    """
+    with rasterio.open(gt_raster_path) as src_gt, rasterio.open(pred_raster_path) as src_pred:
+        window = src_gt.window(*src_gt.bounds).intersection(src_pred.window(*src_pred.bounds))
+        gt_mask = src_gt.read(1, window=window)
+        pred_mask = src_pred.read(1, window=window)
+
+        # Set nodata mask
+        gt_nodata = src_gt.nodata
+        nodata_mask = np.zeros_like(gt_mask, dtype=bool)
+        if gt_nodata is not None:
+            gt_nodata_locations = (gt_mask == gt_nodata)
+            nodata_mask = nodata_mask | gt_nodata_locations  # Mark as nodata where gt_mask is nodata
+
+        if mode == "fn":
+            mask = np.logical_and(gt_mask == 1, pred_mask == 0)
+        elif mode == "fp":
+            mask = np.logical_and(gt_mask == 0, pred_mask == 1)
+        else:
+            raise ValueError("mode must be 'fn' or 'fp'")
+
+        mask = mask.astype(np.int16)
+        # Set output mask to -9999 wherever nodata_mask is True
+        mask[nodata_mask] = -9999
+
+    # Save fn_mask as a GeoTIFF
+    with rasterio.open(
+        output_path,
+        "w",
+        driver="GTiff",
+        height=mask.shape[0],
+        width=mask.shape[1],
+        count=1,
+        dtype=mask.dtype,
+        crs=src_gt.crs,
+        transform=src_gt.window_transform(window),
+        nodata=-9999
+    ) as dst:
+        dst.write(mask, 1)
