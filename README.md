@@ -129,6 +129,8 @@ The result of different model training experiments are shown in the table below.
 | version_7 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | Focal loss | 0.7409 | 0.8865 | 0.8186 | 0.8512 | 0.9558 |
 | version_8 | 1. Sentinel-2 image <br> 2. SDT raster | Focal loss | 0.7259 | 0.8818 | 0.8041 | 0.8412 | 0.9531 |
 
+*BCE = Binary Cross Entopy*
+
 From the result, the best model is using Sentinel-2 image along with PUGS binary mask derived from OSM with Jaccard loss function. 
 
 **Example of the results**
