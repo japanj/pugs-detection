@@ -131,9 +131,11 @@ The result of different model training experiments are shown in the table below.
 
 *BCE = Binary Cross Entopy*
 
-From the result, the best model is using Sentinel-2 image along with PUGS binary mask derived from OSM with Jaccard loss function. 
+Based on the results, the best-performing model uses Sentinel-2 imagery together with a PUGS binary mask derived from OSM as an input and trained with Jaccard loss function.
 
-**Example of the results**
+### Example of the results
+These are examples of model prediction outputs from the best-performing model among all experiments.
+
 ![result_viz_1](/reports/figures/gt_vs_pred/v1/region_512_1152.png)
 ![result_viz_2](/reports/figures/gt_vs_pred/v1/region_768_1152.png)
 
