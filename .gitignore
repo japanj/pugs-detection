@@ -7,7 +7,6 @@
 
 # Folder for keep track of prediction results
 /reports/prediction result/
-/reports/figures/gt_vs_pred/
 
 # Models checkpoints
 /models/checkpoints/
