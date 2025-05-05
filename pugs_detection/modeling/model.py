@@ -11,6 +11,7 @@ import torchgeo
 import torch
 import torch.nn as nn
 
+
 def modify_first_layer(task, in_channels=14):
     """
     Modifies the first convolutional layer of a given model
@@ -22,7 +23,7 @@ def modify_first_layer(task, in_channels=14):
         Model to be modified
     in_channels: int
         Number of input channels for the first convolutional layer
-    
+
     Returns:
     --------
     task : CustomSegmentationTask
@@ -30,9 +31,9 @@ def modify_first_layer(task, in_channels=14):
     """
     # Get the model from the task
     model = task.model
-    
+
     # Find the first conv layer (can delete first if -> hasattr(model, 'backbone'))
-    if hasattr(model, 'encoder') and hasattr(model.encoder, 'conv1'):
+    if hasattr(model, "encoder") and hasattr(model.encoder, "conv1"):
         # Some other architecture
         first_conv = model.encoder.conv1
     # else:
@@ -41,10 +42,10 @@ def modify_first_layer(task, in_channels=14):
     #         if isinstance(module, nn.Conv2d) and module.in_channels == 13:
     #             first_conv = module
     #             break
-    
+
     # Store the original weights
     original_weights = first_conv.weight.data
-    
+
     # Create a new conv with more input channels
     new_conv = nn.Conv2d(
         in_channels=in_channels,
@@ -52,7 +53,7 @@ def modify_first_layer(task, in_channels=14):
         kernel_size=first_conv.kernel_size,
         stride=first_conv.stride,
         padding=first_conv.padding,
-        bias=first_conv.bias is not None
+        bias=first_conv.bias is not None,
     )
 
     if in_channels >= 13:
@@ -61,22 +62,26 @@ def modify_first_layer(task, in_channels=14):
             new_conv.weight[:, :13] = original_weights
             # Initialize the new channel(s) with small random values
             if in_channels > 13:
-                nn.init.kaiming_normal_(new_conv.weight[:, 13:], mode='fan_out', nonlinearity='relu')
+                nn.init.kaiming_normal_(
+                    new_conv.weight[:, 13:], mode="fan_out", nonlinearity="relu"
+                )
     else:
         # Copy the original weights for the first 10 channels
         with torch.no_grad():
             new_conv.weight[:, :9] = original_weights
             # Initialize the new channel(s) with small random values
             if in_channels > 9:
-                nn.init.kaiming_normal_(new_conv.weight[:, 9:], mode='fan_out', nonlinearity='relu')
-    
+                nn.init.kaiming_normal_(
+                    new_conv.weight[:, 9:], mode="fan_out", nonlinearity="relu"
+                )
+
     # Replace the original conv with the new one
-    if hasattr(model, 'encoder') and hasattr(model.encoder, 'conv1'):
+    if hasattr(model, "encoder") and hasattr(model.encoder, "conv1"):
         model.encoder.conv1 = new_conv
     else:
         # If we found it through modules() earlier
         raise ValueError("Could not replace the first convolutional layer")
-    
+
     print(task)
-    
+
     return task

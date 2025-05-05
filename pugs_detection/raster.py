@@ -16,11 +16,19 @@ import numpy as np
 from rasterio.features import rasterize
 from scipy.ndimage import distance_transform_edt
 
-def create_image_tiles(output_folder_path, image_path, train_index_list, val_index_list, test_index_list, valid_data_threshold=0.3):
+
+def create_image_tiles(
+    output_folder_path,
+    image_path,
+    train_index_list,
+    val_index_list,
+    test_index_list,
+    valid_data_threshold=0.3,
+):
     """
     Create train/val/test tiles from a satellite image
     and filtering out tiles with insufficient valid data
-    
+
     Parameters:
     -----------
     output_folder_path : str
@@ -35,7 +43,7 @@ def create_image_tiles(output_folder_path, image_path, train_index_list, val_ind
         List of tile indices for test set
     valid_data_threshold : float
         Minimum percentage of valid data required in a tile (0.0-1.0)
-    
+
     Returns:
     --------
     tiles : list
@@ -49,9 +57,9 @@ def create_image_tiles(output_folder_path, image_path, train_index_list, val_ind
         pass
 
     # Create subdirectories
-    train_dir = os.path.join(output_folder_path, 'train')
-    val_dir = os.path.join(output_folder_path, 'val')
-    test_dir = os.path.join(output_folder_path, 'test')
+    train_dir = os.path.join(output_folder_path, "train")
+    val_dir = os.path.join(output_folder_path, "val")
+    test_dir = os.path.join(output_folder_path, "test")
     os.makedirs(train_dir, exist_ok=True)
     os.makedirs(val_dir, exist_ok=True)
     os.makedirs(test_dir, exist_ok=True)
@@ -71,76 +79,80 @@ def create_image_tiles(output_folder_path, image_path, train_index_list, val_ind
     tiles = []
     valid_tile_count = 0
     skipped_tile_count = 0
-    
+
     for i in range(5):
         for j in range(5):
             # Calculate tile boundaries
             tile_xmin = xmin + i * base_tile_width
             tile_ymin = ymin + j * base_tile_height
-            
+
             # For the last column/row, extend to the edge
             tile_xmax = xmax if i == 4 else xmin + (i + 1) * base_tile_width
             tile_ymax = ymax if j == 4 else ymin + (j + 1) * base_tile_height
-            
+
             # Generate tile index (1-25)
             idx = i * 5 + j
-            
+
             try:
                 # Clip the raster to this tile
                 tile_rds = rds.rio.clip_box(
-                    minx=tile_xmin, miny=tile_ymin, 
-                    maxx=tile_xmax, maxy=tile_ymax
+                    minx=tile_xmin, miny=tile_ymin, maxx=tile_xmax, maxy=tile_ymax
                 )
-                
+
                 # Check for valid data percentage (non-masked values)
                 # Use the first band to create a mask
                 valid_mask = ~tile_rds[0].isnull().values
                 valid_percentage = np.sum(valid_mask) / valid_mask.size
-                
+
                 # Skip tile if it doesn't have enough valid data
                 if valid_percentage < valid_data_threshold:
-                    print(f"Skipping tile {idx+1}: only {valid_percentage:.1%} valid data")
+                    print(
+                        f"Skipping tile {idx + 1}: only {valid_percentage:.1%} valid data"
+                    )
                     skipped_tile_count += 1
                     tiles.append(0)
                     continue
-                
+
                 # Determine which folder to save in
-                if (idx+1) in train_index_list:
+                if (idx + 1) in train_index_list:
                     subfolder_path = train_dir
                     split_type = "train"
-                elif (idx+1) in val_index_list:
+                elif (idx + 1) in val_index_list:
                     subfolder_path = val_dir
                     split_type = "val"
                 else:
                     subfolder_path = test_dir
                     split_type = "test"
-                
+
                 # Save the tile
-                tile_file_path = os.path.join(subfolder_path, f'tile_{idx + 1}.geotiff')
-                
+                tile_file_path = os.path.join(subfolder_path, f"tile_{idx + 1}.geotiff")
+
                 # Save with float preservation and proper no-data values
-                tile_rds.rio.to_raster(
-                    tile_file_path, 
-                    driver='GTiff',
-                    dtype='float32'
-                )
-                
+                tile_rds.rio.to_raster(tile_file_path, driver="GTiff", dtype="float32")
+
                 # Add tile to the list of valid tiles
-                tiles.append([tile_xmin, tile_xmax, tile_ymin, tile_ymax, valid_percentage])
+                tiles.append(
+                    [tile_xmin, tile_xmax, tile_ymin, tile_ymax, valid_percentage]
+                )
                 valid_tile_count += 1
-                
-                print(f"Tile {idx + 1} saved to {split_type} folder ({valid_percentage:.1%} valid data)")
-                
+
+                print(
+                    f"Tile {idx + 1} saved to {split_type} folder ({valid_percentage:.1%} valid data)"
+                )
+
             except Exception as e:
-                print(f"Error processing tile {idx+1}: {e}")
+                print(f"Error processing tile {idx + 1}: {e}")
                 skipped_tile_count += 1
-    
-    print(f"Processing complete: {valid_tile_count} valid tiles created, {skipped_tile_count} tiles skipped")
+
+    print(
+        f"Processing complete: {valid_tile_count} valid tiles created, {skipped_tile_count} tiles skipped"
+    )
     return tiles
+
 
 def create_binary_mask(gdf, file_path, satellite_image_path):
     """
-    Create a binary mask raster from public urban green space (PUGS) 
+    Create a binary mask raster from public urban green space (PUGS)
     polygons in a GeoDataFrame
 
     Parameters:
@@ -160,7 +172,7 @@ def create_binary_mask(gdf, file_path, satellite_image_path):
 
         # Create an empty raster with the same properties as the satellite image
         out_shape = (height, width)
-        raster = np.zeros(out_shape, dtype='int16')
+        raster = np.zeros(out_shape, dtype="int16")
 
         # Rasterize the polygons
         rasterized = rasterize(
@@ -169,14 +181,14 @@ def create_binary_mask(gdf, file_path, satellite_image_path):
             transform=transform,
             fill=0,
             all_touched=True,
-            dtype='int16'
+            dtype="int16",
         )
-        
+
         # Save the raster to a file
         with rasterio.open(
             file_path,
-            'w',
-            driver='GTiff',
+            "w",
+            driver="GTiff",
             height=height,
             width=width,
             count=1,
@@ -187,6 +199,7 @@ def create_binary_mask(gdf, file_path, satellite_image_path):
             dst.write(rasterized, 1)
 
     print("Rasterization complete.")
+
 
 def create_sdt_raster(gdf, file_path, satellite_image_path):
     """
@@ -208,8 +221,8 @@ def create_sdt_raster(gdf, file_path, satellite_image_path):
 
         # Create an empty raster with the same properties as the satellite image
         out_shape = (height, width)
-        raster = np.zeros(out_shape, dtype='uint8')
-        
+        raster = np.zeros(out_shape, dtype="uint8")
+
         # Rasterize the polygons
         raster = rasterize(
             [(geom, 1) for geom in gdf.geometry],
@@ -217,12 +230,16 @@ def create_sdt_raster(gdf, file_path, satellite_image_path):
             transform=transform,
             fill=0,
             all_touched=True,
-            dtype='uint8'
+            dtype="uint8",
         )
 
         # Compute the distance transform for the inside and outside of the polygons
-        distance_inside = distance_transform_edt(raster) # Calculate the nearest distance from each pixel inside polygon to the nearest pixel outside polygon
-        distance_outside = distance_transform_edt(1 - raster) # Calculate the nearest distance from each pixel outside polygon to the nearest pixel inside polygon
+        distance_inside = distance_transform_edt(
+            raster
+        )  # Calculate the nearest distance from each pixel inside polygon to the nearest pixel outside polygon
+        distance_outside = distance_transform_edt(
+            1 - raster
+        )  # Calculate the nearest distance from each pixel outside polygon to the nearest pixel inside polygon
 
         # Create the signed distance transform
         signed_distance_transform = distance_inside - distance_outside
@@ -230,8 +247,8 @@ def create_sdt_raster(gdf, file_path, satellite_image_path):
         # Save the signed distance transform to a file
         with rasterio.open(
             file_path,
-            'w',
-            driver='GTiff',
+            "w",
+            driver="GTiff",
             height=height,
             width=width,
             count=1,
@@ -242,6 +259,7 @@ def create_sdt_raster(gdf, file_path, satellite_image_path):
             dst.write(signed_distance_transform, 1)
 
         print("Signed distance transform complete.")
+
 
 def contrast_stretch(array, lower_percentile=1, upper_percentile=99):
     """
@@ -262,24 +280,27 @@ def contrast_stretch(array, lower_percentile=1, upper_percentile=99):
         The normalized raster image
     """
     normalized_img = array.copy()
-    
-    for i in range(array.sizes['band']):
+
+    for i in range(array.sizes["band"]):
         # Get the band index and data
         band_idx = array.band.values[i]  # Use actual band coordinate value
         band = array.sel(band=band_idx).values
-        
+
         # Calculate percentiles
         lower = np.percentile(band, lower_percentile)
         upper = np.percentile(band, upper_percentile)
 
-        print(f"Band {i+1}: Lower {lower}, Upper {upper}")
+        print(f"Band {i + 1}: Lower {lower}, Upper {upper}")
 
         if upper > lower:
-            normalized_img.loc[dict(band=band_idx)] = np.clip((band - lower) / (upper - lower), 0, 1)
+            normalized_img.loc[dict(band=band_idx)] = np.clip(
+                (band - lower) / (upper - lower), 0, 1
+            )
         else:
             normalized_img.loc[dict(band=band_idx)] = np.zeros_like(band)
-    
+
     return normalized_img
+
 
 def contrast_stretch_dn(array):
     """
@@ -303,6 +324,7 @@ def contrast_stretch_dn(array):
     result.values = image_norm
     return result
 
+
 def min_max_normalize(data):
     """
     Scale data to 0-1 range using min-max normalization
@@ -321,10 +343,11 @@ def min_max_normalize(data):
     max_val = data.max().values
     return (data - min_val) / (max_val - min_val)
 
+
 def save_inference_map(gt_raster_path, pred_raster_path, mode, output_path):
     """
     Save the False Negative (FN) or False Positive (FP) map as a GeoTIFF file.
-    
+
     Parameters:
     -----------
     gt_raster_path : str
@@ -336,8 +359,13 @@ def save_inference_map(gt_raster_path, pred_raster_path, mode, output_path):
     output_path : str
         Path to save the output raster file
     """
-    with rasterio.open(gt_raster_path) as src_gt, rasterio.open(pred_raster_path) as src_pred:
-        window = src_gt.window(*src_gt.bounds).intersection(src_pred.window(*src_pred.bounds))
+    with (
+        rasterio.open(gt_raster_path) as src_gt,
+        rasterio.open(pred_raster_path) as src_pred,
+    ):
+        window = src_gt.window(*src_gt.bounds).intersection(
+            src_pred.window(*src_pred.bounds)
+        )
         gt_mask = src_gt.read(1, window=window)
         pred_mask = src_pred.read(1, window=window)
 
@@ -345,8 +373,10 @@ def save_inference_map(gt_raster_path, pred_raster_path, mode, output_path):
         gt_nodata = src_gt.nodata
         nodata_mask = np.zeros_like(gt_mask, dtype=bool)
         if gt_nodata is not None:
-            gt_nodata_locations = (gt_mask == gt_nodata)
-            nodata_mask = nodata_mask | gt_nodata_locations  # Mark as nodata where gt_mask is nodata
+            gt_nodata_locations = gt_mask == gt_nodata
+            nodata_mask = (
+                nodata_mask | gt_nodata_locations
+            )  # Mark as nodata where gt_mask is nodata
 
         if mode == "fn":
             mask = np.logical_and(gt_mask == 1, pred_mask == 0)
@@ -370,6 +400,6 @@ def save_inference_map(gt_raster_path, pred_raster_path, mode, output_path):
         dtype=mask.dtype,
         crs=src_gt.crs,
         transform=src_gt.window_transform(window),
-        nodata=-9999
+        nodata=-9999,
     ) as dst:
         dst.write(mask, 1)

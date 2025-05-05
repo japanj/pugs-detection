@@ -19,9 +19,10 @@ from torch import Tensor
 from torchmetrics import Accuracy, JaccardIndex, MetricCollection
 from typing import Any
 
+
 class CustomSegmentationTask(SemanticSegmentationTask):
     """
-    Custom SemanticSegmentationTask used for my semantic segmentation task. 
+    Custom SemanticSegmentationTask used for my semantic segmentation task.
 
     Extends the base SemanticSegmentationTask to support binary loss functions,
     metrics, and additional configuration for binary segmentation.
@@ -30,6 +31,7 @@ class CustomSegmentationTask(SemanticSegmentationTask):
     -----------
         **kwargs: Keyword arguments passed to the base class.
     """
+
     def __init__(self, **kwargs):
         # Remove 'ignore' parameter if it exists in kwargs
         if "ignore" in kwargs:

@@ -1,8 +1,8 @@
 """
 dataset.py
 
-This module contains classes to create datasets for training, validation, and testing 
-and functions to create the dataset. 
+This module contains classes to create datasets for training, validation, and testing
+and functions to create the dataset.
 
 Author: Pitchaporn Likitpanjamanon
 Date: 01-05-2025
@@ -21,6 +21,7 @@ from pugs_detection.utils import set_all_seeds
 from torch.utils.data import Dataset
 from rasterio.windows import Window
 
+
 def _process_mask(mask, valid_area, band_count):
     """
     Process the mask to remove invalid areas by setting those areas to 0.
@@ -33,7 +34,7 @@ def _process_mask(mask, valid_area, band_count):
         The valid area tensor indicating valid pixels.
     band_count : int
         The number of bands in the dataset.
-    
+
     Returns:
     --------
     result: torch.Tensor
@@ -42,13 +43,38 @@ def _process_mask(mask, valid_area, band_count):
     mask = mask.numpy()
     valid_area = valid_area.numpy()
     if band_count >= 13:
-        valid_area_all = valid_area[0] | valid_area[1] | valid_area[2] | valid_area[3] | valid_area[4] | valid_area[5] | valid_area[6] | valid_area[7] | valid_area[8] | valid_area[9] | valid_area[10] | valid_area[11] | valid_area[12]
+        valid_area_all = (
+            valid_area[0]
+            | valid_area[1]
+            | valid_area[2]
+            | valid_area[3]
+            | valid_area[4]
+            | valid_area[5]
+            | valid_area[6]
+            | valid_area[7]
+            | valid_area[8]
+            | valid_area[9]
+            | valid_area[10]
+            | valid_area[11]
+            | valid_area[12]
+        )
     else:
-        valid_area_all = valid_area[0] | valid_area[1] | valid_area[2] | valid_area[3] | valid_area[4] | valid_area[5] | valid_area[6] | valid_area[7] | valid_area[8]
+        valid_area_all = (
+            valid_area[0]
+            | valid_area[1]
+            | valid_area[2]
+            | valid_area[3]
+            | valid_area[4]
+            | valid_area[5]
+            | valid_area[6]
+            | valid_area[7]
+            | valid_area[8]
+        )
     # mask[~valid_area[2]] = 0
     mask[~valid_area_all] = 0
     result = torch.from_numpy(mask)
     return result
+
 
 def _filter_patches(sample, band_count):
     """
@@ -69,18 +95,19 @@ def _filter_patches(sample, band_count):
     """
     # min_value = sample['image'].min()
     # valid_area = (sample['image']!=min_value) # create a mask of valid area
-    
+
     nodata_value = -9999
-    valid_area = (sample['image']!=nodata_value) 
-    
-    sample['mask'] = _process_mask(sample['mask'], valid_area, band_count)
-    
-    mask = sample['mask'].numpy()
+    valid_area = sample["image"] != nodata_value
+
+    sample["mask"] = _process_mask(sample["mask"], valid_area, band_count)
+
+    mask = sample["mask"].numpy()
     # Calculate percentage of green space in the mask
     green_percentage = np.mean(mask)
-    
+
     # Filter the patches that has only background or only PUGS out
     return 0 < green_percentage < 1
+
 
 class FilteredGeoDataset(Dataset):
     """
@@ -103,54 +130,73 @@ class FilteredGeoDataset(Dataset):
     dataset_type : str
         The type of dataset ('train', 'validation', 'test').
     """
-    def __init__(self, dataset, patch_size=256, stride=64, transform=None, specific_bands=list(range(13)), dataset_type='train'):
+
+    def __init__(
+        self,
+        dataset,
+        patch_size=256,
+        stride=64,
+        transform=None,
+        specific_bands=list(range(13)),
+        dataset_type="train",
+    ):
         self.dataset = dataset
-        self.sampler = GridGeoSampler(dataset, size=(patch_size, patch_size), stride=stride)
+        self.sampler = GridGeoSampler(
+            dataset, size=(patch_size, patch_size), stride=stride
+        )
         self.transform = transform
         self.bounds = dataset.bounds
         self.specific_bands = specific_bands
         self.band_count = len(specific_bands)
         self.dataset_type = dataset_type
-        
+
         # Compute the valid patches
         self.valid_bboxes = []
-        
+
         # Get total number of patches for progress bar
         total_patches = len(self.sampler)
 
-        if self.dataset_type == 'train':
-            for bbox in tqdm(self.sampler, desc=f"Filtering patches for {dataset_type}", total=total_patches, unit="patch"):
+        if self.dataset_type == "train":
+            for bbox in tqdm(
+                self.sampler,
+                desc=f"Filtering patches for {dataset_type}",
+                total=total_patches,
+                unit="patch",
+            ):
                 sample = self.dataset[bbox]
                 if _filter_patches(sample, self.band_count):
                     self.valid_bboxes.append(bbox)
-            print(f"Found {len(self.valid_bboxes)} valid patches out of {len(self.sampler)} total patches")
+            print(
+                f"Found {len(self.valid_bboxes)} valid patches out of {len(self.sampler)} total patches"
+            )
         else:
             # For validation and test sets, use all patches
             self.valid_bboxes = list(self.sampler)
             print(f"Using all {len(self.valid_bboxes)} patches for {dataset_type} set")
-    
+
     def __len__(self):
         return len(self.valid_bboxes)
-    
+
     def __getitem__(self, idx):
         sample = self.dataset[self.valid_bboxes[idx]]
 
-        # Select specific bands    
-        sample['image'] = sample['image'][self.specific_bands]
+        # Select specific bands
+        sample["image"] = sample["image"][self.specific_bands]
         # min_value = sample['image'].min()
         nodata_value = -9999
-        valid_area = (sample['image']!=nodata_value) # create a mask of valid area
+        valid_area = sample["image"] != nodata_value  # create a mask of valid area
 
         # sample['image'], valid_area = contrast_stretch_patch(sample['image'])
-        sample['mask'] = _process_mask(sample['mask'], valid_area, self.band_count)
-        
+        sample["mask"] = _process_mask(sample["mask"], valid_area, self.band_count)
+
         # replace nodata values with 0
-        sample['image'][sample['image'] == nodata_value] = 0
-        
+        sample["image"][sample["image"] == nodata_value] = 0
+
         del sample["crs"]
         del sample["bounds"]
 
         return sample
+
 
 class AugmentedDataset(Dataset):
     """
@@ -163,39 +209,43 @@ class AugmentedDataset(Dataset):
     transform_list : list
         List of transformations to apply to the dataset.
     """
+
     def __init__(self, dataset, transform_list=None):
         self.dataset = dataset
         self.transform_list = transform_list
-    
+
     def __len__(self):
-        return len(self.dataset) * (len(self.transform_list) + 1)  # Original + augmented versions
-    
+        return len(self.dataset) * (
+            len(self.transform_list) + 1
+        )  # Original + augmented versions
+
     def __getitem__(self, idx):
         # Calculate original dataset index and augmentation version
         dataset_idx = idx // (len(self.transform_list) + 1)
         aug_version = idx % (len(self.transform_list) + 1)
-        
+
         # Get original sample
         sample = self.dataset[dataset_idx]
-        
+
         # If it's the first version (aug_version=0), return original
         if aug_version == 0 or self.transform_list is None:
             return sample
-        
+
         # Apply transformation
         transform = self.transform_list[aug_version - 1]
 
         # Make a deep copy to avoid modifying the original
         sample_copy = copy.deepcopy(sample)
-        
+
         # Apply the transformation
         sample_copy = transform(sample_copy)
 
         # Ensure proper shape (remove batch dimension added by some transforms)
-        sample_copy['image'] = sample_copy['image'].squeeze(0)
-        sample_copy['mask'] = sample_copy['mask'].squeeze(0)
-            
+        sample_copy["image"] = sample_copy["image"].squeeze(0)
+        sample_copy["mask"] = sample_copy["mask"].squeeze(0)
+
         return sample_copy
+
 
 class PredictedImageDataset(Dataset):
     """
@@ -212,7 +262,14 @@ class PredictedImageDataset(Dataset):
     band_list_predict : list
         List of the image's bands/channels.
     """
-    def __init__(self, image_path, patch_size=256, stride=256, band_list_predict=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]):
+
+    def __init__(
+        self,
+        image_path,
+        patch_size=256,
+        stride=256,
+        band_list_predict=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    ):
         self.image_path = image_path
         self.patch_size = patch_size
         self.stride = stride
@@ -271,8 +328,11 @@ class PredictedImageDataset(Dataset):
             "image": image,
             "window_info": window,  # Store coordinates as tuple
         }
-    
-def create_dataset_split(image_path, label_path, epsg_code, band_list, dataset_type, transform_list):
+
+
+def create_dataset_split(
+    image_path, label_path, epsg_code, band_list, dataset_type, transform_list
+):
     """
     Create a dataset for training, validation, or testing.
 
@@ -300,8 +360,13 @@ def create_dataset_split(image_path, label_path, epsg_code, band_list, dataset_t
     image_ds = RasterDataset(paths=image_path, crs=CRS.from_epsg(epsg_code), res=10)
     label_ds = VectorDataset(paths=label_path, crs=CRS.from_epsg(epsg_code), res=10)
     combined_ds = image_ds & label_ds
-    filter_ds = FilteredGeoDataset(dataset=combined_ds, stride=128, specific_bands=band_list, dataset_type=dataset_type)
-    if dataset_type == 'train':
+    filter_ds = FilteredGeoDataset(
+        dataset=combined_ds,
+        stride=128,
+        specific_bands=band_list,
+        dataset_type=dataset_type,
+    )
+    if dataset_type == "train":
         # return AugmentedDataset(dataset=filter_ds, transform_list=transform_list, augmented_condition_fn=augmented_condition)
         return AugmentedDataset(dataset=filter_ds, transform_list=transform_list)
     else:

@@ -14,6 +14,7 @@ import torch
 from lightning.pytorch import seed_everything
 from IPython.display import display
 
+
 def print_basic_info(gdf):
     """
     Print basic information about GeoDataFrame.
@@ -27,6 +28,7 @@ def print_basic_info(gdf):
     print("Number of rows:", len(gdf))
     print("Number of columns:", len(gdf.columns))
     display(gdf.head(3))
+
 
 def set_all_seeds(seed=42):
     """

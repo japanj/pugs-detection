@@ -11,6 +11,7 @@ import numpy as np
 import torch
 from tqdm import tqdm
 
+
 def predict_whole_area(model, inference_dataset, inference_loader):
     """
     Predict the whole area using a trained model.
@@ -23,7 +24,7 @@ def predict_whole_area(model, inference_dataset, inference_loader):
         Dataset containing the images to be predicted
     inference_loader : DataLoader
         DataLoader for the inference dataset
-    
+
     Returns:
     --------
     prediction_map : numpy array
@@ -33,7 +34,9 @@ def predict_whole_area(model, inference_dataset, inference_loader):
     prediction_map = np.zeros(
         (inference_dataset.height, inference_dataset.width), dtype=np.float32
     )
-    counts = np.zeros((inference_dataset.height, inference_dataset.width), dtype=np.float32)
+    counts = np.zeros(
+        (inference_dataset.height, inference_dataset.width), dtype=np.float32
+    )
 
     # Process all patches
     model.eval()

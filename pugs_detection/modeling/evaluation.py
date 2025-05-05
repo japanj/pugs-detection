@@ -11,6 +11,7 @@ from sklearn.metrics import confusion_matrix
 import numpy as np
 import torch
 
+
 def generate_confusion_matrix(model, test_loader):
     """
     Generate confusion matrix
