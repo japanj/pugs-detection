@@ -134,7 +134,8 @@ The result of different model training experiments are shown in the table below.
 From the result, the best model is using Sentinel-2 image along with PUGS binary mask derived from OSM with Jaccard loss function. 
 
 **Example of the results**
-(upload gt_vs_pred folder first)
+![result_viz_1](/reports/figures/gt_vs_pred/v1/region_512_1152.png)
+![result_viz_2](/reports/figures/gt_vs_pred/v1/region_768_1152.png)
 
 For the full details of model prediction output, please visit [results folder](/results/).
 
