@@ -7519,9 +7519,7 @@ a.anchor-link {
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h1 id="Result-analysis-Notebook">Result analysis Notebook<a class="anchor-link" href="#Result-analysis-Notebook">¶</a></h1><p><strong>Description</strong></p>
 <p>This notebook is used for further prediction result analysis. This notebook further looks on overlap percentage between ground truth and prediction of each group of green space size and save the false negative (FN) and false positive (FP) map for visual inspection.</p>
-<blockquote>
-<p>The overlap percentage shown in the following analysis is calculated as the proportion of ground truth area that is covered by the prediction.</p>
-</blockquote>
+<p><em>The overlap percentage shown in the following analysis is calculated as the proportion of ground truth area that is covered by the prediction.</em></p>
 <p><strong>Input folder(s)/file(s)</strong></p>
 <p>4 files</p>
 <ul>
@@ -7620,7 +7618,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Ground Truth Data Paths</span>
@@ -7630,7 +7628,7 @@ a.anchor-link {
 <span class="n">pred_sat_raster_path</span> <span class="o">=</span> <span class="s2">"../results/clipped_prediction/clipped_pred_v0.geotiff"</span>
 <span class="n">pred_with_osm_raster_path</span> <span class="o">=</span> <span class="s2">"../results/clipped_prediction/clipped_pred_v1.geotiff"</span>
 <span class="c1"># Graph output Paths</span>
-<span class="n">graph_output_path</span> <span class="o">=</span> <span class="s2">"../results/others/overlap_pct_with_gs_size.png"</span>
+<span class="n">graph_output_path</span> <span class="o">=</span> <span class="s2">"../figures/others/overlap_pct_with_gs_size.png"</span>
 <span class="c1"># FN area Paths</span>
 <span class="n">fn_area_sat_path</span> <span class="o">=</span> <span class="s2">"../results/fn_fp_maps/fn_area_v0.geotiff"</span>
 <span class="n">fn_area_osm_path</span> <span class="o">=</span> <span class="s2">"../results/fn_fp_maps/fn_area_v1.geotiff"</span>
@@ -7678,10 +7676,10 @@ a.anchor-link {
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">merged_gdf</span> <span class="o">=</span> <span class="n">merge_overlapping_polygons</span><span class="p">(</span><span class="n">gt_gdf</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
 <span class="c1"># Calculate area and group by size</span>
-<span class="n">merged_gdf</span><span class="p">[</span><span class="s1">'area_m2'</span><span class="p">]</span> <span class="o">=</span> <span class="n">merged_gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">area</span>
-<span class="n">bins</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="mi">20000</span><span class="p">,</span> <span class="mi">100000</span><span class="p">,</span> <span class="n">merged_gdf</span><span class="p">[</span><span class="s1">'area_m2'</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span>
-<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'0–1k'</span><span class="p">,</span> <span class="s1">'1k–5k'</span><span class="p">,</span> <span class="s1">'5k–20k'</span><span class="p">,</span> <span class="s1">'20k–100k'</span><span class="p">,</span> <span class="s1">'&gt;100k'</span><span class="p">]</span>
-<span class="n">merged_gdf</span><span class="p">[</span><span class="s1">'area_group'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">merged_gdf</span><span class="p">[</span><span class="s1">'area_m2'</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
+<span class="n">merged_gdf</span><span class="p">[</span><span class="s2">"area_m2"</span><span class="p">]</span> <span class="o">=</span> <span class="n">merged_gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">area</span>
+<span class="n">bins</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="mi">20000</span><span class="p">,</span> <span class="mi">100000</span><span class="p">,</span> <span class="n">merged_gdf</span><span class="p">[</span><span class="s2">"area_m2"</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"0–1k"</span><span class="p">,</span> <span class="s2">"1k–5k"</span><span class="p">,</span> <span class="s2">"5k–20k"</span><span class="p">,</span> <span class="s2">"20k–100k"</span><span class="p">,</span> <span class="s2">"&gt;100k"</span><span class="p">]</span>
+<span class="n">merged_gdf</span><span class="p">[</span><span class="s2">"area_group"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">merged_gdf</span><span class="p">[</span><span class="s2">"area_m2"</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -7696,7 +7694,7 @@ a.anchor-link {
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Dissolve polygons by area group</span>
-<span class="n">dissolved_by_group</span> <span class="o">=</span> <span class="n">merged_gdf</span><span class="o">.</span><span class="n">dissolve</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">'area_group'</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">dissolved_by_group</span> <span class="o">=</span> <span class="n">merged_gdf</span><span class="o">.</span><span class="n">dissolve</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">"area_group"</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -7710,7 +7708,9 @@ a.anchor-link {
 <div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">dissolved_by_group</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">"area_group"</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"Dissolved by Area Group"</span><span class="p">)</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">dissolved_by_group</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span>
+    <span class="n">column</span><span class="o">=</span><span class="s2">"area_group"</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"Dissolved by Area Group"</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8035,14 +8035,16 @@ a.anchor-link {
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">stats_gt</span> <span class="o">=</span> <span class="n">zonal_stats</span><span class="p">(</span>
     <span class="n">dissolved_by_group</span><span class="p">,</span>  <span class="c1"># vector</span>
-    <span class="n">gt_raster_path</span><span class="p">,</span>   <span class="c1"># raster</span>
+    <span class="n">gt_raster_path</span><span class="p">,</span>  <span class="c1"># raster</span>
     <span class="n">stats</span><span class="o">=</span><span class="p">[</span><span class="s2">"sum"</span><span class="p">,</span> <span class="s2">"count"</span><span class="p">],</span>
-    <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span>  <span class="c1"># treat -9999 as nodata</span>
+    <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span><span class="p">,</span>  <span class="c1"># treat -9999 as nodata</span>
 <span class="p">)</span>
 
 <span class="n">stats_gt_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">stats_gt</span><span class="p">)</span>
 
-<span class="n">stats_gt_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dissolved_by_group</span><span class="p">[[</span><span class="s1">'area_group'</span><span class="p">,</span> <span class="s1">'geometry'</span><span class="p">]],</span> <span class="n">stats_gt_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">stats_gt_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">dissolved_by_group</span><span class="p">[[</span><span class="s2">"area_group"</span><span class="p">,</span> <span class="s2">"geometry"</span><span class="p">]],</span> <span class="n">stats_gt_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8159,12 +8161,14 @@ a.anchor-link {
     <span class="n">dissolved_by_group</span><span class="p">,</span>  <span class="c1"># vector</span>
     <span class="n">pred_with_osm_raster_path</span><span class="p">,</span>  <span class="c1"># raster</span>
     <span class="n">stats</span><span class="o">=</span><span class="p">[</span><span class="s2">"sum"</span><span class="p">,</span> <span class="s2">"count"</span><span class="p">],</span>
-    <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span>    <span class="c1"># treat -9999 as nodata</span>
+    <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span><span class="p">,</span>  <span class="c1"># treat -9999 as nodata</span>
 <span class="p">)</span>
 
 <span class="n">stats_pred_osm_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">stats_pred_osm</span><span class="p">)</span>
 
-<span class="n">stats_pred_osm_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dissolved_by_group</span><span class="p">[[</span><span class="s1">'area_group'</span><span class="p">,</span> <span class="s1">'geometry'</span><span class="p">]],</span> <span class="n">stats_pred_osm_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">stats_pred_osm_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">dissolved_by_group</span><span class="p">[[</span><span class="s2">"area_group"</span><span class="p">,</span> <span class="s2">"geometry"</span><span class="p">]],</span> <span class="n">stats_pred_osm_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8270,8 +8274,8 @@ a.anchor-link {
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">stats_gt_df</span><span class="p">)):</span>
     <span class="n">gt</span> <span class="o">=</span> <span class="n">stats_gt_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
     <span class="n">pred</span> <span class="o">=</span> <span class="n">stats_pred_osm_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-    <span class="n">overlap_pct</span> <span class="o">=</span> <span class="p">(</span><span class="n">pred</span><span class="p">[</span><span class="s1">'sum'</span><span class="p">]</span><span class="o">/</span><span class="n">gt</span><span class="p">[</span><span class="s1">'sum'</span><span class="p">])</span> <span class="o">*</span> <span class="mi">100</span>
-    <span class="n">overlap_pct_osm_area_group</span><span class="p">[</span><span class="n">gt</span><span class="p">[</span><span class="s1">'area_group'</span><span class="p">]]</span> <span class="o">=</span> <span class="n">overlap_pct</span>
+    <span class="n">overlap_pct</span> <span class="o">=</span> <span class="p">(</span><span class="n">pred</span><span class="p">[</span><span class="s2">"sum"</span><span class="p">]</span> <span class="o">/</span> <span class="n">gt</span><span class="p">[</span><span class="s2">"sum"</span><span class="p">])</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">overlap_pct_osm_area_group</span><span class="p">[</span><span class="n">gt</span><span class="p">[</span><span class="s2">"area_group"</span><span class="p">]]</span> <span class="o">=</span> <span class="n">overlap_pct</span>
 </pre></div>
 </div>
 </div>
@@ -8330,14 +8334,16 @@ $$\text{Total overlap percentage in Ground truth} = \frac{\text{Overlap area bet
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">stats_pred_sat</span> <span class="o">=</span> <span class="n">zonal_stats</span><span class="p">(</span>
     <span class="n">dissolved_by_group</span><span class="p">,</span>  <span class="c1"># vector</span>
-    <span class="n">pred_sat_raster_path</span><span class="p">,</span>   <span class="c1"># raster</span>
-    <span class="n">stats</span><span class="o">=</span><span class="p">[</span><span class="s2">"sum"</span><span class="p">,</span> <span class="s2">"count"</span><span class="p">],</span> 
-    <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span>    <span class="c1"># treat -9999 as nodata</span>
+    <span class="n">pred_sat_raster_path</span><span class="p">,</span>  <span class="c1"># raster</span>
+    <span class="n">stats</span><span class="o">=</span><span class="p">[</span><span class="s2">"sum"</span><span class="p">,</span> <span class="s2">"count"</span><span class="p">],</span>
+    <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span><span class="p">,</span>  <span class="c1"># treat -9999 as nodata</span>
 <span class="p">)</span>
 
 <span class="n">stats_pred_sat_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">stats_pred_sat</span><span class="p">)</span>
 
-<span class="n">stats_pred_sat_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dissolved_by_group</span><span class="p">[[</span><span class="s1">'area_group'</span><span class="p">,</span> <span class="s1">'geometry'</span><span class="p">]],</span> <span class="n">stats_pred_sat_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">stats_pred_sat_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">dissolved_by_group</span><span class="p">[[</span><span class="s2">"area_group"</span><span class="p">,</span> <span class="s2">"geometry"</span><span class="p">]],</span> <span class="n">stats_pred_sat_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8443,8 +8449,8 @@ $$\text{Total overlap percentage in Ground truth} = \frac{\text{Overlap area bet
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">stats_gt_df</span><span class="p">)):</span>
     <span class="n">gt</span> <span class="o">=</span> <span class="n">stats_gt_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
     <span class="n">pred</span> <span class="o">=</span> <span class="n">stats_pred_sat_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-    <span class="n">overlap_pct</span> <span class="o">=</span> <span class="p">(</span><span class="n">pred</span><span class="p">[</span><span class="s1">'sum'</span><span class="p">]</span><span class="o">/</span><span class="n">gt</span><span class="p">[</span><span class="s1">'sum'</span><span class="p">])</span> <span class="o">*</span> <span class="mi">100</span>
-    <span class="n">overlap_pct_sat_area_group</span><span class="p">[</span><span class="n">gt</span><span class="p">[</span><span class="s1">'area_group'</span><span class="p">]]</span> <span class="o">=</span> <span class="n">overlap_pct</span>
+    <span class="n">overlap_pct</span> <span class="o">=</span> <span class="p">(</span><span class="n">pred</span><span class="p">[</span><span class="s2">"sum"</span><span class="p">]</span> <span class="o">/</span> <span class="n">gt</span><span class="p">[</span><span class="s2">"sum"</span><span class="p">])</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">overlap_pct_sat_area_group</span><span class="p">[</span><span class="n">gt</span><span class="p">[</span><span class="s2">"area_group"</span><span class="p">]]</span> <span class="o">=</span> <span class="n">overlap_pct</span>
 </pre></div>
 </div>
 </div>
@@ -8499,16 +8505,20 @@ $$\text{Total overlap percentage in Ground truth} = \frac{\text{Overlap area bet
 <div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">area_groups</span> <span class="o">=</span> <span class="n">stats_gt_df</span><span class="p">[</span><span class="s1">'area_group'</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">area_groups</span> <span class="o">=</span> <span class="n">stats_gt_df</span><span class="p">[</span><span class="s2">"area_group"</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
 
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-    <span class="s1">'Area Group'</span><span class="p">:</span> <span class="n">area_groups</span><span class="p">,</span>
-    <span class="s1">'Sentinel-2 + OSM'</span><span class="p">:</span> <span class="p">[</span><span class="n">overlap_pct_osm_area_group</span><span class="p">[</span><span class="n">ag</span><span class="p">]</span> <span class="k">for</span> <span class="n">ag</span> <span class="ow">in</span> <span class="n">area_groups</span><span class="p">],</span>
-    <span class="s1">'Sentinel-2 Only'</span><span class="p">:</span> <span class="p">[</span><span class="n">overlap_pct_sat_area_group</span><span class="p">[</span><span class="n">ag</span><span class="p">]</span> <span class="k">for</span> <span class="n">ag</span> <span class="ow">in</span> <span class="n">area_groups</span><span class="p">]</span>
-<span class="p">})</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">"Area Group"</span><span class="p">:</span> <span class="n">area_groups</span><span class="p">,</span>
+        <span class="s2">"Sentinel-2 + OSM"</span><span class="p">:</span> <span class="p">[</span><span class="n">overlap_pct_osm_area_group</span><span class="p">[</span><span class="n">ag</span><span class="p">]</span> <span class="k">for</span> <span class="n">ag</span> <span class="ow">in</span> <span class="n">area_groups</span><span class="p">],</span>
+        <span class="s2">"Sentinel-2 Only"</span><span class="p">:</span> <span class="p">[</span><span class="n">overlap_pct_sat_area_group</span><span class="p">[</span><span class="n">ag</span><span class="p">]</span> <span class="k">for</span> <span class="n">ag</span> <span class="ow">in</span> <span class="n">area_groups</span><span class="p">],</span>
+    <span class="p">}</span>
+<span class="p">)</span>
 
 <span class="c1"># Melt the DataFrame for plotting</span>
-<span class="n">df_melted</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">id_vars</span><span class="o">=</span><span class="s1">'Area Group'</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="s1">'Input Set'</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s1">'Overlap Percentage'</span><span class="p">)</span>
+<span class="n">df_melted</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span>
+    <span class="n">id_vars</span><span class="o">=</span><span class="s2">"Area Group"</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="s2">"Input Set"</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s2">"Overlap Percentage"</span>
+<span class="p">)</span>
 <span class="n">df</span>
 </pre></div>
 </div>
@@ -8592,17 +8602,14 @@ $$\text{Total overlap percentage in Ground truth} = \frac{\text{Overlap area bet
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span>
-    <span class="n">data</span><span class="o">=</span><span class="n">df_melted</span><span class="p">,</span>
-    <span class="n">x</span><span class="o">=</span><span class="s1">'Area Group'</span><span class="p">,</span>
-    <span class="n">y</span><span class="o">=</span><span class="s1">'Overlap Percentage'</span><span class="p">,</span>
-    <span class="n">hue</span><span class="o">=</span><span class="s1">'Input Set'</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_melted</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"Area Group"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"Overlap Percentage"</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">"Input Set"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span>
+    <span class="s2">"Overlap Percentage of Ground Truth Covered by Prediction by Green Space Size"</span>
 <span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Overlap Percentage of Ground Truth Covered by Prediction by Green Space Size'</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">'Overlap Percentage of Ground Truth (%)'</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">'Green Space Size (m²)'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">"Overlap Percentage of Ground Truth (%)"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">"Green Space Size (m²)"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">'Input Set'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Input Set"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 
 <span class="c1"># Save the figure</span>
