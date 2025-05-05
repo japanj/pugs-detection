@@ -359,6 +359,9 @@ def save_inference_map(gt_raster_path, pred_raster_path, mode, output_path):
     output_path : str
         Path to save the output raster file
     """
+    if not os.path.exists(os.path.dirname(output_path)):
+        os.makedirs(os.path.dirname(output_path))
+
     with (
         rasterio.open(gt_raster_path) as src_gt,
         rasterio.open(pred_raster_path) as src_pred,

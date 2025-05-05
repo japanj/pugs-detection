@@ -7518,21 +7518,23 @@ a.anchor-link {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h1 id="Model-Evaluation-Notebook">Model Evaluation Notebook<a class="anchor-link" href="#Model-Evaluation-Notebook">¶</a></h1><p><strong>Description</strong></p>
-<p>This notebook is used for model performance evaluation by calculating these metrics including IoU and Dice coefficient (F1-score) and model prediction visualization on the whole area.</p>
+<p>This notebook is used for model performance evaluation by calculating these metrics including IoU and Dice coefficient (F1-score) and model prediction visualization on the whole area. Furthermore, it also saves the false negative (FN) and false positive (FP) map from model prediction output for visual inspection.</p>
 <p><strong>Input folder(s)/file(s)</strong></p>
-<p>6 files</p>
+<p>7 files</p>
 <ul>
 <li>Test image tiles folder (example: <code>../data/processed/tiles/test</code>)</li>
 <li>Public Urban Green Spaces (PUGS) ground truth (geojson file) (<code>dresden_pugs_gt.geojson</code>)</li>
 <li>Public Urban Green Spaces (PUGS) ground truth (raster) (<code>dresden_pugs_gt.geotiff</code>)</li>
+<li>Public Urban Green Spaces (PUGS) ground truth clipped to Dresden boundary (raster) (<code>clipped_dresden_pugs_gt.geotiff</code>)</li>
 <li>The best model checkpoint (example: <code>epoch=47-val_loss=0.18.ckpt</code>)</li>
 <li>Metrics file (CSV file) (<code>metrics.csv</code>)</li>
 <li>Sentinel-2 image stack with PUGS OSM binary mask and SDT (<code>stacked_sentinel2_dresden.geotiff</code>)</li>
 </ul>
 <p><strong>Output folder(s)/file(s)</strong></p>
-<p>1 folder and 3 files</p>
+<p>2 folders and 3 files</p>
 <ul>
 <li>Output folder for prediction result visualization (example: <code>../reports/figure/gt_vs_pred/v0</code>)</li>
+<li><code>fn_fp_maps</code> folder which contains the False Negative (FN) and False Positive (FP) area from each model prediction output</li>
 <li>Loss graph over Epochs (example: <code>loss_graph_v0.png</code>)</li>
 <li>Whole area prediction (example: <code>pred_v0.geotiff</code>)</li>
 <li>Whole area prediction (clipped to Dresden boundary) (example: <code>clipped_pred_v0.geotiff</code>)</li>
@@ -7635,6 +7637,7 @@ a.anchor-link {
 <span class="kn">from</span><span class="w"> </span><span class="nn">pugs_detection.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">PredictedImageDataset</span><span class="p">,</span> <span class="n">create_dataset_split</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pugs_detection.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_all_seeds</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pugs_detection.modeling.predict</span><span class="w"> </span><span class="kn">import</span> <span class="n">predict_whole_area</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pugs_detection.raster</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_inference_map</span>
 </pre></div>
 </div>
 </div>
@@ -7733,7 +7736,7 @@ List of the best model checkpoint file can be found in <a href="../models/README
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">test_image_path</span> <span class="o">=</span> <span class="s2">"../data/processed/tiles/test"</span>
@@ -7769,12 +7772,19 @@ List of the best model checkpoint file can be found in <a href="../models/README
     <span class="sa">f</span><span class="s2">"../results/clipped_prediction/clipped_pred_v</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">.geotiff"</span>
 <span class="p">)</span>
 
+<span class="c1"># Ground Truth Data Paths</span>
+<span class="n">clipped_ground_truth_path</span> <span class="o">=</span> <span class="s2">"../data/processed/ground truth/clipped_dresden_pugs_gt.geotiff"</span>
 <span class="n">ground_truth_path</span> <span class="o">=</span> <span class="s2">"../data/processed/ground truth/dresden_pugs_gt.geotiff"</span>
 
 <span class="n">output_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"../reports/figures/gt_vs_pred/v</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">"</span>
 
 <span class="c1"># Dresden boundary</span>
 <span class="n">boundary_path</span> <span class="o">=</span> <span class="s2">"../data/raw/boundary/dresden_boundary.geojson"</span>
+
+<span class="c1"># FN area Paths</span>
+<span class="n">fn_area_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"../results/fn_maps/fn_area_v</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">.geotiff"</span>
+<span class="c1"># FP area Paths</span>
+<span class="n">fp_area_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"../results/fp_maps/fp_area_v</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">.geotiff"</span>
 </pre></div>
 </div>
 </div>
@@ -8149,7 +8159,7 @@ HPU available: False, using: 0 HPUs
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
 <pre>Restoring states from the checkpoint path at ../models/checkpoints/version_1/checkpoints/epoch=48-val_loss=0.18.ckpt
-/root/miniforge3/envs/pugs-detection-new/lib/python3.12/site-packages/lightning/pytorch/callbacks/model_checkpoint.py:362: The dirpath has changed from '../models/checkpoints/version_1/checkpoints' to '../models/test_result/version_9/checkpoints', therefore `best_model_score`, `kth_best_model_path`, `kth_value`, `last_model_path` and `best_k_models` won't be reloaded. Only `best_model_path` will be reloaded.
+/root/miniforge3/envs/pugs-detection-new/lib/python3.12/site-packages/lightning/pytorch/callbacks/model_checkpoint.py:362: The dirpath has changed from '../models/checkpoints/version_1/checkpoints' to '../models/test_result/version_20/checkpoints', therefore `best_model_score`, `kth_best_model_path`, `kth_value`, `last_model_path` and `best_k_models` won't be reloaded. Only `best_model_path` will be reloaded.
 Loaded model weights from the checkpoint at ../models/checkpoints/version_1/checkpoints/epoch=48-val_loss=0.18.ckpt
 /root/miniforge3/envs/pugs-detection-new/lib/python3.12/site-packages/lightning/pytorch/trainer/connectors/data_connector.py:425: The 'test_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=19` in the `DataLoader` to improve performance.
 </pre>
@@ -8469,13 +8479,7 @@ IoU: 0.7767
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>  0%|          | 0/25 [00:00&lt;?, ?it/s]</pre>
-</div>
-</div>
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>100%|██████████| 25/25 [00:10&lt;00:00,  2.46it/s]
+<pre>100%|██████████| 25/25 [00:08&lt;00:00,  2.92it/s]
 </pre>
 </div>
 </div>
@@ -8696,7 +8700,7 @@ IoU: 0.7767
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>Generating visualizations: 100%|██████████| 13/13 [00:14&lt;00:00,  1.12s/image]</pre>
+<pre>Generating visualizations: 100%|██████████| 13/13 [00:05&lt;00:00,  2.39image/s]</pre>
 </div>
 </div>
 <div class="jp-OutputArea-child">
@@ -8716,12 +8720,38 @@ Complete saving the files
 </div>
 </div>
 </div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h1 id="9.-Save-FN-and-FP-maps-for-visual-inspection">9. Save FN and FP maps for visual inspection<a class="anchor-link" href="#9.-Save-FN-and-FP-maps-for-visual-inspection">¶</a></h1><p>Save the false negative (FN) and false positive (FP) map for visual inspection.</p>
+</div>
+</div>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
 <div class="jp-InputPrompt jp-InputArea-prompt">In [30]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">save_inference_map</span><span class="p">(</span><span class="n">clipped_ground_truth_path</span><span class="p">,</span> <span class="n">clipped_prediction_image_path</span><span class="p">,</span> <span class="s2">"fn"</span><span class="p">,</span> <span class="n">fn_area_path</span><span class="p">)</span>
+<span class="n">save_inference_map</span><span class="p">(</span><span class="n">clipped_ground_truth_path</span><span class="p">,</span> <span class="n">clipped_prediction_image_path</span><span class="p">,</span> <span class="s2">"fp"</span><span class="p">,</span> <span class="n">fp_area_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [31]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Usage example with output directory</span>
