@@ -33,9 +33,6 @@ The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbon
 ├── notebooks           <- Jupyter notebooks are named using the following convention:
 │                          `<step_number>_<short_description>.ipynb`, e.g. `1_data_acquisition_osm`.
 │
-├── pyproject.toml      <- Project configuration file with package metadata for 
-│                          public_urban_green_spaces_detection and configuration for tools like black
-│
 ├── results             <- Results from model prediction
 │   ├── clipped_prediction      <- 
 │   ├── fn_fp_maps
