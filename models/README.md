@@ -2,7 +2,7 @@
 
 This folder contains various model checkpoints and default model performance metrics (accuracy, Jaccard index, loss) from Torchgeo library.
 
-It contains two sub-folders: `checkpoints` and `test_result`
+It contains **two sub-folders**: `checkpoints` and `test_result`
 
 ## `checkpoints` folder
 

@@ -1,6 +1,6 @@
 # data folder
 
-This folder contains all input datasets used in the workflow, including both raw data and processed data generated during data preparation steps. It does **not** store model prediction outputs. The model prediction outputs are saved in the top-level `results` folder (link to folder).
+This folder contains all input datasets used in the workflow, including both raw data and processed data generated during data preparation steps. It does **not** store model prediction outputs. The model prediction outputs are saved in the top-level [results folder](/results/).
 
 ## Folder structure
 ```
