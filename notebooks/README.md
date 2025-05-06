@@ -42,7 +42,10 @@ flowchart TD
 | 8_result_analysis.ipynb | Further prediction result analysis |
 
 ## Notebook-specific instructions
-- `6_model_training.ipynb`: To change model parameters (e.g., learning rate, batch size) as listed in [Model experiment setup](/models/README.md#model-experiment-setup), edit the **Set variables section** in the notebook.
+- `6_model_training.ipynb`: To change model parameters (e.g., learning rate, batch size) as listed in [Model experiment setup](/models/README.md#model-experiment-setup), edit the **Set variables section** in the notebook. 
+
+    >Model training step can take up **2-3 hours** to complete.
+
 - `7_model_evaluation.ipynb`: To evaluate different model checkpoints, change the model checkpoint path and version folder in the **Set variables section** in the notebook. More details about the model checkpoint files and model experiment setup can be found in [Model folder](/models/README.md).
 
 ## Note
