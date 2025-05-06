@@ -1,12 +1,12 @@
 # Data (don't commit data since they are too large)
-/data/
+/data/processed/
+/data/raw/
 
 # Pytorch lightning logs
 /notebooks/lightning_logs/
 
 # Folder for keep track of prediction results
 /reports/prediction result/
-/reports/figures/gt_vs_pred/
 
 # Models checkpoints
 /models/checkpoints/

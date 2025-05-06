@@ -1,3 +1,17 @@
+"""
+segmentation_task.py
+
+This module contains custom SemanticSegmentationTask class for semantic segmentation
+from torchgeo library, with custom loss functions and metrics.
+
+Please note that this code is a modification of the original
+torchgeo SemanticSegmentationTask class to support binary loss functions.
+
+Original from: Torchgeo library
+Modified by: Pitchaporn Likitpanjamanon
+Date: 01-05-2025
+"""
+
 from torchgeo.trainers import SemanticSegmentationTask
 import segmentation_models_pytorch as smp
 import torch.nn as nn
@@ -5,7 +19,19 @@ from torch import Tensor
 from torchmetrics import Accuracy, JaccardIndex, MetricCollection
 from typing import Any
 
+
 class CustomSegmentationTask(SemanticSegmentationTask):
+    """
+    Custom SemanticSegmentationTask used for my semantic segmentation task.
+
+    Extends the base SemanticSegmentationTask to support binary loss functions,
+    metrics, and additional configuration for binary segmentation.
+
+    Parameters:
+    -----------
+        **kwargs: Keyword arguments passed to the base class.
+    """
+
     def __init__(self, **kwargs):
         # Remove 'ignore' parameter if it exists in kwargs
         if "ignore" in kwargs:
@@ -62,12 +88,15 @@ class CustomSegmentationTask(SemanticSegmentationTask):
         self.test_metrics = metrics.clone(prefix="test_")
 
     def training_step(self, batch: Any) -> Tensor:
-        """Compute the training loss and additional metrics.
+        """
+        Compute the training loss and additional metrics.
 
-        Args:
+        Parameters:
+        -----------
             batch: The output of your DataLoader.
 
         Returns:
+        ---------
             The loss tensor.
         """
         x = batch["image"]
@@ -86,9 +115,11 @@ class CustomSegmentationTask(SemanticSegmentationTask):
         return loss
 
     def validation_step(self, batch: Any) -> None:
-        """Compute the validation loss and additional metrics.
+        """
+        Compute the validation loss and additional metrics.
 
-        Args:
+        Parameters:
+        -----------
             batch: The output of your DataLoader.
         """
         x = batch["image"]
@@ -105,9 +136,11 @@ class CustomSegmentationTask(SemanticSegmentationTask):
         self.log("val_loss", loss, batch_size=batch_size)
 
     def test_step(self, batch: Any) -> None:
-        """Compute the test loss and additional metrics.
+        """
+        Compute the test loss and additional metrics.
 
-        Args:
+        Parameters:
+        -----------
             batch: The output of your DataLoader.
         """
         x = batch["image"]

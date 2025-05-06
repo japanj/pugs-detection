@@ -1,8 +1,31 @@
+"""
+evaluation.py
+
+This module contains functions for generating confusion matrix.
+
+Author: Pitchaporn Likitpanjamanon
+Date: 01-05-2025
+"""
+
 from sklearn.metrics import confusion_matrix
 import numpy as np
 import torch
 
+
 def generate_confusion_matrix(model, test_loader):
+    """
+    Generate confusion matrix
+
+    Parameters:
+    -----------
+    model : CustomSegmentationTask
+        Model to be evaluated
+
+    Returns:
+    --------
+    cm : numpy array
+        Confusion matrix of the predictions
+    """
     # Set model to evaluation mode
     model.eval()
 

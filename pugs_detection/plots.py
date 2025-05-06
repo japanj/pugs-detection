@@ -1,11 +1,11 @@
 """
 plots.py
 
-This module contains functions for plotting results 
+This module contains functions for plotting results
 and visualizing data.
 
 Author: Pitchaporn Likitpanjamanon
-Date: [YYYY-MM-DD]
+Date: 01-05-2025
 """
 
 import rioxarray
@@ -23,11 +23,22 @@ from rasterio.windows import Window
 from tqdm import tqdm
 from pugs_detection.utils import set_all_seeds
 
+
 def plot_image_tiles(image_path, image_tiles):
+    """
+    Plot the image with bounding boxes for each tile.
+
+    Parameters:
+    -----------
+    image_path : str
+        Path to the satellite image
+    image_tiles : list
+        List that contains tile information (e.g. xmin, xmax, ymin, ymax)
+    """
     data = rioxarray.open_rasterio(image_path)
     plt.figure(figsize=(12, 12))
     data.sel(band=[4, 3, 2]).plot.imshow(robust=True)
-    plt.axis('off')
+    plt.axis("off")
 
     # Add bounding boxes for each tile
     ax = plt.gca()
@@ -36,21 +47,35 @@ def plot_image_tiles(image_path, image_tiles):
             tile_xmin, tile_xmax, tile_ymin, tile_ymax, valid_pct = tile
             width = tile_xmax - tile_xmin
             height = tile_ymax - tile_ymin
-            
+
             # Create a rectangle patch
-            rect = patches.Rectangle((tile_xmin, tile_ymin), width, height, 
-                                    linewidth=1, edgecolor='r', facecolor='none')
-            
+            rect = patches.Rectangle(
+                (tile_xmin, tile_ymin),
+                width,
+                height,
+                linewidth=1,
+                edgecolor="r",
+                facecolor="none",
+            )
+
             # Add the rectangle to the plot
             ax.add_patch(rect)
-            
+
             # Add text label for the tile number
-            plt.text(tile_xmin + width/2, tile_ymin + height/2, f'Tile {idx+1}', 
-                    ha='center', va='center', color='white', fontsize=10,
-                    bbox=dict(facecolor='black', alpha=0.7, boxstyle='round,pad=0.2'))
+            plt.text(
+                tile_xmin + width / 2,
+                tile_ymin + height / 2,
+                f"Tile {idx + 1}",
+                ha="center",
+                va="center",
+                color="white",
+                fontsize=10,
+                bbox=dict(facecolor="black", alpha=0.7, boxstyle="round,pad=0.2"),
+            )
 
     plt.title("Satellite Image with tiles")
     plt.show()
+
 
 def enhance_satellite_rgb(img):
     """
@@ -97,18 +122,35 @@ def enhance_satellite_rgb(img):
 
     return rgb
 
-def visualize_from_torchgeo_dataloader(dataloader, num_samples=3, mode='original', replace_band_pos=None):
-    """Visualize samples from a TorchGeo DataLoader with stack_samples"""
+
+def visualize_from_torchgeo_dataloader(
+    dataloader, num_samples=3, mode="original", additional_band_pos=None
+):
+    """
+    Visualize samples of input channels or input images from Dataloader
+
+    Parameters:
+    -----------
+    dataloader : DataLoader
+        Dataloader containing the dataset
+    num_samples : int
+        Number of samples to visualize
+    mode : str
+        Mode of visualization ('original' or 'additional')
+        Note: 'additional' is when the additional data from OSM is added
+    additional_band_pos : list
+        List of additional information from OSM band position
+    """
     set_all_seeds(42)
     # Get a batch from the dataloader
     dataiter = iter(dataloader)
     batch = next(dataiter)
 
-    for i in range(min(num_samples, batch['image'].shape[0])):
+    for i in range(min(num_samples, batch["image"].shape[0])):
         # Get the image and mask for this sample
-        image = batch['image'][i]
-        mask = batch['mask'][i]
-        
+        image = batch["image"][i]
+        mask = batch["mask"][i]
+
         # Convert to numpy for visualization
         image_np = image.numpy()
         mask_np = mask.numpy()
@@ -118,45 +160,72 @@ def visualize_from_torchgeo_dataloader(dataloader, num_samples=3, mode='original
         print(f"  Image shape: {image_np.shape}")
         print(f"  Mask shape: {mask_np.shape}")
         print(f"  Green space percentage: {np.mean(mask_np):.2f}")
-        
-        # # For sentinel-2 data, use bands 4,3,2 (R,G,B)
-        # # Assuming bands are [C, H, W]
-        # if image_np.shape[0] >= 13:  # Multi-spectral image
-        #     rgb = image_np[[3, 2, 1], :, :].transpose(1, 2, 0)  # Select 4,3,2 bands (RGB bands)
-        # else:
-        #     rgb = image_np[[2, 1, 0], :, :].transpose(1, 2, 0)  # Select 4,3,2 bands (RGB bands)
-        
+
         rgb = enhance_satellite_rgb(image_np)
 
-        if mode != 'original':
-            num_plots = 2 + len(replace_band_pos)
+        if mode != "original":
+            num_plots = 2 + len(additional_band_pos)
         else:
             num_plots = 2
-        
+
         # Create a figure with two subplots
         fig, axes = plt.subplots(1, num_plots, figsize=(12, 6))
-        
+
         additional_info_pos = 0
         for i in range(num_plots):
-            if i==0:
+            if i == 0:
                 # Display the RGB image in the first subplot
                 axes[i].imshow(rgb)
-                axes[i].set_title('RGB Image')
-                axes[i].axis('off')
-            elif i==(num_plots-1):
-                axes[i].imshow(mask_np, cmap='gray')
-                axes[i].set_title('GT')
-                axes[i].axis('off')
+                axes[i].set_title("RGB Image")
+                axes[i].axis("off")
+            elif i == (num_plots - 1):
+                axes[i].imshow(mask_np, cmap="gray")
+                axes[i].set_title("GT")
+                axes[i].axis("off")
             else:
                 # Display the mask in the second subplot
-                axes[i].imshow(image_np[replace_band_pos[additional_info_pos]], cmap='gray')
-                axes[i].set_title('Additional info')
-                axes[i].axis('off')
+                axes[i].imshow(
+                    image_np[additional_band_pos[additional_info_pos]], cmap="gray"
+                )
+                axes[i].set_title("Additional info")
+                axes[i].axis("off")
                 additional_info_pos += 1
-        
+
         plt.show()
 
-def visualize_map(gdf_list, column_list=None, name_list=None, tooltip_list=None, style_list=None, tile_list=None, marker_style=None, categorical=False):
+
+def visualize_map(
+    gdf_list,
+    column_list=None,
+    name_list=None,
+    tooltip_list=None,
+    style_list=None,
+    tile_list=None,
+    marker_style=None,
+    categorical=False,
+):
+    """
+    Visualize multiple GeoDataFrames on a Folium map
+
+    Parameters:
+    -----------
+    gdf_list : list
+        List of GeoDataFrames to visualize
+    column_list : list
+        List of columns to use for coloring the layers
+    name_list : list
+        List of names for the layers
+    tooltip_list : list
+        List of tooltips for the layers
+    style_list : list
+        List of style dictionaries for the layers
+    tile_list : list
+        List of tile layers to add to the map
+    marker_style : list
+        List of marker styles for the layers
+    categorical : bool
+        Whether the column values are categorical
+    """
     # Create the base map with the first layer
     m = gdf_list[0].explore(
         column=column_list[0] if column_list is not None else None,
@@ -164,7 +233,7 @@ def visualize_map(gdf_list, column_list=None, name_list=None, tooltip_list=None,
         style_kwds=style_list[0] if style_list is not None else {},
         tooltip=tooltip_list[0] if tooltip_list is not None else True,
         marker_kwds=marker_style[0] if marker_style is not None else {},
-        categorical=categorical
+        categorical=categorical,
     )
 
     for i in range(1, len(gdf_list)):
@@ -176,15 +245,18 @@ def visualize_map(gdf_list, column_list=None, name_list=None, tooltip_list=None,
             style_kwds=style_list[i] if style_list is not None else {},
             tooltip=tooltip_list[i] if tooltip_list is not None else True,
             marker_kwds=marker_style[i] if marker_style is not None else {},
-            categorical=categorical
+            categorical=categorical,
         )
-    
+
     if tile_list is not None:
         # Add tile layers if provided
         for tile in tile_list:
-            if tile == 'OSM':
+            if tile == "OSM":
                 folium.TileLayer(
-                    tiles="OpenStreetMap", name="OpenStreetMap", overlay=False, control=True
+                    tiles="OpenStreetMap",
+                    name="OpenStreetMap",
+                    overlay=False,
+                    control=True,
                 ).add_to(m)
             else:
                 folium.TileLayer(
@@ -194,11 +266,12 @@ def visualize_map(gdf_list, column_list=None, name_list=None, tooltip_list=None,
                     overlay=False,
                     control=True,
                 ).add_to(m)
-    
+
     # Add layer controls
     folium.LayerControl().add_to(m)
 
     return m
+
 
 def visualize_predictions(
     model,
@@ -209,6 +282,27 @@ def visualize_predictions(
     replace_band_pos=None,
     output_dir=None,
 ):
+    """
+    Visualize predictions from a model on test data
+
+    Parameters:
+    -----------
+    model : CustomSegmentationTask
+        The trained model
+    test_loader : DataLoader
+        DataLoader for the test dataset
+    num_batches : int
+        Number of batches to visualize
+    samples_per_batch : int
+        Number of samples to visualize per batch
+    mode : str
+        Mode of visualization ('original' or 'additional')
+        Note: 'additional' is when the additional data from OSM is added
+    additional_band_pos : list
+        List of additional information from OSM band position
+    output_dir : str
+        Directory to save the output images
+    """
     # Set model to evaluation mode
     model.eval()
 
@@ -327,19 +421,26 @@ def visualize_predictions(
         # Close the figure to free memory
         plt.close(fig)
 
-def visualize_area(original_image_path, prediction_path, ground_truth_path=None, 
-                   x_coord=0, y_coord=0, window_size=256):
+
+def visualize_area(
+    original_image_path,
+    prediction_path,
+    ground_truth_path=None,
+    x_coord=0,
+    y_coord=0,
+    window_size=256,
+):
     """
-    Visualize a specific area with RGB, ground truth, prediction, and overlays.
-    
+    Visualize a specific area with RGB, ground truth, and prediction.
+
     Parameters:
     -----------
     original_image_path : str
-        Path to the original satellite image
+        Path to the satellite image
     prediction_path : str
-        Path to the prediction GeoTIFF
-    ground_truth_path : str, optional
-        Path to the ground truth mask
+        Path to the binary mask from model prediction
+    ground_truth_path : str
+        Path to the binary mask from ground truth
     x_coord, y_coord : int
         Coordinates of the top left corner of the area to visualize
     window_size : int
@@ -350,25 +451,35 @@ def visualize_area(original_image_path, prediction_path, ground_truth_path=None,
         window = Window(x_coord, y_coord, window_size, window_size)
         original = src.read(window=window)
         # print(f"Original shape: {original.shape}")
-        
+
     # Open prediction
     with rasterio.open(prediction_path) as src:
         prediction = src.read(1, window=window)
+        pred_nodata = src.nodata
+        if pred_nodata is not None:
+            prediction = np.where(
+                prediction == pred_nodata, 0, prediction
+            )  # Set nodata to 0
         # print(f"Prediction shape: {prediction.shape}")
-    
+
     # Load ground truth if provided
     ground_truth = None
     if ground_truth_path and os.path.exists(ground_truth_path):
         try:
             with rasterio.open(ground_truth_path) as src:
                 ground_truth = src.read(1, window=window)
+                gt_nodata = src.nodata
+                if gt_nodata is not None:
+                    ground_truth = np.where(
+                        ground_truth == gt_nodata, 0, ground_truth
+                    )  # Set nodata to 0
                 # print(f"Ground truth shape: {ground_truth.shape}")
         except Exception as e:
             print(f"Error loading ground truth: {e}")
-    
+
     # Create RGB visualization
     rgb_data = enhance_satellite_rgb(original)
-    
+
     # Determine number of plots
     # if ground_truth is not None:
     #     fig, axes = plt.subplots(2, 2, figsize=(16, 12))
@@ -376,42 +487,49 @@ def visualize_area(original_image_path, prediction_path, ground_truth_path=None,
     # else:
     #     fig, axes = plt.subplots(1, 3, figsize=(18, 6))
     fig, axes = plt.subplots(1, 3, figsize=(15, 6))
-    
+
     # Plot RGB
     axes[0].imshow(rgb_data)
     axes[0].set_title("RGB Image", fontsize=14)
-    axes[0].axis('off')
-    
+    axes[0].axis("off")
+
     # # Plot ground truth if available
     if ground_truth is not None:
-        axes[1].imshow(ground_truth, cmap='gray')
+        axes[1].imshow(ground_truth, cmap="gray")
         axes[1].set_title("Ground Truth", fontsize=14)
-        axes[1].axis('off')
+        axes[1].axis("off")
         idx_pred = 2  # Index for prediction plot
     else:
         idx_pred = 1  # Index for prediction plot when no ground truth
-    
+
     # Plot prediction
-    axes[idx_pred].imshow(prediction, cmap='gray')
+    axes[idx_pred].imshow(prediction, cmap="gray")
     axes[idx_pred].set_title("Model Prediction", fontsize=14)
-    axes[idx_pred].axis('off')
-    
+    axes[idx_pred].axis("off")
+
     plt.tight_layout()
     return fig
 
-def visualize_whole_image(original_image_path, prediction_path, ground_truth_path=None,
-                         window_size=256, stride=256, output_dir=None):
+
+def visualize_whole_image(
+    original_image_path,
+    prediction_path,
+    ground_truth_path=None,
+    window_size=256,
+    stride=256,
+    output_dir=None,
+):
     """
-    # Loop through the entire image and visualize multiple regions.
-    
+    Loop through the entire image and visualize multiple regions.
+
     Parameters:
     -----------
     original_image_path : str
-        Path to the original satellite image
+        Path to the satellite image
     prediction_path : str
-        Path to the prediction GeoTIFF
-    ground_truth_path : str, optional
-        Path to the ground truth mask
+        Path to the binary mask from model prediction
+    ground_truth_path : str
+        Path to the binary mask from ground truth
     window_size : int
         Size of each window to extract
     stride : int
@@ -423,19 +541,19 @@ def visualize_whole_image(original_image_path, prediction_path, ground_truth_pat
     with rasterio.open(original_image_path) as src:
         img_width = src.width
         img_height = src.height
-    
+
     # Create output directory if needed
     if output_dir and not os.path.exists(output_dir):
         os.makedirs(output_dir)
-    
+
     # Calculate grid positions
     positions = []
     for y in range(0, img_height - window_size + 1, stride):
         for x in range(0, img_width - window_size + 1, stride):
             positions.append((x, y))
-    
+
     print(f"Found {len(positions)} windows to visualize")
-    
+
     # Create visualizations
     for i, (x, y) in enumerate(tqdm(positions)):
         try:
@@ -445,28 +563,42 @@ def visualize_whole_image(original_image_path, prediction_path, ground_truth_pat
                 ground_truth_path=ground_truth_path,
                 x_coord=x,
                 y_coord=y,
-                window_size=window_size
+                window_size=window_size,
             )
-            
+
             if output_dir:
                 # Save to file
                 fig_path = os.path.join(output_dir, f"region_{x}_{y}.png")
-                fig.savefig(fig_path, bbox_inches='tight', dpi=300)
+                fig.savefig(fig_path, bbox_inches="tight", dpi=300)
                 plt.close(fig)
             else:
                 # Display and pause
                 plt.show()
-                response = input(f"Window {i+1}/{len(positions)} at ({x},{y}). Press Enter to continue, 'q' to quit: ")
-                if response.lower() == 'q':
+                response = input(
+                    f"Window {i + 1}/{len(positions)} at ({x},{y}). Press Enter to continue, 'q' to quit: "
+                )
+                if response.lower() == "q":
                     break
                 plt.close(fig)
-                
+
         except Exception as e:
             print(f"Error visualizing window at ({x},{y}): {e}")
-    
+
     return f"Completed visualization of {len(positions)} windows"
 
+
 def plot_loss_graph(metrics_path, loss_graph_path):
+    """
+    Plot training and validation loss from a CSV file
+    and save the figure
+
+    Parameters:
+    -----------
+    metrics_path : str
+        Path to the CSV file containing training and validation metrics (e.g. train_loss, val_loss)
+    loss_graph_path : str
+        Path to save the loss graph
+    """
     # Read the metrics CSV file
     df = pd.read_csv(metrics_path)
 
@@ -524,7 +656,7 @@ def plot_loss_graph(metrics_path, loss_graph_path):
     )
 
     plt.tight_layout()
-    plt.savefig(loss_graph_path, dpi=300, bbox_inches='tight')
+    plt.savefig(loss_graph_path, dpi=300, bbox_inches="tight")
     plt.show()
     plt.close(fig)
 
