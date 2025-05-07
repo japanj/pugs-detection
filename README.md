@@ -131,7 +131,7 @@ For the full details of model prediction output, please visit [results folder](/
 
 ## Reproducibility
 
-For detailed, step-by-step instructions to reproduce the results and environment, see [reproducibility.md](reproducibility.md).
+For detailed, step-by-step instructions to reproduce the results and environment, see [Reproducibility documentation](reproducibility.md).
 
 ## License
 The license information is divided into three sections:
