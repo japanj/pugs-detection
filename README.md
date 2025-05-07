@@ -34,10 +34,10 @@ The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbon
 │                          `<step_number>_<short_description>.ipynb`, e.g. `1_data_acquisition_osm`.
 │
 ├── results             <- Results from model prediction
-│   ├── clipped_prediction      <- 
-│   ├── fn_fp_maps
-│   ├── others
-│   └── whole_area_prediction
+│   ├── clipped_prediction     <- Model prediction results clipped to Dresden administrative boundary 
+│   ├── fn_maps                <- False negative (FN) area maps from model prediction
+│   ├── fp_maps                <- False positive (FP) area maps from model prediction 
+│   └── whole_area_prediction  <- Model prediction results
 │
 ├── reports             <- Generated analysis (e.g. HTML, PDF, LaTeX, etc.)
 │   ├── figures         <- Generated graphics and figures to be used in reporting
