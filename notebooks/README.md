@@ -49,4 +49,5 @@ flowchart TD
 - `7_model_evaluation.ipynb`: To evaluate different model checkpoints, change the model checkpoint path and version folder in the **Set variables section** in the notebook. More details about the model checkpoint files and model experiment setup can be found in [Model folder](/models/README.md).
 
 ## Note
-In the data acquisition notebooks, some data sources require users to have an account in order to download data and some dataset require users to download them manually. All details are listed inside the notebooks.
+- In the data acquisition notebooks, some data sources require users to have an account in order to download data and some dataset require users to download them manually. All details are listed inside the notebooks.
+- To run the workflow on **Windows or MacOS**, you need to modify some part of code in `6_model_training.ipynb` and `7_model_evaluation.ipynb`. See [manual modification step](../reproducibility.md#code-modification) for more detail. 
