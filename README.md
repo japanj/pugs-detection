@@ -10,11 +10,11 @@ The study area in this project is **Dresden, Germany**.
 
 ## Overview of the workflow
 
-This workflow encompass from data acquisition to model evaluation step. The final output of this workflow is the **binary mask of PUGS** in the study or target area.
+This workflow covers all steps from data acquisition to model evaluation and result analysis. The final output is the **binary mask of PUGS** for the study area.
 
 ![Flowchart of the workflow](reports/figures/diagram/update_main_workflow.jpg)
 
-The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbone**. The model used pre-trained weight from [TorchGeo library](https://github.com/microsoft/torchgeo). More details about model training can be found in [Model folder document](/models/README.md).
+The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbone**. The model uses pre-trained weight from [TorchGeo library](https://github.com/microsoft/torchgeo). See [Model documentation](/models/README.md) for more details about model setup.
 
 ## Project Organization
 ```
@@ -86,31 +86,22 @@ Disk storage: 1 TB
 ```
 Conda Version: 24.11.3
 
-## Prerequisites
-1. User need to have Conda installed. If user have not installed Conda yet, please visit the [installation guide](https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html) from Conda.
-2. User need to clone this repository or download ZIP file of this repository. To clone the repository, user can use the below command.
+## Getting Started
+1. Install Conda. If you have not installed Conda yet, please visit the [installation guide](https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html) from Conda.
+2. Clone this repository or download ZIP file of this repository. To clone the repository, use the following command:
     ```
     git clone https://github.com/japanj/pugs-detection.git
     ```
-
-## Set up the environment
-1. Create the environment with required dependencies for this project
-
-    ```
-    conda env create -f environment.yml
-    ```
-2. Activate the environment
-    ```
-    conda activate pugs-detection
-    ```
-(Optional) User can check all the installed libraries or dependencies by using `conda list` command. 
+3. Set up the environment (see [environment setup section](reproducibility.md#set-up-the-environment) for OS-specific instructions).
 
 ## Steps to run the workflow
-All the notebooks are available in [notebooks folder](/notebooks/). The **number at the beginning of the notebooks' name indicate the order of execution**. Each notebook has different requirements or dependecies which are described in the notebooks.
+All notebooks are available in [notebooks folder](/notebooks/). The **number at the beginning of each notebook's name indicates the execution order**. Each notebook has different requirements or dependencies which are described in the notebooks.
 
-To get the reproducible result in data processing till model evaluation result step, user can skip the data acquisition notebooks (`1_data_acquisition_ground_truth.ipynb`, `1_data_acquisition_osm.ipynb`, and `1_data_acquisition_satellite_image.ipynb`) since there might be a chance the **different data retrieving time** can lead to slightly different dataset, e.g. OSM data.
+To ensure reproducibility from data processing to result ananlysis, you can skip the data acquisition notebooks (`1_data_acquisition_ground_truth.ipynb`, `1_data_acquisition_osm.ipynb`, and `1_data_acquisition_satellite_image.ipynb`), as there might be a chance the **different data retrieving time** can lead to slightly different dataset, e.g. OSM data.
 
-More details about notebooks folder, please visit [notebooks folder document](/notebooks/README.md)
+**Note:**
+- For more details about notebooks folder, see [notebooks folder documentation](/notebooks/README.md)
+- On **Windows**, some code modifications may be required due to OS differences. Please follow the instruction in [Reproducibility guide](reproducibility.md).
 
 ## Results
 The result of different model training experiments are shown in the table below. To see the detail of Model experiment setup, please visit [Model Experiment Setup document](/models/README.md#model-experiment-setup).
@@ -126,7 +117,7 @@ The result of different model training experiments are shown in the table below.
 | version_7 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | Focal loss | 0.7409 | 0.8865 | 0.8186 | 0.8512 | 0.9558 |
 | version_8 | 1. Sentinel-2 image <br> 2. SDT raster | Focal loss | 0.7259 | 0.8818 | 0.8041 | 0.8412 | 0.9531 |
 
-*BCE = Binary Cross Entopy*
+*BCE = Binary Cross Entropy*
 
 Based on the results, the best-performing model uses Sentinel-2 imagery together with a PUGS binary mask derived from OSM as an input and trained with Jaccard loss function.
 
@@ -138,11 +129,15 @@ These are examples of model prediction outputs from the best-performing model am
 
 For the full details of model prediction output, please visit [results folder](/results/).
 
+## Reproducibility
+
+For detailed, step-by-step instructions to reproduce the results and environment, see [reproducibility.md](reproducibility.md).
+
 ## License
-It can be separated into three sections:
+The license information is divided into three sections:
 1. This repository is released under [MIT License](/LICENSE).
 2. The data used in this project is under various licenses. Please visit [Data license section](/data/README.md#data-license) to see more detail about license of data used in this project.
 3. The model weights, prediction output, and all figures are licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode.en).
 
 ## Contact
-If there is any further questions or issues related to work, please feel free to open an issues in GitHub or contact m.p.likitpanjamanon@student.utwente.nl
+For questions or issues, please open an issue on GitHub or contact m.p.likitpanjamanon@student.utwente.nl

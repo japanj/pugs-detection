@@ -38,7 +38,7 @@ flowchart TD
 | 4_ground_truth_exploration.ipynb | Explore all ground truth dataset to make a decision on which ground truth datasets should be used to create single ground truth dataset |
 | 5_ground_truth_creation.ipynb | Create single ground truth dataset |
 | 6_model_training.ipynb | Train the model |
-| 7_model_evalution.ipynb | Evaluate the model performace and save the output from model prediction |
+| 7_model_evaluation.ipynb | Evaluate the model performance and save the output from model prediction |
 | 8_result_analysis.ipynb | Further prediction result analysis |
 
 ## Notebook-specific instructions
