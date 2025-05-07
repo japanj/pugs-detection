@@ -184,6 +184,9 @@ def create_binary_mask(gdf, file_path, satellite_image_path):
             dtype="int16",
         )
 
+        if not os.path.exists(os.path.dirname(file_path)):
+            os.makedirs(os.path.dirname(file_path))
+            
         # Save the raster to a file
         with rasterio.open(
             file_path,
@@ -243,6 +246,9 @@ def create_sdt_raster(gdf, file_path, satellite_image_path):
 
         # Create the signed distance transform
         signed_distance_transform = distance_inside - distance_outside
+        
+        if not os.path.exists(os.path.dirname(file_path)):
+            os.makedirs(os.path.dirname(file_path))
 
         # Save the signed distance transform to a file
         with rasterio.open(

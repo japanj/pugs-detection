@@ -38,7 +38,7 @@ flowchart TD
 | 4_ground_truth_exploration.ipynb | Explore all ground truth dataset to make a decision on which ground truth datasets should be used to create single ground truth dataset |
 | 5_ground_truth_creation.ipynb | Create single ground truth dataset |
 | 6_model_training.ipynb | Train the model |
-| 7_model_evalution.ipynb | Evaluate the model performace and save the output from model prediction |
+| 7_model_evaluation.ipynb | Evaluate the model performance and save the output from model prediction |
 | 8_result_analysis.ipynb | Further prediction result analysis |
 
 ## Notebook-specific instructions
@@ -49,4 +49,5 @@ flowchart TD
 - `7_model_evaluation.ipynb`: To evaluate different model checkpoints, change the model checkpoint path and version folder in the **Set variables section** in the notebook. More details about the model checkpoint files and model experiment setup can be found in [Model folder](/models/README.md).
 
 ## Note
-In the data acquisition notebooks, some data sources require users to have an account in order to download data and some dataset require users to download them manually. All details are listed inside the notebooks.
+- In the data acquisition notebooks, some data sources require users to have an account in order to download data and some dataset require users to download them manually. All details are listed inside the notebooks.
+- To run the workflow on **Windows or MacOS**, you need to modify some part of code in `6_model_training.ipynb` and `7_model_evaluation.ipynb`. See [manual modification step](../reproducibility.md#code-modification) for more detail. 
