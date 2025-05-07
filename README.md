@@ -94,7 +94,7 @@ Conda Version: 24.11.3
     ```
 3. Set up the environment (see [environment setup section](reproducibility.md#set-up-the-environment) for OS-specific instructions).
 
-## Steps to run the workflow
+### Steps to run the workflow
 All notebooks are available in [notebooks folder](/notebooks/). The **number at the beginning of each notebook's name indicates the execution order**. Each notebook has different requirements or dependencies which are described in the notebooks.
 
 To ensure reproducibility from data processing to result ananlysis, you can skip the data acquisition notebooks (`1_data_acquisition_ground_truth.ipynb`, `1_data_acquisition_osm.ipynb`, and `1_data_acquisition_satellite_image.ipynb`), as there might be a chance the **different data retrieving time** can lead to slightly different dataset, e.g. OSM data.
@@ -128,10 +128,6 @@ These are examples of model prediction outputs from the best-performing model am
 ![result_viz_2](/reports/figures/gt_vs_pred/v1/region_768_1152.png)
 
 For the full details of model prediction output, please visit [results folder](/results/).
-
-## Reproducibility
-
-For detailed, step-by-step instructions to reproduce the results and environment, see [Reproducibility documentation](reproducibility.md).
 
 ## License
 The license information is divided into three sections:
