@@ -401,7 +401,7 @@ def merge_overlapping_polygons(gdf, threshold=0.5):
         id_poly2 = []
         possible_matches_index = list(sindex.intersection(poly1.geometry.bounds))
         for j in possible_matches_index:
-            if j <= i:
+            if i==j:
                 continue
             poly2 = gdf.iloc[j]
             inter = poly1.geometry.intersection(poly2.geometry)
@@ -422,3 +422,63 @@ def merge_overlapping_polygons(gdf, threshold=0.5):
     merged_gdf["id_poly2"] = id_poly2_merged
 
     return merged_gdf
+
+def merge_overlapping_polygons_improved(gdf, threshold=0.5):
+    """
+    Merge overlapping polygons while avoiding duplication by using connected components.
+    """
+    import networkx as nx
+    from shapely.ops import unary_union
+    
+    # Reset index for consistent indexing
+    gdf = gdf.reset_index(drop=True)
+    
+    # Create spatial index
+    sindex = gdf.sindex
+    
+    # Create a graph where nodes are polygon indices and edges represent significant overlaps
+    G = nx.Graph()
+    G.add_nodes_from(range(len(gdf)))
+    
+    # Find overlapping polygons and add edges
+    for i, poly1 in gdf.iterrows():
+        possible_matches_index = list(sindex.intersection(poly1.geometry.bounds))
+        for j in possible_matches_index:
+            if i >= j:  # Only check each pair once
+                continue
+            poly2 = gdf.iloc[j]
+            inter = poly1.geometry.intersection(poly2.geometry)
+            if not inter.is_empty:
+                poly1_area = poly1.geometry.area
+                poly2_area = poly2.geometry.area
+                overlap_pct_poly1 = inter.area / poly1_area
+                overlap_pct_poly2 = inter.area / poly2_area
+                if (overlap_pct_poly1 > threshold) or (overlap_pct_poly2 > threshold):
+                    G.add_edge(i, j)
+    
+    # Find connected components (clusters of overlapping polygons)
+    connected_components = list(nx.connected_components(G))
+    
+    # Merge polygons in each connected component
+    merged_geometries = []
+    component_info = []
+    
+    for component in connected_components:
+        component = list(component)
+        geometries = [gdf.loc[i, "geometry"] for i in component]
+        merged_geometries.append(unary_union(geometries))
+        
+        # Store IDs of polygons in this component
+        if "unique_id" in gdf.columns:
+            primary_id = gdf.loc[component[0], "unique_id"]
+            other_ids = [gdf.loc[i, "unique_id"] for i in component[1:]]
+        else:
+            primary_id = component[0]
+            other_ids = component[1:]
+            
+        component_info.append({"id_poly1": primary_id, "id_poly2": other_ids})
+    
+    # Create GeoDataFrame with the merged geometries
+    result = gpd.GeoDataFrame(component_info, geometry=merged_geometries, crs=gdf.crs)
+    
+    return result
