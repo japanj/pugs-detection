@@ -1,0 +1,107 @@
+general:
+  os: "linux"
+  seed: 42
+
+paths:
+  raw_ground_truth_path: "../data/raw/ground truth"
+  dresden_boundary_path: "../data/raw/boundary/dresden_boundary.geojson"
+  eua_dataset_path: "../data/raw/ground truth/DE009L2_DRESDEN_UA2018_v013.gpkg"
+  
+  # Ground truth datasets
+  green_openspaces_path: "../data/raw/ground truth/green_and_openspaces_dataset.geojson"
+  parks_greenspaces_path: "../data/raw/ground truth/parks_and_greenspaces_dataset.geojson"
+  leisure_area_path: "../data/raw/ground truth/leisure_area_dataset.geojson"
+  point_parks_path: "../data/raw/ground truth/point_parks_and_gardens_dataset.geojson"
+  park_zwirnmuhle_path: "../data/raw/ground truth/park_an_der_zwirnmuhle_polygon.geojson"
+  
+  # Processed ground truth paths
+  processed_ground_truth_path: "../data/processed/ground truth"
+  gt_vector_path: "../data/processed/ground truth/dresden_pugs_gt.geojson"
+  gt_undissolved_path: "../data/processed/ground truth/dresden_pugs_gt_undissolved.geojson"
+  gt_raster_path: "../data/processed/ground truth/dresden_pugs_gt.geotiff"
+  clipped_gt_raster_path: "../data/processed/ground truth/clipped_dresden_pugs_gt.geotiff"
+  eua_pugs_path: "../data/processed/ground truth/eua_pugs_dataset.geojson"
+  parks_i_type_path: "../data/processed/ground truth/i_parks_type_dataset.geojson"
+  
+  # Raw OSM data paths
+  raw_osm_path: "../data/raw/osm"
+  green_landuse_path: "../data/raw/osm/green space/green_landuse_area_dresden.geojson"
+  green_leisure_path: "../data/raw/osm/green space/green_leisure_area_dresden.geojson"
+  green_natural_path: "../data/raw/osm/green space/green_natural_area_dresden.geojson"
+  green_campsite_path: "../data/raw/osm/green space/green_campsite_area_dresden.geojson"
+  poi_amenity_path: "../data/raw/osm/amenity/poi_amenity_dresden.geojson"
+  poi_leisure_path: "../data/raw/osm/amenity/poi_leisure_dresden.geojson"
+  poi_viewpoint_path: "../data/raw/osm/amenity/poi_viewpoint_dresden.geojson"
+  footpath_network_path: "../data/raw/osm/network/footpath_network_edges.geojson"
+  
+  # Processed OSM data paths
+  processed_osm_path: "../data/processed/osm"
+  pugs_vector_path: "../data/processed/osm/public_green_spaces_dresden.geojson"
+  pugs_mask_path: "../data/processed/osm/public_green_spaces_dresden.geotiff"
+  pugs_sdt_path: "../data/processed/osm/sdt_public_green_spaces_dresden.geotiff"
+
+  # Raw Sentinel-2 data paths
+  raw_sentinel_path: "../data/raw/sentinel-2/cm_sentinel2_l1c_openeo_med_4months_dresden.geotiff"
+
+  # Processed Sentinel-2 data paths
+  processed_sentinel_path: "../data/processed/sentinel-2"
+  clipped_image_path: "../data/processed/sentinel-2/stacked_sentinel2_dresden_clipped.geotiff"
+  whole_image_path: "../data/processed/sentinel-2/stacked_sentinel2_dresden.geotiff"
+  
+  # Tile paths
+  tiles_folder_path: "../data/processed/tiles"
+  train_image_path: "../data/processed/tiles/train"
+  val_image_path: "../data/processed/tiles/val"
+  test_image_path: "../data/processed/tiles/test"
+  
+  # Model paths
+  logger_path: "../models"
+  checkpoint_folder: "checkpoints"
+  test_result_folder: "test_result"
+  
+  # Results paths
+  gt_vs_pred_template: "../reports/figures/gt_vs_pred/v{version}"
+  loss_graph_template: "../reports/figures/loss graph/loss_graph_v{version}.png" 
+  fn_area_template: "../results/fn_maps/fn_area_v{version}.geotiff"
+  fp_area_template: "../results/fp_maps/fp_area_v{version}.geotiff"
+  clipped_prediction_template: "../results/clipped_prediction/clipped_pred_v{version}.geotiff"
+  whole_prediction_template: "../results/whole_area_prediction/pred_v{version}.geotiff"
+  test_metrics_template: "../models/test_result/version_{version}/test_metrics.csv"
+  train_metrics_template: "../models/checkpoints/version_{version}/metrics.csv"
+
+  # Report paths
+  sentinel_pred_raster_path: "../results/clipped_prediction/clipped_pred_v0.geotiff"
+  with_osm_pred_raster_path: "../results/clipped_prediction/clipped_pred_v1.geotiff"
+  analysis_graph_path: "../reports/figures/others/overlap_pct_with_gs_size.png"
+
+data:
+  # Data splitting
+  train_index_list: [2, 3, 9, 11, 12, 13, 15, 16, 18, 20, 23]
+  val_index_list: [7, 17, 19]
+  test_index_list: [8, 14, 22]
+  
+  # Input configuration
+  band_list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+  crs: 32633
+
+model:
+  # Model architecture
+  architecture: "unet"
+  backbone: "resnet50"
+  weight: "SENTINEL2_ALL_MOCO"
+  
+  # Training parameters
+  batch_size: 16
+  loss_func: "focal"  # Options: "bce", "focal", "jaccard"
+  learning_rate: 0.0001
+  epochs: 50
+  patience: 10  # For early stopping
+  
+  # Hardware settings
+  training_num_workers: 4
+  validation_num_workers: 2
+  test_num_workers: 1
+  accelerator: "cpu"
+
+  # Model experiment version
+  version: 1

@@ -331,7 +331,7 @@ class PredictedImageDataset(Dataset):
 
 
 def create_dataset_split(
-    image_path, label_path, epsg_code, band_list, dataset_type, transform_list
+    image_path, label_path, epsg_code, band_list, dataset_type, transform_list, seed=42
 ):
     """
     Create a dataset for training, validation, or testing.
@@ -350,13 +350,15 @@ def create_dataset_split(
         Type of dataset ('train', 'validation', 'test').
     transform_list : list
         List of transformations to apply to the dataset.
+    seed : int
+        Random seed for reproducibility.
 
     Returns:
     --------
     Dataset (either AugmentedDataset or FilteredGeoDataset depending on dataset_type)
         The created dataset to be used for training, validation, or testing
     """
-    set_all_seeds(42)
+    set_all_seeds(seed)
     image_ds = RasterDataset(paths=image_path, crs=CRS.from_epsg(epsg_code), res=10)
     label_ds = VectorDataset(paths=label_path, crs=CRS.from_epsg(epsg_code), res=10)
     combined_ds = image_ds & label_ds
