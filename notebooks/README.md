@@ -20,7 +20,8 @@ flowchart TD
 
 ## How to execute the notebooks
 - Follow the notebook numbering for the recommended execution order (naming convention of notebook is `<step_number>_<short_description>.ipynb`)
-- Data Acquisition notebooks can be skipped and user can use the provided raw data to get the reproducible result in data processing till model evaluation result step.
+- **For exact reproduction of results:** Use only the raw data provided in `data/raw/` folder
+  - Running the data acquisition notebooks with new downloads might lead to different results from reported metrics as data might change over time (e.g. OSM data)
 
 ## Data Locations
 - Input and output data for these notebooks are stored in the top-level `data` folder.
