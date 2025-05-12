@@ -7,7 +7,7 @@ It contains **two sub-folders**: `checkpoints` and `test_result`
 ## `checkpoints` folder
 
 This folder contains sub-folders of different training experiments (`version_<number>`). Inside sub-folder, it contains:
-- `checkpoints` folder: contains the best two models of each training experiment
+- `checkpoints` folder: contains the best model of each training experiment
 - `hparams.yaml` file: contains the hyperparameters setup of each training experiment <br> *Note: num_channels is always 13 because it doesn't take a log of first layer customization into account*
 - `metrics.csv` file: contains training and validation metrics (accuracy, Jaccard index, loss) recorded during model training
 
@@ -44,17 +44,3 @@ Each folder (`version_<number>`) contains the model performance on test set of e
 
 **Reference:**
 - He, K., Zhang, X., Ren, S., & Sun, J. (2015, February 6). Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification. arXiv.org. https://arxiv.org/abs/1502.01852v1
-
-## Model checkpoint path
-The table below shows the best model of each experiment. These model checkpoint paths are in `/checkpoints/version_<number>/` folder.
-| Version folder | input  | Loss function | The best model (checkpoint path) |
-| -------------- | ------ | ------------- | -------------------------------- |
-| version_0 | 1. Sentinel-2 image | Jaccard loss | epoch=49-val_loss=0.22.ckpt |
-| version_1 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | Jaccard loss | epoch=48-val_loss=0.18.ckpt |
-| version_2 | 1. Sentinel-2 image <br> 2. SDT raster | Jaccard loss | epoch=48-val_loss=0.22.ckpt |
-| version_3 | 1. Sentinel-2 image | BCE | epoch=24-val_loss=0.14.ckpt |
-| version_4 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | BCE | epoch=28-val_loss=0.13.ckpt |
-| version_5 | 1. Sentinel-2 image <br> 2. SDT raster | BCE | epoch=25-val_loss=0.14.ckpt |
-| version_6 | 1. Sentinel-2 image | Focal loss | epoch=27-val_loss=0.00.ckpt |
-| version_7 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | Focal loss | epoch=31-val_loss=0.00.ckpt |
-| version_8 | 1. Sentinel-2 image <br> 2. SDT raster | Focal loss | epoch=27-val_loss=0.00.ckpt |
