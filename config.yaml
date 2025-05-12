@@ -1,6 +1,7 @@
 general:
   os: "linux"
   seed: 42
+  place_name: "Dresden, Germany"
 
 paths:
   raw_ground_truth_path: "../data/raw/ground truth"
@@ -75,6 +76,11 @@ paths:
   analysis_graph_path: "../reports/figures/others/overlap_pct_with_gs_size.png"
 
 data:
+  # Sentinel-2 data configuration
+  spatial_extent: {"west": 13.5793237, "south": 50.974937, "east": 13.9660626, "north": 51.1777202}
+  temporal_extent: ["2024-05-01", "2024-08-31"]
+  max_cloud_cover: 5
+
   # Data splitting
   train_index_list: [2, 3, 9, 11, 12, 13, 15, 16, 18, 20, 23]
   val_index_list: [7, 17, 19]
@@ -92,7 +98,7 @@ model:
   
   # Training parameters
   batch_size: 16
-  loss_func: "focal"  # Options: "bce", "focal", "jaccard"
+  loss_func: "jaccard"  # Options: "bce", "focal", "jaccard"
   learning_rate: 0.0001
   epochs: 50
   patience: 10  # For early stopping

@@ -19,7 +19,8 @@ The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbon
 ## Project Organization
 ```
 ├── LICENSE             <- Open-source license of the project
-├── README.md           <- The top-level README for users.
+├── README.md           <- The top-level README for users
+├── config.yaml         <- All parameters used in the workflow
 ├── data                <- All input datasets used in the workflow, including both raw data 
 │   │                      and processed data generated during data preparation steps
 │   ├── processed       <- The intermediate data from raw data processing.
@@ -101,21 +102,21 @@ To ensure reproducibility from data processing to result ananlysis, you can skip
 
 **Note:**
 - For more details about notebooks folder, see [notebooks folder documentation](/notebooks/README.md)
-- On **Windows**, some code modifications may be required due to OS differences. Please follow the instruction in [Reproducibility guide](reproducibility.md).
+- On **Windows**, some parameters in [config.yaml](/config.yaml) are required to change due to OS differences. Please follow the instruction in [Reproducibility guide](reproducibility.md).
 
 ## Results
 The result of different model training experiments are shown in the table below. To see the detail of Model experiment setup, please visit [Model Experiment Setup document](/models/README.md#model-experiment-setup).
 | Version folder | input  | Loss function | Jaccard index (IoU) | Precision | Recall | F1 score | Accuracy |
 | -------------- | ------ | ------------- | ------------------- | --------- | ------ | -------- | -------- |
 | version_0 | 1. Sentinel-2 image | Jaccard loss | 0.7724 | 0.8949 | 0.8495 | 0.8716 | 0.9614 |
-| **version_1** | **1. Sentinel-2 image** <br> **2. PUGS binary mask derived from OSM** | **Jaccard loss** | **0.7767** | 0.9058 | 0.8449 | **0.8743** | 0.9625 |
-| version_2 | 1. Sentinel-2 image <br> 2. SDT raster | Jaccard loss | 0.7652 | 0.8910 | 0.8442 | 0.8670 | 0.96 |
+| **version_1** | **1. Sentinel-2 image** <br> **2. PUGS binary mask derived from OSM** | **Jaccard loss** | **0.7847** | 0.9041 | 0.8560 | **0.8794** | 0.9638 |
+| version_2 | 1. Sentinel-2 image <br> 2. SDT raster | Jaccard loss | 0.7580 | 0.8780 | 0.8472 | 0.8623 | 0.9583 |
 | version_3 | 1. Sentinel-2 image | BCE | 0.7546 | 0.8963 | 0.8268 | 0.8601 | 0.9585 |
-| version_4 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | BCE | 0.7596 | 0.9159 | 0.8165 | 0.8633 | 0.9601 |
-| version_5 | 1. Sentinel-2 image <br> 2. SDT raster | BCE | 0.7483 | 0.8821 | 0.8315 | 0.8560 | 0.9568 |
-| version_6 | 1. Sentinel-2 image | Focal loss | 0.7209 | 0.8622 | 0.8148 | 0.8378 | 0.9513 |
-| version_7 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | Focal loss | 0.7409 | 0.8865 | 0.8186 | 0.8512 | 0.9558 |
-| version_8 | 1. Sentinel-2 image <br> 2. SDT raster | Focal loss | 0.7259 | 0.8818 | 0.8041 | 0.8412 | 0.9531 |
+| version_4 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | BCE | 0.7623 | 0.9060 | 0.8276 | 0.8651 | 0.9602 |
+| version_5 | 1. Sentinel-2 image <br> 2. SDT raster | BCE | 0.7568 | 0.8822 | 0.8419 | 0.8616 | 0.9583 |
+| version_6 | 1. Sentinel-2 image | Focal loss | 0.7178 | 0.8665 | 0.8070 | 0.8357 | 0.9510  |
+| version_7 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | Focal loss | 0.7445 | 0.8908 | 0.8193 | 0.8535 | 0.9566  |
+| version_8 | 1. Sentinel-2 image <br> 2. SDT raster | Focal loss | 0.7239 | 0.8819 | 0.8016 | 0.8400 | 0.9528 |
 
 *BCE = Binary Cross Entropy*
 
