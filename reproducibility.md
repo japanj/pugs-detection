@@ -44,3 +44,19 @@ To ensure reproducibility, it's recommended to:
 - Skip the data acquisition notebooks (`1_data_acquisition_*.ipynb`)
 - Start workflow execution from data processing notebooks (`2_data_processing_*.ipynb`)
 - Use the pre-downloaded raw data files provided in this repository
+
+## Check result
+
+You can verify your results match the reference outputs by comparing:
+
+- **Model performance metrics**: `models/test_result/version_{version}/test_metrics.csv`
+- **Prediction outputs**: 
+  - `results/whole_area_prediction/pred_v{version}.geotiff`
+  - `results/clipped_prediction/clipped_pred_v{version}.geotiff`
+- **Visualization outputs**:
+  - Loss graphs: `reports/figures/loss graph/loss_graph_v{version}.png`
+  - Prediction samples: `reports/figures/gt_vs_pred/v{version}/`
+
+**Note:** `{version}` need to match your `version` setting in `config.yaml`.
+
+For intermediate results, reference HTML notebooks are available in `reports/notebook html/`.
