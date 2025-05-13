@@ -468,15 +468,13 @@ def merge_overlapping_polygons_improved(gdf, threshold=0.5):
         geometries = [gdf.loc[i, "geometry"] for i in component]
         merged_geometries.append(unary_union(geometries))
         
-        # Store IDs of polygons in this component
+        # Store all unique IDs of each merged polygon
         if "unique_id" in gdf.columns:
-            primary_id = gdf.loc[component[0], "unique_id"]
-            other_ids = [gdf.loc[i, "unique_id"] for i in component[1:]]
+            merged_ids = [gdf.loc[i, "unique_id"] for i in component]
         else:
-            primary_id = component[0]
-            other_ids = component[1:]
+            merged_ids = component
             
-        component_info.append({"id_poly1": primary_id, "id_poly2": other_ids})
+        component_info.append({"merged_ids": merged_ids})
     
     # Create GeoDataFrame with the merged geometries
     result = gpd.GeoDataFrame(component_info, geometry=merged_geometries, crs=gdf.crs)

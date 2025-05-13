@@ -77,9 +77,10 @@ You can adjust the following parameters to optimize training performance on your
 - `test_num_workers`: Number of workers to load the test data
 - `accelerator`: Computation device ("cpu" or "gpu")
 
-To set number of workers, please see the recommendation from [Pytorch lightning documentation](https://lightning.ai/docs/pytorch/stable/advanced/speed.html#num-workers).
-
-**Note on Reproducibility:** Changing these hardware-related parameters may optimize training speed but **does not guarantee** identical model performance metrics and prediction output. 
+**Note:**
+- To set number of workers, please see the recommendation from [Pytorch lightning documentation](https://lightning.ai/docs/pytorch/stable/advanced/speed.html#num-workers).
+- To set *gpu* as accelerator, please make sure that you have installed **CUDA**.
+- Changing these hardware-related parameters may optimize training speed but **does not guarantee** identical model performance metrics and prediction output. 
 
 ## Note
 - In the data acquisition notebooks, some data sources require users to have an account in order to download data and some dataset require users to download them manually. All details are listed inside the notebooks.
