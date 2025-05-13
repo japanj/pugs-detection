@@ -7585,7 +7585,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="1.-Import-libraries">1. Import libraries<a class="anchor-link" href="#1.-Import-libraries">¶</a></h1>
+<h1 id="1.-Import-libraries-and-load-config">1. Import libraries and load config<a class="anchor-link" href="#1.-Import-libraries-and-load-config">¶</a></h1>
 </div>
 </div>
 </div>
@@ -7617,8 +7617,40 @@ a.anchor-link {
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pugs_detection.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_basic_info</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pugs_detection.ground_truth</span><span class="w"> </span><span class="kn">import</span> <span class="n">download_ground_truth_data</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=f48e6964">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Load config</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"../config.yaml"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=3dbd58ab">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># set crs</span>
+<span class="n">crs</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"data"</span><span class="p">][</span><span class="s2">"crs"</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -7657,7 +7689,7 @@ Next, user can select <strong>Download pre-packaged data collections</strong> an
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">url</span> <span class="o">=</span> <span class="s2">"https://kommisdd.dresden.de/net4/public/ogcapi/collections/L1266/items"</span>
-<span class="n">green_and_os_gdf</span> <span class="o">=</span> <span class="n">download_ground_truth_data</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">og_crs</span><span class="o">=</span><span class="mi">4326</span><span class="p">,</span> <span class="n">new_crs</span><span class="o">=</span><span class="mi">32633</span><span class="p">)</span>
+<span class="n">green_and_os_gdf</span> <span class="o">=</span> <span class="n">download_ground_truth_data</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">og_crs</span><span class="o">=</span><span class="mi">4326</span><span class="p">,</span> <span class="n">new_crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -7681,10 +7713,10 @@ Next, user can select <strong>Download pre-packaged data collections</strong> an
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">geojson_output_path</span> <span class="o">=</span> <span class="s2">"../data/raw/ground truth/green_and_openspaces_dataset.geojson"</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">geojson_output_path</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">][</span><span class="s2">"green_openspaces_path"</span><span class="p">]</span>
 
 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">geojson_output_path</span><span class="p">)):</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">geojson_output_path</span><span class="p">))</span>
@@ -7847,7 +7879,7 @@ Number of columns: 13
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">url</span> <span class="o">=</span> <span class="s2">"https://kommisdd.dresden.de/net4/public/ogcapi/collections/L569/items"</span>
-<span class="n">park_and_gs_gdf</span> <span class="o">=</span> <span class="n">download_ground_truth_data</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">og_crs</span><span class="o">=</span><span class="mi">4326</span><span class="p">,</span> <span class="n">new_crs</span><span class="o">=</span><span class="mi">32633</span><span class="p">)</span>
+<span class="n">park_and_gs_gdf</span> <span class="o">=</span> <span class="n">download_ground_truth_data</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">og_crs</span><span class="o">=</span><span class="mi">4326</span><span class="p">,</span> <span class="n">new_crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -7871,10 +7903,10 @@ Number of columns: 13
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">geojson_output_path</span> <span class="o">=</span> <span class="s2">"../data/raw/ground truth/parks_and_greenspaces_dataset.geojson"</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">geojson_output_path</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">][</span><span class="s2">"parks_greenspaces_path"</span><span class="p">]</span>
 
 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">geojson_output_path</span><span class="p">)):</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">geojson_output_path</span><span class="p">))</span>
@@ -8029,7 +8061,7 @@ Number of columns: 8
 <span class="p">}</span>
 
 <span class="n">leisure_gdf</span> <span class="o">=</span> <span class="n">download_ground_truth_data</span><span class="p">(</span>
-    <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">og_crs</span><span class="o">=</span><span class="mi">25833</span><span class="p">,</span> <span class="n">new_crs</span><span class="o">=</span><span class="mi">32633</span>
+    <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">og_crs</span><span class="o">=</span><span class="mi">25833</span><span class="p">,</span> <span class="n">new_crs</span><span class="o">=</span><span class="n">crs</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -8054,10 +8086,10 @@ Number of columns: 8
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [14]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">geojson_output_path</span> <span class="o">=</span> <span class="s2">"../data/raw/ground truth/leisure_area_dataset.geojson"</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">geojson_output_path</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">][</span><span class="s2">"leisure_area_path"</span><span class="p">]</span>
 
 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">geojson_output_path</span><span class="p">)):</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">geojson_output_path</span><span class="p">))</span>
@@ -8228,7 +8260,7 @@ Number of columns: 15
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">url</span> <span class="o">=</span> <span class="s2">"https://kommisdd.dresden.de/net4/public/ogcapi/collections/L104/items"</span>
-<span class="n">park_point_gdf</span> <span class="o">=</span> <span class="n">download_ground_truth_data</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">og_crs</span><span class="o">=</span><span class="mi">4326</span><span class="p">,</span> <span class="n">new_crs</span><span class="o">=</span><span class="mi">32633</span><span class="p">)</span>
+<span class="n">park_point_gdf</span> <span class="o">=</span> <span class="n">download_ground_truth_data</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">og_crs</span><span class="o">=</span><span class="mi">4326</span><span class="p">,</span> <span class="n">new_crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8252,10 +8284,10 @@ Number of columns: 15
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">geojson_output_path</span> <span class="o">=</span> <span class="s2">"../data/raw/ground truth/point_parks_and_gardens_dataset.geojson"</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">geojson_output_path</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"paths"</span><span class="p">][</span><span class="s2">"point_parks_path"</span><span class="p">]</span>
 
 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">geojson_output_path</span><span class="p">)):</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">geojson_output_path</span><span class="p">))</span>
@@ -8347,21 +8379,21 @@ Number of columns: 6
 </tr>
 <tr>
 <th>1</th>
-<td>Palaisgarten</td>
-<td>Palaisplatz</td>
+<td>Gönnsdorfer Park</td>
+<td>Am Park</td>
 <td>Park</td>
-<td>www.stadtwikidd.de/wiki/Palaisgarten</td>
-<td>14.03.2025 13:23:16</td>
-<td>POINT (411462.772 5657203.894)</td>
+<td>www.dresden.de/de/stadtraum/umwelt/gruenes-dre...</td>
+<td>13.03.2025 15:55:02</td>
+<td>POINT (420552.833 5655956.565)</td>
 </tr>
 <tr>
 <th>2</th>
-<td>Park Schloß Eckberg</td>
-<td>Bautzner Straße 134</td>
+<td>Am Hohen Stein</td>
+<td>Coschützer Straße</td>
 <td>Park</td>
-<td>www.schloss-eckberg.de/der-schlosspark/</td>
-<td>14.03.2025 13:33:16</td>
-<td>POINT (416057.391 5657751.021)</td>
+<td>www.dresden.de/de/stadtraum/umwelt/gruenes-dre...</td>
+<td>14.03.2025 13:28:14</td>
+<td>POINT (409087.775 5653243.08)</td>
 </tr>
 </tbody>
 </table>
