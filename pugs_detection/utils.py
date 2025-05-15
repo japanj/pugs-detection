@@ -45,7 +45,7 @@ def set_all_seeds(seed=42):
     seed_everything(42, workers=True)
 
 def get_checkpoint_path(version):
-    checkpoint_dir = f"../models/checkpoints/version_{version}/checkpoints"
+    checkpoint_dir = f"../models/trained_models/version_{version}/checkpoints"
     files = os.listdir(checkpoint_dir)
     
     if not files:

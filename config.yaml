@@ -57,7 +57,7 @@ paths:
   
   # Model paths
   logger_path: "../models"
-  checkpoint_folder: "checkpoints"
+  checkpoint_folder: "trained_models"
   test_result_folder: "test_result"
   
   # Results paths
@@ -68,7 +68,7 @@ paths:
   clipped_prediction_template: "../results/clipped_prediction/clipped_pred_v{version}.geotiff"
   whole_prediction_template: "../results/whole_area_prediction/pred_v{version}.geotiff"
   test_metrics_template: "../models/test_result/version_{version}/test_metrics.csv"
-  train_metrics_template: "../models/checkpoints/version_{version}/metrics.csv"
+  train_metrics_template: "../models/trained_models/version_{version}/metrics.csv"
 
   # Report paths
   sentinel_pred_raster_path: "../results/clipped_prediction/clipped_pred_v0.geotiff"
@@ -87,7 +87,7 @@ data:
   test_index_list: [8, 14, 22]
   
   # Input configuration
-  band_list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+  band_list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   crs: 32633
 
 model:
@@ -104,10 +104,10 @@ model:
   patience: 10  # For early stopping
   
   # Hardware settings
-  training_num_workers: 4
+  training_num_workers: 6
   validation_num_workers: 2
-  test_num_workers: 1
-  accelerator: "cpu"
+  test_num_workers: 2
+  accelerator: "gpu"
 
   # Model experiment version
-  version: 1
+  version: 0

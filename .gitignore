@@ -9,7 +9,7 @@
 /reports/prediction result/
 
 # Models checkpoints
-/models/checkpoints/
+/models/trained_models/
 /models/test_result/
 
 # Mac OS-specific storage files

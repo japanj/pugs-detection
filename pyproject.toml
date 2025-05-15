@@ -1,0 +1,60 @@
+[project]
+name = "pugs-detection"
+version = "0.1.0"
+description = "Public Urban Green Spaces Detection Workflow"
+authors = [
+  { name = "Pitchaporn Likitpanjamanon" },
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License"
+]
+requires-python = ">=3.12"
+dependencies = [
+    "folium==0.19.4",
+    "gdal==3.10.2",
+    "geopandas==1.0.1",
+    "ipykernel==6.29.5",
+    "ipywidgets==8.1.6",
+    "openeo==0.37.0",
+    "osmnx==2.0.1",
+    "rasterstats==0.20.0",
+    "rioxarray==0.19.0",
+    "scikit-learn==1.6.1",
+    "scipy==1.15.1",
+    "seaborn==0.13.2",
+    "torch==2.7.0",
+    "torchvision==0.22.0",
+    "torchgeo==0.6.2",
+    "mapclassify==2.8.1",
+]
+
+[tool.uv.sources]
+gdal = [
+  { index = "gdal-wheels", marker = "sys_platform == 'linux'" },
+  { index = "geospatial_wheels", marker = "sys_platform == 'win32'" },
+]
+torch = [
+  { index = "pytorch-cu126", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+torchvision = [
+  { index = "pytorch-cu126", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+
+
+[[tool.uv.index]]
+name = "geospatial_wheels"
+url = "https://nathanjmcdougall.github.io/geospatial-wheels-index/"
+explicit = true
+
+[[tool.uv.index]]
+name = "gdal-wheels"
+url = "https://gitlab.com/api/v4/projects/61637378/packages/pypi/simple"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
