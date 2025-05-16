@@ -88,12 +88,24 @@ Disk storage: 1 TB
 Conda Version: 24.11.3
 
 ## Getting Started
-1. Install Conda. If you have not installed Conda yet, please visit the [installation guide](https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html) from Conda.
-2. Clone this repository or download ZIP file of this repository. To clone the repository, use the following command:
+1. Clone this repository or download ZIP file of this repository. To clone the repository, use the following command:
     ```
     git clone https://github.com/japanj/pugs-detection.git
     ```
-3. Set up the environment (see [environment setup section](reproducibility.md#set-up-the-environment) for OS-specific instructions).
+2. Install **uv** package by running
+   ```
+   pipx install uv
+   ```
+   *Note:* `pip install uv` also works, but it is recommended from the developers to install it in isolated environment. You can visit [uv document](https://docs.astral.sh/uv/getting-started/installation/#standalone-installer) to see more details about uv installation.
+3. Set up the virtual environment by running
+   ```
+   uv sync
+   ```
+   The virtual environment (.venv) will be automatically created in project folder.
+4. You can verify the installed packages by running
+   ```
+   uv pip list
+   ```
 
 ### Steps to run the workflow
 All notebooks are available in [notebooks folder](/notebooks/). The **number at the beginning of each notebook's name indicates the execution order**. Each notebook has different requirements or dependencies which are described in the notebooks.
@@ -108,15 +120,15 @@ To ensure reproducibility from data processing to result ananlysis, you can skip
 The result of different model training experiments are shown in the table below. To see the detail of Model experiment setup, please visit [Model Experiment Setup document](/models/README.md#model-experiment-setup).
 | Version folder | input  | Loss function | Jaccard index (IoU) | Precision | Recall | F1 score | Accuracy |
 | -------------- | ------ | ------------- | ------------------- | --------- | ------ | -------- | -------- |
-| version_0 | 1. Sentinel-2 image | Jaccard loss | 0.7724 | 0.8949 | 0.8495 | 0.8716 | 0.9614 |
-| **version_1** | **1. Sentinel-2 image** <br> **2. PUGS binary mask derived from OSM** | **Jaccard loss** | **0.7847** | 0.9041 | 0.8560 | **0.8794** | 0.9638 |
-| version_2 | 1. Sentinel-2 image <br> 2. SDT raster | Jaccard loss | 0.7580 | 0.8780 | 0.8472 | 0.8623 | 0.9583 |
-| version_3 | 1. Sentinel-2 image | BCE | 0.7546 | 0.8963 | 0.8268 | 0.8601 | 0.9585 |
-| version_4 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | BCE | 0.7623 | 0.9060 | 0.8276 | 0.8651 | 0.9602 |
-| version_5 | 1. Sentinel-2 image <br> 2. SDT raster | BCE | 0.7568 | 0.8822 | 0.8419 | 0.8616 | 0.9583 |
-| version_6 | 1. Sentinel-2 image | Focal loss | 0.7178 | 0.8665 | 0.8070 | 0.8357 | 0.9510  |
-| version_7 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | Focal loss | 0.7445 | 0.8908 | 0.8193 | 0.8535 | 0.9566  |
-| version_8 | 1. Sentinel-2 image <br> 2. SDT raster | Focal loss | 0.7239 | 0.8819 | 0.8016 | 0.8400 | 0.9528 |
+| version_0 | 1. Sentinel-2 image | Jaccard loss | 0.7682 | 0.8964 | 0.8430 | 0.8689 | 0.9607 |
+| **version_1** | **1. Sentinel-2 image** <br> **2. PUGS binary mask derived from OSM** | **Jaccard loss** | **0.7855** | 0.91 | 0.8518 | **0.88** | 0.9641 |
+| version_2 | 1. Sentinel-2 image <br> 2. SDT raster | Jaccard loss | 0.7580 | 0.8865 | 0.8419 | 0.8636 | 0.9590 |
+| version_3 | 1. Sentinel-2 image | BCE | 0.7541 | 0.8850 | 0.8361 | 0.8598 | 0.9579 |
+| version_4 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | BCE | 0.7678 | 0.9171 | 0.8251 | 0.8687 | 0.9615 |
+| version_5 | 1. Sentinel-2 image <br> 2. SDT raster | BCE | 0.7514 | 0.8970 | 0.8224 | 0.8580 | 0.9580 |
+| version_6 | 1. Sentinel-2 image | Focal loss | 0.7191 | 0.8585 | 0.8158 | 0.8366 | 0.9508 |
+| version_7 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | Focal loss | 0.7452 | 0.8909 | 0.8201 | 0.8540 | 0.9567 |
+| version_8 | 1. Sentinel-2 image <br> 2. SDT raster | Focal loss | 0.7251 | 0.8794 | 0.8052 | 0.8406 | 0.9529 |
 
 *BCE = Binary Cross Entropy*
 
