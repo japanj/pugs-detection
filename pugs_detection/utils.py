@@ -10,6 +10,7 @@ Date: 01-05-2025
 """
 
 import numpy as np
+import random
 import torch
 import os
 from lightning.pytorch import seed_everything
@@ -42,6 +43,8 @@ def set_all_seeds(seed=42):
     """
     np.random.seed(seed)
     torch.manual_seed(seed)
+    random.seed(seed)
+    torch.cuda.manual_seed_all(seed)
     seed_everything(42, workers=True)
 
 def get_checkpoint_path(version):
