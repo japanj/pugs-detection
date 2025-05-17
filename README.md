@@ -44,7 +44,9 @@ The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbon
 │   ├── figures         <- Generated graphics and figures to be used in reporting
 │   └── notebook html   <- Notebooks in HTML format
 │   
-├── environment.yml     <- The requirements file for reproducing the analysis environment
+├── pyproject.toml      <- Project metadata
+├── .python-version     <- File to define default Python version used in this project
+├── uv.lock             <- Lockfile that contains information about project's dependencies
 │
 └── pugs_detection      <- Main Python package containing modules and utilities for PUGS detection workflow
     │
@@ -85,7 +87,7 @@ GPU: NVIDIA RTX A500
 RAM: 32 GB
 Disk storage: 1 TB
 ```
-Conda Version: 24.11.3
+**uv** (Python package and project manager) is used in this project. The version of **uv** is 0.7.3.
 
 ## Getting Started
 1. Clone this repository or download ZIP file of this repository. To clone the repository, use the following command:
@@ -94,14 +96,17 @@ Conda Version: 24.11.3
     ```
 2. Install **uv** package by running
    ```
-   pipx install uv
+   pip install uv
    ```
-   *Note:* `pip install uv` also works, but it is recommended from the developers to install it in isolated environment. You can visit [uv document](https://docs.astral.sh/uv/getting-started/installation/#standalone-installer) to see more details about uv installation.
+   *Note:* `pipx install uv` is also recommened as it will automatically installed  uv package in isolated environment. You can visit [uv document](https://docs.astral.sh/uv/getting-started/installation/#standalone-installer) to see more details about uv installation.
+
+   To install exact version of **uv**, you can use the following command `pip install uv==0.7.3` or `pipx install uv==0.7.3`.
+
 3. Set up the virtual environment by running
    ```
    uv sync
    ```
-   The virtual environment (.venv) will be automatically created in project folder.
+   The virtual environment (`.venv` folder) will be automatically created in project folder.
 4. You can verify the installed packages by running
    ```
    uv pip list
@@ -132,7 +137,7 @@ The result of different model training experiments are shown in the table below.
 
 *BCE = Binary Cross Entropy*
 
-Based on the results, the best-performing model uses Sentinel-2 imagery together with a PUGS binary mask derived from OSM as an input and trained with Jaccard loss function.
+Based on the results, the **best-performing model** uses Sentinel-2 imagery together with a PUGS binary mask derived from OSM as an input and trained with Jaccard loss function.
 
 ### Example of the results
 These are examples of model prediction outputs from the best-performing model among all experiments.
@@ -141,6 +146,10 @@ These are examples of model prediction outputs from the best-performing model am
 ![result_viz_2](/reports/figures/gt_vs_pred/v1/region_768_1152.png)
 
 For the full details of model prediction output, please visit [results folder](/results/).
+
+### Further analysis from the model prediction
+(add key findings)
+![result_analysis](/reports/figures/others/pugs_size_analysis.png)
 
 ## License
 The license information is divided into three sections:

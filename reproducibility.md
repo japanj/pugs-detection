@@ -1,25 +1,6 @@
 # Reproduce the workflow
 
-To be able to reproduce this workflow, please follow the steps below.
-
-## Set up the environment
-
-1. Create the environment with required dependencies for this project
-    - **For Linux/WSL:**
-        ```
-        conda env create -f environment_linux.yml
-        ```
-    - **For Windows or macOS:**
-        ```
-        conda env create -f environment_windows_mac.yml
-        ```
-
-2. Activate the environment
-    ```
-    conda activate pugs-detection
-    ```
-
-(Optional) User can check all the installed libraries or dependencies by using `conda list` command. 
+This document provides additional information for reproducing the workflow and verifying output consistency.
 
 ## Set the parameters
 
@@ -53,10 +34,10 @@ You can verify your results match the reference outputs by comparing:
 - **Prediction outputs**: 
   - `results/whole_area_prediction/pred_v{version}.geotiff`
   - `results/clipped_prediction/clipped_pred_v{version}.geotiff`
-- **Visualization outputs**:
-  - Loss graphs: `reports/figures/loss graph/loss_graph_v{version}.png`
-  - Prediction samples: `reports/figures/gt_vs_pred/v{version}/`
+- **Result analysis**: `reports/figures/others/overlap_pct_with_gs_size.png`
 
 **Note:** `{version}` need to match your `version` setting in `config.yaml`.
 
-For intermediate results, reference HTML notebooks are available in `reports/notebook html/`.
+For intermediate results verification, reference HTML notebooks are available in `reports/notebook html/`.
+
+:warning: Difference in hardware and OS **does not guarantee** the **identical** output of model performance metrics, model prediction output, and result analysis output, but overall it should lead to the same conclusion as shown in [result section](/README.md#results).
