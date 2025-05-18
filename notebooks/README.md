@@ -84,4 +84,5 @@ You can adjust the following parameters to optimize training performance on your
 
 ## Note
 - In the data acquisition notebooks, some data sources require users to have an account in order to download data and some dataset require users to download them manually. All details are listed inside the notebooks.
+- When you run the model training step (`6_model_training.ipynb`), it will automatically create a new versioned folder in `models/trained_models/` to store metrics and checkpoints. For example, if versions 0-8 already exist (containing my predefined model experiments), your first run will create `version_9/`.
 - Model training step can take up **1-2 hours** to complete (The estimated time is based on author's laptop hardware and hardware configuration setup in [config.yaml](/config.yaml)).

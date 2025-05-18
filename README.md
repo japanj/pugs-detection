@@ -17,6 +17,7 @@ This workflow covers all steps from data acquisition to model evaluation and res
 The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbone**. The model uses pre-trained weight from [TorchGeo library](https://github.com/microsoft/torchgeo). See [Model documentation](/models/README.md) for more details about model setup.
 
 ## Project Organization
+(consider to move pugs_detection into its folder)
 ```
 ├── LICENSE             <- Open-source license of the project
 ├── README.md           <- The top-level README for users
@@ -102,12 +103,14 @@ Disk storage: 1 TB
 
    To install exact version of **uv**, you can use the following command `pip install uv==0.7.3` or `pipx install uv==0.7.3`.
 
-3. Set up the virtual environment by running
+3. Navigate to the root directory of the cloned repository. You should be in the directory containing `pyproject.toml`.
+
+4. Set up the virtual environment by running
    ```
    uv sync
    ```
    The virtual environment (`.venv` folder) will be automatically created in project folder.
-4. You can verify the installed packages by running
+5. You can verify the installed packages by running
    ```
    uv pip list
    ```

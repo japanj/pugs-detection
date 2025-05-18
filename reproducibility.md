@@ -40,4 +40,4 @@ You can verify your results match the reference outputs by comparing:
 
 For intermediate results verification, reference HTML notebooks are available in `reports/notebook html/`.
 
-:warning: Difference in hardware and OS **does not guarantee** the **identical** output of model performance metrics, model prediction output, and result analysis output, but overall it should lead to the same conclusion as shown in [result section](/README.md#results).
+:warning: Difference in hardware and OS **does not guarantee** the **identical** output as stated in [PyTorch document](https://docs.pytorch.org/docs/stable/notes/randomness.html#reproducibility), e.g. model performance metrics, model prediction output, and result analysis output, but overall it should lead to the same conclusion as shown in [result section](/README.md#results).
