@@ -11,7 +11,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License"
 ]
-requires-python = ">=3.12"
+requires-python = "==3.12.8"
 dependencies = [
     "folium==0.19.4",
     "gdal==3.10.2",
@@ -29,6 +29,7 @@ dependencies = [
     "torchvision==0.22.0",
     "torchgeo==0.6.2",
     "mapclassify==2.8.1",
+    "pyproj==3.7.1"
 ]
 
 [tool.uv.sources]

@@ -17,7 +17,6 @@ This workflow covers all steps from data acquisition to model evaluation and res
 The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbone**. The model uses pre-trained weight from [TorchGeo library](https://github.com/microsoft/torchgeo). See [Model documentation](/models/README.md) for more details about model setup.
 
 ## Project Organization
-(consider to move pugs_detection into its folder)
 ```
 ├── LICENSE             <- Open-source license of the project
 ├── README.md           <- The top-level README for users
@@ -46,7 +45,6 @@ The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbon
 │   └── notebook html   <- Notebooks in HTML format
 │   
 ├── pyproject.toml      <- Project metadata
-├── .python-version     <- File to define default Python version used in this project
 ├── uv.lock             <- Lockfile that contains information about project's dependencies
 │
 └── pugs_detection      <- Main Python package containing modules and utilities for PUGS detection workflow
