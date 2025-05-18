@@ -50,21 +50,6 @@ The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbon
 ├── uv.lock             <- Lockfile that contains information about project's dependencies
 │
 └── pugs_detection      <- Main Python package containing modules and utilities for PUGS detection workflow
-    │
-    ├── modeling                
-    │   ├── __init__.py
-    │   ├── model.py                 <- Customized model architecture
-    │   ├── predict.py               <- Code to run model inference with trained models          
-    │   ├── segmentation_task.py     <- Customized SegmentationTask (customize from torchgeo library)
-    │   └── evaluation.py            <- Function to create the confusion matrix
-    │
-    ├── __init__.py          
-    ├── utils.py             <- Common functions used across different notebooks
-    ├── dataset.py           <- Dataset classes and dataset creation functions
-    ├── ground_truth.py      <- Functions to create features for modeling
-    ├── osm.py               <- Functions related to OSM data including loading and processing OSM data
-    ├── raster.py            <- Functions to create and process raster data
-    └── plots.py             <- Functions to create all visualizations
 ```
 
 ## Datasets
