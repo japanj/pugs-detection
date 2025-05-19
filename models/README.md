@@ -1,6 +1,6 @@
 # models folder
 
-This folder contains various model checkpoints and default model performance metrics (accuracy, Jaccard index, loss) from Torchgeo library.
+This folder contains various model checkpoints and reported model performance metrics, e.g. Jaccard Index (IoU), Precision, Recall, F1 Score, and Accuracy, of each model experiment.
 
 It contains **two sub-folders**: `checkpoints` and `test_result`
 
@@ -13,7 +13,7 @@ This folder contains sub-folders of different training experiments (`version_<nu
 
 ## `test_result` folder
 
-This folder contains default model performance metris (accuracy, Jaccard index, loss) on test set.
+This folder contains default model performance metrics, e.g. Jaccard Index (IoU), Precision, Recall, F1 Score, and Accuracy, on test set.
 
 Each folder (`version_<number>`) contains the model performance on test set of each experiment.
 
@@ -44,3 +44,14 @@ Each folder (`version_<number>`) contains the model performance on test set of e
 
 **Reference:**
 - He, K., Zhang, X., Ren, S., & Sun, J. (2015, February 6). Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification. arXiv.org. https://arxiv.org/abs/1502.01852v1
+
+## Hardware setup for model training
+**GPU** (NVIDIA RTX A500) is used in model training steps and number of workers is also set for DataLoader as listed in [config.yaml](/config.yaml) under `model` section.
+```yaml
+# Hardware settings
+training_num_workers: 6
+validation_num_workers: 2
+test_num_workers: 2
+accelerator: "gpu"
+```
+More detail about hardware specification can be found in [Hardware and Software Specifications](/README.md#hardware-and-software-specifications)
