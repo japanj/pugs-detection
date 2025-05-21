@@ -134,7 +134,27 @@ These are examples of model prediction outputs from the best-performing model am
 For the full details of model prediction output, please visit [results folder](/results/).
 
 ### Further analysis from the model prediction
-(add key findings)
+
+:mag: **Key Findings**
+- Model performance improves as green space size increases.
+- The model using both Sentinel-2 imagery and PUGS binary mask from OSM outperforms the one using only Sentinel-2 imagery.
+- Regional parks are easiest to detect, with both models achieving high recall.
+- Small PUGS (e.g., pocket and neighbourhood parks) are more difficult to detect and have lower recall values.
+- Regional parks dominate total green space area but make up only a small fraction of the total number of PUGS.
+- In contrast, small PUGS make up the majority of PUGS by count but contribute little to total area.
+- The largest performance gain from using additional data from OSM is seen in small PUGS, especially pocket parks.
+- **Conclusion**: Incorporating additional data from OSM helps improve detection of small PUGS.
+
+| Type of PUGS | Size (ha) |
+| ------------ | --------- |
+| Pocket park | < 0.4 |
+| Neighbourhood park | 0.4 – 3 |
+| Community park | 3 - 10 |
+| Urban park | 10 – 80 |
+| Regional park | > 80 |
+
+*Note: PUGS size categories adapted from (Byrne & Sipe, 2010; Choi et al., 2020; Şenik & Uzun, 2022).*
+
 ![result_analysis](/reports/figures/others/pugs_size_analysis.png)
 
 ## License
@@ -145,3 +165,8 @@ The license information is divided into three sections:
 
 ## Contact
 For questions or issues, please open an issue on GitHub or contact m.p.likitpanjamanon@student.utwente.nl
+
+## References
+- Byrne, J., & Sipe, N. (2010). Green and open space planning for urban consolidation—A review of the literature and best practice. Urban Research Program. https://research-repository.griffith.edu.au/server/api/core/bitstreams/60289e60-4b96-5c4b-99de-d39d2c8db305/content
+- Choi, D., Park, K., & Rigolon, A. (2020). From XS to XL Urban Nature: Examining Access to Different Types of Green Space Using a ‘Just Sustainabilities’ Framework. Sustainability, 12(17), Article 17. https://doi.org/10.3390/su12176998
+- Şenik, B., & Uzun, O. (2022). A process approach to the open green space system planning. Landscape and Ecological Engineering, 18(2), 203–219. https://doi.org/10.1007/s11355-021-00492-5
