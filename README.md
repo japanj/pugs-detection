@@ -105,7 +105,7 @@ To ensure reproducibility from data processing to result ananlysis, you can skip
 
 **Note:**
 - For more details about notebooks folder, see [notebooks folder documentation](/notebooks/README.md)
-- On **Windows**, some parameters in [config.yaml](/config.yaml) are required to change due to OS differences. Please follow the instruction in [Reproducibility guide](reproducibility.md).
+- On **Windows and macOS**, some parameters in [config.yaml](/config.yaml) are required to change due to OS differences. Please follow the instruction in [Reproducibility guide](reproducibility.md).
 
 ## Results
 The result of different model training experiments are shown in the table below. To see the detail of Model experiment setup, please visit [Model Experiment Setup document](/models/README.md#model-experiment-setup).
