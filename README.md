@@ -78,7 +78,9 @@ Disk storage: 1 TB
     ```
     git clone https://github.com/japanj/pugs-detection.git
     ```
-2. Install **uv** package by running
+2. Make sure that you have installed `Python` and `pip`.
+
+3. Install **uv** package by running
    ```
    pip install uv
    ```
@@ -86,14 +88,15 @@ Disk storage: 1 TB
 
    To install exact version of **uv**, you can use the following command `pip install uv==0.7.3` or `pipx install uv==0.7.3`.
 
-3. Navigate to the root directory of the cloned repository. You should be in the directory containing `pyproject.toml`.
+4. Navigate to the root directory of the cloned repository. You should be in the directory containing `pyproject.toml`.
 
-4. Set up the virtual environment by running
+5. Set up the virtual environment by running
    ```
    uv sync
    ```
    The virtual environment (`.venv` folder) will be automatically created in project folder.
-5. You can verify the installed packages by running
+
+6. You can verify the installed packages by running
    ```
    uv pip list
    ```
@@ -137,12 +140,12 @@ For the full details of model prediction output, please visit [results folder](/
 
 :mag: **Key Findings**
 - Model performance improves as green space size increases.
-- The model using both Sentinel-2 imagery and PUGS binary mask from OSM outperforms the one using only Sentinel-2 imagery.
-- Regional parks are easiest to detect, with both models achieving high recall.
+- The model that uses both Sentinel-2 imagery and PUGS binary mask from OSM as input outperforms the one using only Sentinel-2 imagery.
+- Regional parks are easiest to detect and both models achieve approximately 99% of recall.
 - Small PUGS (e.g., pocket and neighbourhood parks) are more difficult to detect and have lower recall values.
 - Regional parks dominate total green space area but make up only a small fraction of the total number of PUGS.
-- In contrast, small PUGS make up the majority of PUGS by count but contribute little to total area.
-- The largest performance gain from using additional data from OSM is seen in small PUGS, especially pocket parks.
+- In contrast, small PUGS has the higheest numbers in terms of PUGS count but contribute little to total area.
+- The most significant performance gap between two models gain from using additional data from OSM is seen in small PUGS, especially pocket parks.
 - **Conclusion**: Incorporating additional data from OSM helps improve detection of small PUGS.
 
 | Type of PUGS | Size (ha) |
