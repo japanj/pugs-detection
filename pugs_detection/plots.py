@@ -665,3 +665,152 @@ def plot_loss_graph(metrics_path, loss_graph_path):
     print(f"Best model at epoch {int(best_epoch)}:")
     print(f"  Val Loss: {best_row['val_loss']:.4f}")
     print(f"  Val Jaccard: {best_row['val_BinaryJaccardIndex']:.4f}")
+
+
+def plot_result_analysis(area_groups, recall_df, summary_area_df, summary_polygon_num_df, graph_output_path):
+    """
+    Plot the result analysis for PUGS detection.
+    This function creates a bar plot for recall by PUGS size category,
+    a pie chart for polygon count distribution, and a pie chart for area distribution.
+
+    Parameters:
+    -----------
+    area_groups : list
+        List of area groups for categorization
+    recall_df : DataFrame
+        DataFrame containing the recall of different input sets by area group
+    summary_area_df : DataFrame
+        DataFrame containing the summary of area distribution
+    summary_polygon_num_df : DataFrame
+        DataFrame containing the summary of polygon count distribution
+    graph_output_path : str
+        Path to save the output graph
+    """
+    colors = sns.color_palette("viridis", n_colors=len(area_groups))
+    colors_dict = dict(zip(area_groups, colors))
+
+    fig = plt.figure(figsize=(18, 10))
+    gs = fig.add_gridspec(2, 2, width_ratios=[1.8, 1.2], wspace=0.4)  # Increased spacing
+
+    # 1. Model performance barplot (left side, spans both rows)
+    ax1 = fig.add_subplot(gs[:, 0])  # Span both rows in first column
+
+    sns.barplot(
+        data=recall_df,
+        x="Area Group",
+        y="Overlap Percentage",
+        hue="Input Set",
+        ax=ax1,
+        palette=["#1f77b4", "#ff7f0e"],
+    )
+
+    for i in ax1.containers:
+        ax1.bar_label(i, fmt="%.2f", padding=2)
+
+    ax1.set_title("Recall by PUGS Size Category", fontsize=16)
+    ax1.set_ylabel("Recall (%)", fontsize=12)
+    ax1.set_xlabel("PUGS Size (ha)", fontsize=12)
+    ax1.set_ylim(0, 110)
+    ax1.legend(title="Input Set", fontsize=12, title_fontsize=12)
+    ax1.tick_params(labelsize=11)
+
+    # 2. Polygon count distribution pie chart (top right)
+    ax2 = fig.add_subplot(gs[0, 1])
+    counts_series = summary_polygon_num_df.sort_index()
+    wedges, _ = ax2.pie(
+        counts_series,
+        labels=None,
+        autopct=None,
+        wedgeprops={"edgecolor": "white", "linewidth": 1},
+        colors=[colors_dict[idx] for idx in counts_series.index],
+    )
+
+    bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=0.72)
+    kw = dict(arrowprops=dict(arrowstyle="-"), bbox=bbox_props, zorder=0, va="center")
+
+    # Add percentage annotations
+    for i, p in enumerate(wedges):
+        ang = (p.theta2 - p.theta1) / 2.0 + p.theta1
+        x = np.cos(np.deg2rad(ang))
+        y = np.sin(np.deg2rad(ang))
+
+        # Calculate percentage
+        pct = 100 * counts_series.iloc[i] / counts_series.sum()
+
+        horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
+        connectionstyle = f"angle,angleA=0,angleB={ang}"
+        kw["arrowprops"].update({"connectionstyle": connectionstyle})
+        ax2.annotate(
+            f"{pct:.1f}%",
+            xy=(x, y),
+            xytext=(1.35 * np.sign(x), 1.4 * y),
+            horizontalalignment=horizontalalignment,
+            fontsize=12,
+            **kw,
+        )
+
+    ax2.legend(
+        wedges,
+        summary_area_df["area_group"].values,
+        title="PUGS Size (ha)",
+        loc="center left",
+        bbox_to_anchor=(-0.6, 0.6),
+        fontsize=12,
+        title_fontsize=12,
+    )
+
+    ax2.set_title(
+        "Distribution of PUGS Polygons in each category", fontsize=14, pad=20
+    )
+
+    # 3. Area distribution pie chart (bottom right)
+    ax3 = fig.add_subplot(gs[1, 1])
+    wedges, _ = ax3.pie(
+        summary_area_df["Total Area (ha)"],
+        labels=None,
+        autopct=None,
+        wedgeprops={"edgecolor": "white", "linewidth": 1},
+        colors=[colors_dict[idx] for idx in summary_area_df["area_group"]],
+    )
+
+    # Add percentage annotations
+    for i, p in enumerate(wedges):
+        ang = (p.theta2 - p.theta1) / 2.0 + p.theta1
+        x = np.cos(np.deg2rad(ang))
+        y = np.sin(np.deg2rad(ang))
+
+        # Calculate percentage
+        pct = summary_area_df["Percentage (%)"][i]
+
+        horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
+        connectionstyle = f"angle,angleA=0,angleB={ang}"
+        kw["arrowprops"].update({"connectionstyle": connectionstyle})
+        ax3.annotate(
+            f"{pct:.1f}%",
+            xy=(x, y),
+            xytext=(1.35 * np.sign(x), 1.4 * y),
+            horizontalalignment=horizontalalignment,
+            fontsize=12,
+            **kw,
+        )
+
+    ax3.legend(
+        wedges,
+        summary_area_df["area_group"].values,
+        title="Green Space Size (ha)",
+        loc="center left",
+        bbox_to_anchor=(-0.6, 0.5),
+        fontsize=12,
+        title_fontsize=12,
+    )
+
+    ax3.set_title("Distribution of PUGS Area in each category", fontsize=14, pad=20)
+
+    # Adjust layout and add title
+    plt.suptitle("Public Urban Green Space (PUGS) Analysis by Size Category", fontsize=18, y=0.98)
+    plt.savefig(
+        os.path.join(os.path.dirname(graph_output_path), "pugs_size_analysis.png"),
+        dpi=300,
+        bbox_inches="tight",
+    )
+    plt.show()

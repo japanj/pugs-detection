@@ -13,9 +13,9 @@ import geopandas as gpd
 import pandas as pd
 import rasterio
 import requests
+import networkx as nx
 from rasterstats import zonal_stats
 from shapely.ops import unary_union
-
 
 def download_ground_truth_data(url, params=None, og_crs=4326, new_crs=32633):
     """
@@ -372,7 +372,6 @@ def print_non_green_space_info(gdf, threshold=0):
         f"Low NDVI value area: {low_ndvi_area:.2f} m² from {total_area:.2f} m² ({area_percentage:.2f}%)"
     )
 
-
 def merge_overlapping_polygons(gdf, threshold=0.5):
     """
     Merge (dissolve) overlapping polygons in a GeoDataFrame based on a specified overlap threshold.
@@ -389,47 +388,6 @@ def merge_overlapping_polygons(gdf, threshold=0.5):
     merged_gdf : GeoDataFrame
         GeoDataFrame containing the merged polygons
     """
-    # Use spatial index for efficient overlap search
-    gdf = gdf.reset_index(drop=True)
-    sindex = gdf.sindex
-    merged = []
-    id_poly1 = []
-    id_poly2_merged = []
-    list_merged_id = set()
-    for i, poly1 in gdf.iterrows():
-        group = [poly1.geometry]
-        id_poly2 = []
-        possible_matches_index = list(sindex.intersection(poly1.geometry.bounds))
-        for j in possible_matches_index:
-            if i==j:
-                continue
-            poly2 = gdf.iloc[j]
-            inter = poly1.geometry.intersection(poly2.geometry)
-            poly1_area = poly1.geometry.area
-            poly2_area = poly2.geometry.area
-            if not inter.is_empty:
-                overlap_pct_poly1 = inter.area / poly1_area
-                overlap_pct_poly2 = inter.area / poly2_area
-                if (overlap_pct_poly1 > threshold) or (overlap_pct_poly2 > threshold):
-                    id_poly2.append(poly2.unique_id)
-                    list_merged_id.add(poly2.unique_id)
-                    group.append(poly2.geometry)
-        merged.append(unary_union(group))
-        id_poly1.append(poly1.unique_id)
-        id_poly2_merged.append(id_poly2)
-    merged_gdf = gpd.GeoDataFrame(geometry=merged, crs=gdf.crs)
-    merged_gdf["id_poly1"] = id_poly1
-    merged_gdf["id_poly2"] = id_poly2_merged
-
-    return merged_gdf
-
-def merge_overlapping_polygons_improved(gdf, threshold=0.5):
-    """
-    Merge overlapping polygons while avoiding duplication by using connected components.
-    """
-    import networkx as nx
-    from shapely.ops import unary_union
-    
     # Reset index for consistent indexing
     gdf = gdf.reset_index(drop=True)
     
