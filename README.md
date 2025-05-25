@@ -73,6 +73,13 @@ Disk storage: 1 TB
 ```
 **uv** (Python package and project manager) is used in this project. The version of **uv** is 0.7.3.
 
+
+## Estimated project size
+The project size is approximately 5.7 GB.
+- data: approximately 1.64 GB
+- models: approximately 3.27 GB
+- code and others: approximately 0.79 GB
+
 ## Getting Started
 
 ### Option 1: Download Complete Package from Release tag
