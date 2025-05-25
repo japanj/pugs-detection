@@ -20,27 +20,31 @@ flowchart TD
 
 ## How to execute the notebooks
 - Follow the notebook numbering for the recommended execution order (naming convention of notebook is `<step_number>_<short_description>.ipynb`)
-- **For exact reproduction of results:** Use only the raw data provided in `data/raw/` folder
-  - Running the data acquisition notebooks with new downloads might lead to different results from reported metrics as data might change over time (e.g. OSM data)
+- To **ensure reproducibility**, it's recommended to:
+    - Skip the data acquisition notebooks (`1_data_acquisition_*.ipynb`)
+    - Start workflow execution from data processing notebooks (`2_data_processing_*.ipynb`)
+    - Use the pre-downloaded raw data files provided in this repository
 
-## Data Locations
+Since running the data acquisition notebooks with new downloads might lead to different results from reported metrics as data might change over time (e.g. OSM data).
+
+## Data files
 - Input and output data for these notebooks are stored in the top-level `data` folder.
 - For details on the all data used in this project, see [Data folder document](../data/README.md).
 
 ## Notebook List
-| Notebook name         |  Description           |
-| --------------------- |  --------------------- |
-| 1_data_acquisition_ground_truth.ipynb | Download ground truth datasets |
-| 1_data_acquisition_osm.ipynb | Download the OpenStreetMap (OSM) data |
-| 1_data_acquisition_satellite_image.ipynb | Download Sentinel-2 image |
-| 2_data_processing_ground_truth.ipynb | Pre-process the ground truth datasets before ground truth exploration and creation steps |
-| 2_data_processing_osm.ipynb | Derive public urban green space (PUGS) from OSM data |
-| 3_data_processing_satellite_image.ipynb | Pre-process Sentinel-2 image and stack additional raster derived from OSM data with Sentinel-2 image |
-| 4_ground_truth_exploration.ipynb | Explore all ground truth dataset to make a decision on which ground truth datasets should be used to create single ground truth dataset |
-| 5_ground_truth_creation.ipynb | Create single ground truth dataset |
-| 6_model_training.ipynb | Train the model |
-| 7_model_evaluation.ipynb | Evaluate the model performance and save the output from model prediction |
-| 8_result_analysis.ipynb | Further prediction result analysis |
+| Notebook name         |  Description           | Note            |
+| --------------------- |  --------------------- | --------------- |
+| 1_data_acquisition_ground_truth.ipynb | Download ground truth datasets | Some dataset require users to download them manually. All details are listed inside the notebooks |
+| 1_data_acquisition_osm.ipynb | Download the OpenStreetMap (OSM) data | - |
+| 1_data_acquisition_satellite_image.ipynb | Download Sentinel-2 image | Require users to have an account in order to download data | 
+| 2_data_processing_ground_truth.ipynb | Pre-process the ground truth datasets before ground truth exploration and creation steps | - |
+| 2_data_processing_osm.ipynb | Derive public urban green space (PUGS) from OSM data | - |
+| 3_data_processing_satellite_image.ipynb | Pre-process Sentinel-2 image and stack additional raster derived from OSM data with Sentinel-2 image | - |
+| 4_ground_truth_exploration.ipynb | Explore all ground truth dataset to make a decision on which ground truth datasets should be used to create single ground truth dataset | - | 
+| 5_ground_truth_creation.ipynb | Create single ground truth dataset | - |
+| 6_model_training.ipynb | Train the model | Running this notebook will automatically create a new versioned folder in `models/trained_models/` to store metrics and checkpoints. <br><br> For example, if versions 0-8 already exist (containing my predefined model experiments), your first run will create `version_9/`. |
+| 7_model_evaluation.ipynb | Evaluate the model performance and save the output from model prediction | - |
+| 8_result_analysis.ipynb | Further prediction result analysis | - |
 
 ## Change the parameters
 
@@ -83,7 +87,5 @@ You can adjust the following parameters to optimize training performance on your
 - Changing these hardware-related parameters may optimize training speed but **does not guarantee** identical model performance metrics and prediction output. 
 
 ## Note
-- In the data acquisition notebooks, some data sources require users to have an account in order to download data and some dataset require users to download them manually. All details are listed inside the notebooks.
 - **Import libraries** section in each notebook can take up to **5-6 mins** if there is a lot of dependencies.
-- When you run the model training step (`6_model_training.ipynb`), it will automatically create a new versioned folder in `models/trained_models/` to store metrics and checkpoints. For example, if versions 0-8 already exist (containing my predefined model experiments), your first run will create `version_9/`.
-- Model training step can take up **1-2 hours** to complete (The estimated time is based on author's laptop hardware and hardware configuration setup in [config.yaml](/config.yaml)). Without setting up number of workers, model training step can take longer than 6 hours.
+- Model training step can take up **1-2 hours** to complete (The estimated time is based on author's laptop hardware and hardware configuration setup in [config.yaml](/config.yaml)). Without setting up number of workers and using CPU, model training time can take **up to 9 hours** for each experiment.

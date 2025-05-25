@@ -12,32 +12,44 @@ More details about the issue: https://github.com/microsoft/torchgeo/issues/886#i
 
 ## Data for Reproducibility
 
-This repository includes all raw data files required to reproduce our results:
-
 ### Use Provided Raw Data Files
 - The raw data in `data/raw/` must be used to get the reproducible results
 - Different data retrieval date can lead to different raw data since OSM data might change over time and Sentinel-2 image collections are occasionally reprocessed. 
 
     More details about Sentinel-2 processing baseline: https://sentiwiki.copernicus.eu/web/s2-processing
 
-### Skip Data Acquisition Notebooks
-To ensure reproducibility, it's recommended to:
-- Skip the data acquisition notebooks (`1_data_acquisition_*.ipynb`)
-- Start workflow execution from data processing notebooks (`2_data_processing_*.ipynb`)
-- Use the pre-downloaded raw data files provided in this repository
+### Use provided model checkpoints
+For **model training** step, you have two options:
 
-## Check result
+1. **Train from scratch**: Run notebook `6_model_training.ipynb`
+   - New checkpoints will be saved in `models/trained_models/`
+
+2. **Use pre-trained checkpoints** (recommended for exact reproduction)
+   - Pre-trained models are available in `models/trained_models/`
+   - Set `version` in `config.yaml` to match the experiment you want to reproduce
+   - You can directly run `7_model_evaluation.ipynb` for model evaluation
+
+## Workflow Execution
+
+All notebooks required for this workflow are available in the [notebooks folder](/notebooks/) and should be executed in sequence. It also includes instructions for [parameter configuration](/notebooks/README.md#change-the-parameters) to experiment with different model setups.
+
+## Validate result
 
 You can verify your results match the reference outputs by comparing:
 
-- **Model performance metrics**: `models/test_result/version_{version}/test_metrics.csv`
-- **Prediction outputs**: 
-  - `results/whole_area_prediction/pred_v{version}.geotiff`
-  - `results/clipped_prediction/clipped_pred_v{version}.geotiff`
-- **Result analysis**: `reports/figures/others/overlap_pct_with_gs_size.png`
+### 1. Validate Model Metrics
+- Compare your metrics in `models/test_result/version_{version}/test_metrics.csv` with reference values
+- For quick comparison, reference metrics for all model versions are available in the [Results section](/README.md#results)
+
+### 2. Validate Visual Outputs
+- Check prediction outputs in `results/clipped_prediction/clipped_pred_v{version}.geotiff`
+- Examine visual examples in `reports/figures/gt_vs_pred/v{version}/`
+
+### 3. Validate Result Analysis Chart
+- Check the area-based analysis in `reports/figures/others/pugs_size_analysis.png` or [Results section](/README.md#results)
+
+For intermediate results verification, reference HTML notebooks are available in `reports/notebook html/`
 
 **Note:** `{version}` need to match your `version` setting in `config.yaml`.
-
-For intermediate results verification, reference HTML notebooks are available in `reports/notebook html/`.
 
 :warning: Difference in hardware and OS **does not guarantee** the **identical** output as stated in [PyTorch document](https://docs.pytorch.org/docs/stable/notes/randomness.html#reproducibility), e.g. model performance metrics, model prediction output, and result analysis output, but overall it should lead to the same conclusion as shown in [result section](/README.md#results).

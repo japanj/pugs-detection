@@ -104,25 +104,22 @@ Disk storage: 1 TB
 ### Steps to run the workflow
 All notebooks are available in [notebooks folder](/notebooks/). The **number at the beginning of each notebook's name indicates the execution order**. Each notebook has different requirements or dependencies which are described in the notebooks.
 
-To ensure reproducibility from data processing to result ananlysis, you can skip the data acquisition notebooks (`1_data_acquisition_ground_truth.ipynb`, `1_data_acquisition_osm.ipynb`, and `1_data_acquisition_satellite_image.ipynb`), as there might be a chance the **different data retrieving time** can lead to slightly different dataset, e.g. OSM data.
-
 **Note:**
-- For more details about notebooks folder, see [notebooks folder documentation](/notebooks/README.md)
 - On **Windows and macOS**, some parameters in [config.yaml](/config.yaml) are required to change due to OS differences. Please follow the instruction in [Reproducibility guide](reproducibility.md).
 
 ## Results
 The result of different model training experiments are shown in the table below. To see the detail of Model experiment setup, please visit [Model Experiment Setup document](/models/README.md#model-experiment-setup).
 | Version folder | input  | Loss function | Jaccard index (IoU) | Precision | Recall | F1 score | Accuracy |
 | -------------- | ------ | ------------- | ------------------- | --------- | ------ | -------- | -------- |
-| version_0 | 1. Sentinel-2 image | Jaccard loss | 0.7682 | 0.8964 | 0.8430 | 0.8689 | 0.9607 |
-| **version_1** | **1. Sentinel-2 image** <br> **2. PUGS binary mask derived from OSM** | **Jaccard loss** | **0.7855** | 0.91 | 0.8518 | **0.88** | 0.9641 |
-| version_2 | 1. Sentinel-2 image <br> 2. SDT raster | Jaccard loss | 0.7580 | 0.8865 | 0.8419 | 0.8636 | 0.9590 |
-| version_3 | 1. Sentinel-2 image | BCE | 0.7541 | 0.8850 | 0.8361 | 0.8598 | 0.9579 |
-| version_4 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | BCE | 0.7678 | 0.9171 | 0.8251 | 0.8687 | 0.9615 |
-| version_5 | 1. Sentinel-2 image <br> 2. SDT raster | BCE | 0.7514 | 0.8970 | 0.8224 | 0.8580 | 0.9580 |
-| version_6 | 1. Sentinel-2 image | Focal loss | 0.7191 | 0.8585 | 0.8158 | 0.8366 | 0.9508 |
-| version_7 | 1. Sentinel-2 image <br> 2. PUGS binary mask derived from OSM | Focal loss | 0.7452 | 0.8909 | 0.8201 | 0.8540 | 0.9567 |
-| version_8 | 1. Sentinel-2 image <br> 2. SDT raster | Focal loss | 0.7251 | 0.8794 | 0.8052 | 0.8406 | 0.9529 |
+| version_0 | <ul><li>Sentinel-2 image</li></ul> | Jaccard loss | 0.7682 | 0.8964 | 0.8430 | 0.8689 | 0.9607 |
+| **version_1** | **<ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul>** | **Jaccard loss** | **0.7855** | 0.91 | 0.8518 | **0.88** | 0.9641 |
+| version_2 | <ul><li>Sentinel-2 image</li><li>SDT raster</li></ul> | Jaccard loss | 0.7580 | 0.8865 | 0.8419 | 0.8636 | 0.9590 |
+| version_3 | <ul><li>Sentinel-2 image</li></ul> | BCE | 0.7541 | 0.8850 | 0.8361 | 0.8598 | 0.9579 |
+| version_4 | <ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul> | BCE | 0.7678 | 0.9171 | 0.8251 | 0.8687 | 0.9615 |
+| version_5 | <ul><li>Sentinel-2 image</li><li>SDT raster</li></ul> | BCE | 0.7514 | 0.8970 | 0.8224 | 0.8580 | 0.9580 |
+| version_6 | <ul><li>Sentinel-2 image</li></ul> | Focal loss | 0.7191 | 0.8585 | 0.8158 | 0.8366 | 0.9508 |
+| version_7 | <ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul> | Focal loss | 0.7452 | 0.8909 | 0.8201 | 0.8540 | 0.9567 |
+| version_8 | <ul><li>Sentinel-2 image</li><li>SDT raster</li></ul> | Focal loss | 0.7251 | 0.8794 | 0.8052 | 0.8406 | 0.9529 |
 
 *BCE = Binary Cross Entropy*
 
@@ -137,6 +134,12 @@ These are examples of model prediction outputs from the best-performing model am
 For the full details of model prediction output, please visit [results folder](/results/).
 
 ### Further analysis from the model prediction
+
+In the result analysis, the two models are selected based on the highest performance model in baseline (using only Sentinel-2 image) and having additional data from OSM to do the result analysis. These are two selected models:
+| Version folder | Input datasets | Loss function |
+| -------------- | -------------- | ------------- |
+| version_0 | <ul><li>Sentinel-2 image</li></ul> | Jaccard loss |
+| version_1 | <ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul> | Jaccard loss |
 
 :mag: **Key Findings**
 - Model performance improves as green space size increases.
@@ -159,6 +162,8 @@ For the full details of model prediction output, please visit [results folder](/
 *Note: PUGS size categories adapted from (Byrne & Sipe, 2010; Choi et al., 2020; Şenik & Uzun, 2022).*
 
 ![result_analysis](/reports/figures/others/pugs_size_analysis.png)
+
+To validate outputs, please visit [Reproducibility document](/reproducibility.md)
 
 ## License
 The license information is divided into three sections:
