@@ -74,13 +74,21 @@ Disk storage: 1 TB
 **uv** (Python package and project manager) is used in this project. The version of **uv** is 0.7.3.
 
 ## Getting Started
+
+### Option 1: Download Complete Package from Release tag
+1. Download the complete package from the [Releases](https://github.com/japanj/pugs-detection/releases) page
+2. Continue with step 3 below (setting up the environment)
+
+### Option 2: Clone Repository
 1. Clone this repository or download ZIP file of this repository. To clone the repository, use the following command:
     ```
     git clone https://github.com/japanj/pugs-detection.git
     ```
-2. Make sure that you have installed `Python` and `pip`.
+2. Download **data and model checkpoints** of all experiments from the [Releases](https://github.com/japanj/pugs-detection/releases) page
 
-3. Install **uv** package by running
+3. Make sure that you have installed `Python` and `pip`.
+
+4. Install **uv** package by running
    ```
    pip install uv
    ```
@@ -88,15 +96,15 @@ Disk storage: 1 TB
 
    To install exact version of **uv**, you can use the following command `pip install uv==0.7.3` or `pipx install uv==0.7.3`.
 
-4. Navigate to the root directory of the cloned repository. You should be in the directory containing `pyproject.toml`.
+5. Navigate to the root directory of the cloned repository. You should be in the directory containing `pyproject.toml`.
 
-5. Set up the virtual environment by running
+6. Set up the virtual environment by running
    ```
    uv sync
    ```
    The virtual environment (`.venv` folder) will be automatically created in project folder.
 
-6. You can verify the installed packages by running
+7. You can verify the installed packages by running
    ```
    uv pip list
    ```
