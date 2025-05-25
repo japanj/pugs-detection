@@ -84,6 +84,9 @@ The project size is approximately 5.7 GB.
 
 ### Option 1: Download Complete Package from Release tag
 1. Download the complete package from the [Releases](https://github.com/japanj/pugs-detection/releases) page
+
+   > Make sure that data and models are placed in the same folder structure in [Project Organization](#project-organization)
+
 2. Continue with step 3 below (setting up the environment)
 
 ### Option 2: Clone Repository
@@ -93,6 +96,8 @@ The project size is approximately 5.7 GB.
     ```
 2. Download **data and model checkpoints** of all experiments from the [Releases](https://github.com/japanj/pugs-detection/releases) page
 
+   > Make sure that data and models are placed in the same folder structure in [Project Organization](#project-organization)
+   
 3. Make sure that you have installed `Python` and `pip`.
 
 4. Install **uv** package by running
