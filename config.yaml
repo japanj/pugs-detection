@@ -74,6 +74,7 @@ paths:
   sentinel_pred_raster_path: "../results/clipped_prediction/clipped_pred_v0.geotiff"
   with_osm_pred_raster_path: "../results/clipped_prediction/clipped_pred_v1.geotiff"
   analysis_graph_path: "../reports/figures/others/overlap_pct_with_gs_size.png"
+  dissolved_by_area_group_gt_path: "../data/processed/ground truth/pugs_by_area_group.geojson"
 
 data:
   # Sentinel-2 data configuration
@@ -109,7 +110,7 @@ model:
   training_num_workers: 6
   validation_num_workers: 2
   test_num_workers: 2
-  accelerator: "gpu"
+  accelerator: "gpu" # Options: "cpu", "gpu"
 
   # Model experiment version
   version: 1
