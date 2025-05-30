@@ -82,21 +82,11 @@ The project size is approximately 5.7 GB.
 
 ## Getting Started
 
-(need to be changed since GitHub Relase limit that each file size can't exceed 2 GB)
-
-### Option 1: Download Complete Package from Release tag
-1. Download the complete package from the [Releases](https://github.com/japanj/pugs-detection/releases) page
-
-   > Make sure that data and models are placed in the same folder structure in [Project Organization](#project-organization)
-
-2. Continue with step 3 below (setting up the environment)
-
-### Option 2: Clone Repository
 1. Clone this repository or download ZIP file of this repository. To clone the repository, use the following command:
     ```
     git clone https://github.com/japanj/pugs-detection.git
     ```
-2. Download **data and model checkpoints** of all experiments from the [Releases](https://github.com/japanj/pugs-detection/releases) page
+2. Download **data and model checkpoints** of all experiments from https://doi.org/10.5281/zenodo.15553942
 
    > Make sure that data and models are placed in the same folder structure in [Project Organization](#project-organization)
 

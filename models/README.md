@@ -2,6 +2,8 @@
 
 This folder contains various model checkpoints and reported model performance metrics, e.g. Jaccard Index (IoU), Precision, Recall, F1 Score, and Accuracy, of each model experiment.
 
+**All the model checkpoints and model performance metrics from each experiment can be downloaded from https://doi.org/10.5281/zenodo.15553942**
+
 It contains **two sub-folders**: `checkpoints` and `test_result`
 
 ## `checkpoints` folder
