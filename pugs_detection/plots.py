@@ -814,3 +814,16 @@ def plot_result_analysis(area_groups, recall_df, summary_area_df, summary_polygo
         bbox_inches="tight",
     )
     plt.show()
+
+def plot_classification_osm(final_gdf, osm_classification_path):
+    plt.figure(figsize=(12, 6))
+    classification_counts = final_gdf["classification_step"].value_counts()
+    ax = sns.barplot(x=classification_counts.index, y=classification_counts.values)
+    plt.title("PUGS Classification Methods", fontsize=16)
+    plt.ylabel("Number of polygons", fontsize=14)
+    plt.xticks(fontsize=12)
+    for i, count in enumerate(classification_counts.values):
+        ax.text(i, count + 5, str(count), ha='center', fontsize=12)
+    plt.tight_layout()
+    plt.savefig(osm_classification_path, dpi=300, bbox_inches="tight")
+    plt.show()

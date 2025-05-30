@@ -75,7 +75,7 @@ paths:
   with_osm_pred_raster_path: "../results/clipped_prediction/clipped_pred_v1.geotiff"
   analysis_graph_path: "../reports/figures/others/overlap_pct_with_gs_size.png"
   dissolved_by_area_group_gt_path: "../data/processed/ground truth/pugs_by_area_group.geojson"
-
+  osm_classification_path: "../reports/figures/others/osm_pugs_classification_method.png"
 data:
   # Sentinel-2 data configuration
   spatial_extent: {"west": 13.5793237, "south": 50.974937, "east": 13.9660626, "north": 51.1777202}

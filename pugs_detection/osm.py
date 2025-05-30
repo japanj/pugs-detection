@@ -291,13 +291,11 @@ def classification_with_smaller_area(lulc_gdf):
         # after applying threshold, only 1 area is classified since some small polygon inside is unclassified.
         if (pub_area > nonpub_area) & (pub_area >= ((50 * total_area) / 100)):
             # print('yes')
-            modified_lulc_gdf.loc[modified_lulc_gdf["id_left"] == i, "is_public"] = (
-                "yes"
-            )
+            modified_lulc_gdf.loc[modified_lulc_gdf["id_left"] == i, ["is_public", "classification_step"]] = ["yes", "hierachy"]
         elif (pub_area < nonpub_area) & (nonpub_area >= ((50 * total_area) / 100)):
             # print('no')
             check_big_polygon.append(i)
             print("larger polygon id:", i, "   small polygon id:", small_polygon_id)
-            modified_lulc_gdf.loc[modified_lulc_gdf["id_left"] == i, "is_public"] = "no"
+            modified_lulc_gdf.loc[modified_lulc_gdf["id_left"] == i, ["is_public", "classification_step"]] = ["no", "hierachy"]
 
     return modified_lulc_gdf
