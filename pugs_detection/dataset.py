@@ -105,7 +105,7 @@ def _filter_patches(sample, band_count):
     # Calculate percentage of green space in the mask
     green_percentage = np.mean(mask)
 
-    # Filter the patches that has only background or only PUGS out
+    # Filter the patches that has only background out
     return 0 < green_percentage
 
 
