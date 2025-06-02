@@ -106,7 +106,7 @@ def _filter_patches(sample, band_count):
     green_percentage = np.mean(mask)
 
     # Filter the patches that has only background or only PUGS out
-    return 0 < green_percentage < 1
+    return 0 < green_percentage
 
 
 class FilteredGeoDataset(Dataset):
