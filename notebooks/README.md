@@ -78,7 +78,7 @@ To test different [model experiments](/models/README.md#model-experiment-setup),
 
     If you run the model training from scratch and end up with different model version number, you can change the prediction file path in config file:
     - `sentinel_pred_raster_path`: clipped prediction output of model experiment version 0 (using only Sentinel-2 image with jaccard loss function)
-    - `with_osm_pred_raster_path`: clipped prediction output of model experiment version 0 (using Sentinel-2 image and PUGS binary mask from OSM with jaccard loss function)
+    - `with_osm_pred_raster_path`: clipped prediction output of model experiment version 1 (using Sentinel-2 image and PUGS binary mask from OSM with jaccard loss function)
 
 
 ### Speed up model training parameters

@@ -59,4 +59,4 @@ You can verify your results match the reference outputs by comparing:
 
 **Note:** `{version}` need to match your `version` setting in `config.yaml`.
 
-:warning: Difference in hardware and OS **does not guarantee** the **identical** output as stated in [PyTorch document](https://docs.pytorch.org/docs/stable/notes/randomness.html#reproducibility), e.g. model performance metrics, model prediction output, and result analysis output.
+:warning: Difference in hardware and OS **does not guarantee** the **identical** output as stated in [PyTorch document](https://docs.pytorch.org/docs/stable/notes/randomness.html#reproducibility), e.g. model performance metrics, model prediction output, and result analysis output, when you run the model training step from scratch.
