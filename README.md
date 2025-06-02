@@ -12,7 +12,7 @@ The study area in this project is **Dresden, Germany**.
 
 This workflow covers all steps from data acquisition to model evaluation and result analysis. The final output is the **binary mask of PUGS** for the study area.
 
-![Flowchart of the workflow](reports/figures/diagram/update_main_workflow.jpg)
+![Flowchart of the workflow](reports/figures/diagram/workflow_implementation.png)
 
 The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbone**. The model uses pre-trained weight from [TorchGeo library](https://github.com/microsoft/torchgeo). See [Model documentation](/models/README.md) for more details about model setup.
 
