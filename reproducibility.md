@@ -13,8 +13,8 @@ More details about the issue: https://github.com/microsoft/torchgeo/issues/886#i
 ## Data for Reproducibility
 
 ### Use provided raw data files
-- The raw data in `data/raw/` must be used to get the reproducible results
-- Different data retrieval date can lead to different raw data since OSM data might change over time and Sentinel-2 image collections are occasionally reprocessed. 
+- The raw data in `data/raw/` must be used to get the reproducible results. So you can skip the data acquisition notebooks (`1_data_acquisition_*.ipynb`) and start workflow execution from data processing notebooks (`2_data_processing_*.ipynb`)
+- You can still run the data acquisition notebooks, but please note that different data retrieval date can lead to different raw data since OSM data might change over time and Sentinel-2 image collections are occasionally reprocessed. 
 
     More details about Sentinel-2 processing baseline: https://sentiwiki.copernicus.eu/web/s2-processing
 
@@ -51,6 +51,7 @@ You can verify your results match the reference outputs by comparing:
 
 ### 4. Validate the intermediate results
 - For intermediate results verification, reference HTML notebooks are available in `reports/notebook html/`
+> Note: The results shown in `6_model_training` and `7_model_evaluation` are from model experiment version 1 (Please refer to [Model experiment setup section](/models/README.md#model-experiment-setup) for the details)
 
 **(Optional) Validate Visual Outputs**
 - Check prediction outputs in `results/clipped_prediction/clipped_pred_v{version}.geotiff`
