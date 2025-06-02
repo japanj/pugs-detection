@@ -44,7 +44,7 @@ Since running the data acquisition notebooks with new downloads might lead to di
 | 5_ground_truth_creation.ipynb | Create single ground truth dataset | - |
 | 6_model_training.ipynb | Train the model | Running this notebook will automatically create a new versioned folder in `models/trained_models/` to store metrics and checkpoints. <br><br> For example, if versions 0-8 already exist (containing my predefined model experiments), your first run will create `version_9/`. |
 | 7_model_evaluation.ipynb | Evaluate the model performance and save the output from model prediction | - |
-| 8_result_analysis.ipynb | Further prediction result analysis | - |
+| 8_result_analysis.ipynb | Further prediction result analysis | The result analysis is the comparison of the recall of two model as listed in [Further analysis from the model prediction section](/README.md#further-analysis-from-the-model-prediction). |
 
 ## Change the parameters
 
@@ -72,6 +72,15 @@ To test different [model experiments](/models/README.md#model-experiment-setup),
         - Sentinel-2 image + SDT as input: `band_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14]`
     - `version`: version number regarding to model experiments 
 
+3. **Result Analysis Notebook** (run `8_result_analysis.ipynb`)
+
+    For the result analysis, this notebook compares how different models' performance (recall value) vary across different PUGS size. For further details, please check [Further analysis from the model prediction section](/README.md#further-analysis-from-the-model-prediction).
+
+    If you run the model training from scratch and end up with different model version number, you can change the prediction file path in config file:
+    - `sentinel_pred_raster_path`: clipped prediction output of model experiment version 0 (using only Sentinel-2 image with jaccard loss function)
+    - `with_osm_pred_raster_path`: clipped prediction output of model experiment version 0 (using Sentinel-2 image and PUGS binary mask from OSM with jaccard loss function)
+
+
 ### Speed up model training parameters
 
 You can adjust the following parameters to optimize training performance on your system:
@@ -88,4 +97,4 @@ You can adjust the following parameters to optimize training performance on your
 
 ## Note
 - **Import libraries** section in each notebook can take up to **5-6 mins** if there is a lot of dependencies.
-- Model training step can take up **1-2 hours** to complete (The estimated time is based on author's laptop hardware and hardware configuration setup in [config.yaml](/config.yaml)). Without setting up number of workers and using CPU, model training time can take **up to 9 hours** for each experiment.
+- If you are running model training step (`6_model_training.ipynb`), it can take up **1-2 hours** to complete (The estimated time is based on author's laptop hardware and hardware configuration setup in [config.yaml](/config.yaml)). Without setting up number of workers and using CPU, model training time can take **up to 9 hours** for each experiment.
