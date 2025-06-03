@@ -87,8 +87,8 @@ def create_image_tiles(
             tile_ymin = ymin + j * base_tile_height
 
             # For the last column/row, extend to the edge and add buffer to ensure that there is no overlap
-            tile_xmax = xmax if i == 4 else xmin + (i + 1) * base_tile_width - (10*1.1)
-            tile_ymax = ymax if j == 4 else ymin + (j + 1) * base_tile_height - (10*1.1)
+            tile_xmax = xmax if i == 4 else xmin + (i+1) * base_tile_width - (10*1.1)
+            tile_ymax = ymax if j == 4 else ymin + (j+1) * base_tile_height - (10*1.1)
 
             # Generate tile index (1-25)
             idx = i * 5 + j
