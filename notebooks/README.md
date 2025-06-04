@@ -93,7 +93,7 @@ You can adjust the following parameters to optimize training performance on your
 **Note:**
 - To set number of workers, please see the recommendation from [Pytorch lightning documentation](https://lightning.ai/docs/pytorch/stable/advanced/speed.html#num-workers).
 - To set *gpu* as accelerator, please make sure that **CUDA** is already installed.
-- Changing these hardware-related parameters may optimize training speed but **does not guarantee** identical model performance metrics and prediction output. 
+- Changing these hardware-related parameters may optimize training speed but **does not guarantee** identical model performance metrics and prediction output when you run the model from scratch. 
 
 ## Note
 - **Import libraries** section in each notebook can take up to **5-6 mins** if there is a lot of dependencies.

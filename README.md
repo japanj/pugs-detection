@@ -124,7 +124,7 @@ The result of different model training experiments are shown in the table below.
 | Version folder | input  | Loss function | IoU (Jaccard index) | Precision | Recall | F1 score | Accuracy |
 | -------------- | ------ | ------------- | ------------------- | --------- | ------ | -------- | -------- |
 | version_0 | <ul><li>Sentinel-2 image</li></ul> | Jaccard loss | 0.7712 | 0.9056 | 0.8386 | 0.8708 | 0.9617 |
-| **version_1** | **<ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul>** | **Jaccard loss** | **0.7777** | 0.9168 | 0.8368 | **0.8750** | 0.9632 |
+| **version_1** | **<ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul>** | **Jaccard loss** | **0.7777** | **0.9168** | **0.8368** | **0.8750** | **0.9632** |
 | version_2 | <ul><li>Sentinel-2 image</li><li>SDT raster</li></ul> | Jaccard loss | 0.7547 | 0.8752 | 0.8458 | 0.8602 | 0.9577 |
 | version_3 | <ul><li>Sentinel-2 image</li></ul> | BCE | 0.7557 | 0.8842 | 0.8386 | 0.8608 | 0.9583 |
 | version_4 | <ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul> | BCE | 0.7579 | 0.9082 | 0.8209 | 0.8623 | 0.9597 |
@@ -165,13 +165,15 @@ In the result analysis, the two models are selected based on the highest perform
 
 | Type of PUGS | Size (ha) |
 | ------------ | --------- |
-| Pocket park | < 0.4 |
-| Neighbourhood park | 0.4 – 3 |
-| Community park | 3 - 10 |
-| Urban park | 10 – 80 |
+| Pocket park | <= 0.4 |
+| Neighbourhood park | (0.4, 3] |
+| Community park | (3, 10] |
+| Urban park | (10, 80] |
 | Regional park | > 80 |
 
-*Note: PUGS size categories adapted from (Byrne & Sipe, 2010; Choi et al., 2020; Şenik & Uzun, 2022).*
+*'(' indicates exclusive and ']' indicates inclusive. For example, (0.4, 3] means 0.4 < x <= 3*
+
+>Note: PUGS size categories adapted from (Byrne & Sipe, 2010; Choi et al., 2020; Şenik & Uzun, 2022).
 
 ![result_analysis](/reports/figures/others/pugs_size_analysis.png)
 
