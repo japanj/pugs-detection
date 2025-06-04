@@ -1,8 +1,6 @@
 # models folder
 
-This folder contains various model checkpoints and reported model performance metrics, e.g. Jaccard Index (IoU), Precision, Recall, F1 Score, and Accuracy, of each model experiment.
-
-**All the model checkpoints and model performance metrics from each experiment can be downloaded from https://doi.org/10.5281/zenodo.15553942**
+This folder contains various model checkpoints and reported model performance metrics, e.g. IoU (Jaccard Index), Precision, Recall, F1 Score, and Accuracy, of each model experiment.
 
 It contains **two sub-folders**: `checkpoints` and `test_result`
 
@@ -11,11 +9,11 @@ It contains **two sub-folders**: `checkpoints` and `test_result`
 This folder contains sub-folders of different training experiments (`version_<number>`). Inside sub-folder, it contains:
 - `checkpoints` folder: contains the best model of each training experiment
 - `hparams.yaml` file: contains the hyperparameters setup of each training experiment <br> *Note: num_channels is always 13 because it doesn't take a log of first layer customization into account*
-- `metrics.csv` file: contains training and validation metrics (accuracy, Jaccard index, loss) recorded during model training
+- `metrics.csv` file: contains training and validation metrics (accuracy, IoU or Jaccard index, loss) recorded during model training
 
 ## `test_result` folder
 
-This folder contains default model performance metrics, e.g. Jaccard Index (IoU), Precision, Recall, F1 Score, and Accuracy, on test set.
+This folder contains default model performance metrics, e.g. IoU (Jaccard Index), Precision, Recall, F1 Score, and Accuracy, on test set.
 
 Each folder (`version_<number>`) contains the model performance on test set of each experiment.
 

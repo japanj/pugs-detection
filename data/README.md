@@ -2,8 +2,6 @@
 
 This folder contains all input datasets used in the workflow, including both raw data and processed data generated during data preparation steps. It does **not** store model prediction outputs. The model prediction outputs are saved in the top-level [results folder](/results/).
 
-**All the data used in the workflow can be downloaded from https://doi.org/10.5281/zenodo.15553942**
-
 ## Folder structure
 ```
 ├── README.md           <- README file for data folder
@@ -58,8 +56,9 @@ This folder contains all input datasets used in the workflow, including both raw
 | Folder/File | Source | Description | Original data | Modification from original dataset |
 |-------------|--------|-------------|---------------|------------------------------------|
 | `ground truth/ i_parks_type_dataset.geojson`| Output from `2_data_processing_ground_truth.ipynb` | Parks (I type) dataset | `raw/ground truth/ leisure_area_dataset.geojson` | Filter only areas that are in *I-Parkanlagen, Zoo, Botanischer Garten* category |
-| 1. `ground truth/ clipped_dresden_pugs_gt.geojson` <br> 2. `ground truth/ clipped_dresden_pugs_gt.geotiff` <br> 3. `ground truth/ dresden_pugs_gt.geotiff` | Output from `4_ground_truth_creation.ipynb` | Ground truth of Public Urban Green Spaces (PUGS) | 1. `raw/ground truth/ green_and_openspaces_dataset.geojson` <br> 2. `raw/ground truth/ i_parks_type_dataset.geojson` <br> 3. `raw/ground truth/ parks_and_greenspaces_dataset.geojson` <br> 4. `raw/ground truth/ park_an_der_zwirnmuhle_polygon.geojson` | Filter and merge all four original datasets |
+| 1. `ground truth/ clipped_dresden_pugs_gt.geojson` <br> 2. `ground truth/ clipped_dresden_pugs_gt.geotiff` <br> 3. `ground truth/ dresden_pugs_gt.geotiff` <br> 4. `ground truth/ dresden_pugs_gt_undissolved.geojson` | Output from `5_ground_truth_creation.ipynb` | Ground truth of Public Urban Green Spaces (PUGS) | 1. `raw/ground truth/ green_and_openspaces_dataset.geojson` <br> 2. `raw/ground truth/ i_parks_type_dataset.geojson` <br> 3. `raw/ground truth/ parks_and_greenspaces_dataset.geojson` <br> 4. `raw/ground truth/ park_an_der_zwirnmuhle_polygon.geojson` | Filter and merge all four original datasets |
 | `ground truth/ eua_pugs_dataset.geojson`| Output from `2_data_processing_ground_truth.ipynb` | Reclassified Urban Atlas Land Cover/Land use 2018 (EUA dataset) | `raw/ground truth/ DE009L2_DRESDEN_UA2018_v013.gpkg`  | Reclassify the dataset |
+| `ground truth/ pugs_by_area_group.geojson`| Output from `8_result_analysis.ipynb` | Dissolved PUGS by area size  | `processed/ground truth/ dresden_pugs_gt_undissolved.geojson`  | Group PUGS in ground truth by area size |
 
 #### OSM Processed Data
 | Folder/File | Source | Description | Original data | Modification from original dataset |
@@ -69,12 +68,12 @@ This folder contains all input datasets used in the workflow, including both raw
 #### Satellite Image Processing
 | Folder/File | Source | Description | Original data | Modification from original dataset |
 |-------------|--------|-------------|---------------|------------------------------------|
-| All data in `sentinel-2` folder | Output from `2_data_processing _satellite_image.ipynb` | Sentinel-2 image stack with NDVI raster, and binary mask and Signed-distance transform (SDT) raster derived from OSM data | all data in `raw/sentinel-2/` and `processed/osm` folders | 1. Normalize Sentinel-2 pixel value to range 0 to 1 <br> 2. Calculate NDVI indices <br> 3. Stack NDVI and binary mask and SDT raster derived from OSM |
+| All data in `sentinel-2` folder | Output from `3_data_processing _satellite_image.ipynb` | Sentinel-2 image stack with NDVI raster, and binary mask and Signed-distance transform (SDT) raster derived from OSM data | all data in `raw/sentinel-2/` and `processed/osm` folders | 1. Normalize Sentinel-2 pixel value to range 0 to 1 <br> 2. Calculate NDVI indices <br> 3. Stack NDVI and binary mask and SDT raster derived from OSM |
 
 #### Training, test, and validation Data
 | Folder/File | Source | Description | Original data | Modification from original dataset |
 |-------------|--------|-------------|---------------|------------------------------------|
-| All data in `tiles` folder | Output from `5_model_training.ipynb` | Image tiles for training, test, and validation set | `processed/sentinel-2/ stacked_sentinel2_dresden_clipped.geotiff` | Create image tiles from the processed satellite image |
+| All data in `tiles` folder | Output from `6_model_training.ipynb` | Image tiles for training, test, and validation set | `processed/sentinel-2/ stacked_sentinel2_dresden_clipped.geotiff` | Create image tiles from the processed satellite image |
 
 ## Data license 
 
