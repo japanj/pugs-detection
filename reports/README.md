@@ -10,8 +10,7 @@ This folder contains generated figures from the workflow and also figure used in
 │   ├── diagram      <- Figures of diagram
 │   ├── gt_vs_pred   <- Ground truth and prediction visualization
 │   ├── loss graph   <- Train and validation loss graph of each model experiment
-│   └── others       <- Other figures (e.g. overlap percentage between 
-│                       ground truth and prediction of each group of green space size)
+│   └── others       <- Other figures like graphs/charts from result analysis
 │
 └── notebook html    <- HTML exports of Jupyter notebooks
 ```
