@@ -124,7 +124,7 @@ def enhance_satellite_rgb(img):
 
 
 def visualize_from_torchgeo_dataloader(
-    dataiter, num_samples=3, mode="original", additional_band_pos=None
+    dataloader, num_samples=3, mode="original", additional_band_pos=None
 ):
     """
     Visualize samples of input channels or input images from Dataloader
@@ -143,7 +143,7 @@ def visualize_from_torchgeo_dataloader(
     """
     set_all_seeds(42)
     # Get a batch from the dataloader
-    # dataiter = iter(dataloader)
+    dataiter = iter(dataloader)
     batch = next(dataiter)
 
     for i in range(min(num_samples, batch["image"].shape[0])):
