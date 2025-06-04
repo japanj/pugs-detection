@@ -86,7 +86,7 @@ The project size is approximately 5.7 GB.
     ```
     git clone https://github.com/japanj/pugs-detection.git
     ```
-2. Download **data and model checkpoints** of all experiments from https://doi.org/10.5281/zenodo.15553942
+2. Download **data and model checkpoints** of all experiments from https://doi.org/10.5281/zenodo.15596620
 
    > Make sure that data and models are placed in the same folder structure in [Project Organization](#project-organization)
 
@@ -100,7 +100,7 @@ The project size is approximately 5.7 GB.
 
    To install exact version of **uv**, you can use the following command `pip install uv==0.7.3` or `pipx install uv==0.7.3`.
 
-5. Navigate to the root directory of the cloned repository. You should be in the directory containing `pyproject.toml`.
+5. Navigate to the root directory of the cloned repository. You should be in the directory that contains `pyproject.toml`.
 
 6. Set up the virtual environment by running
    ```

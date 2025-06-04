@@ -4,6 +4,8 @@ This folder contains various model checkpoints and reported model performance me
 
 It contains **two sub-folders**: `checkpoints` and `test_result`
 
+**All the model checkpoints and model performance metrics from each experiment can be downloaded from https://doi.org/10.5281/zenodo.15596620**
+
 ## `checkpoints` folder
 
 This folder contains sub-folders of different training experiments (`version_<number>`). Inside sub-folder, it contains:
