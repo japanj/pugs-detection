@@ -124,7 +124,7 @@ def enhance_satellite_rgb(img):
 
 
 def visualize_from_torchgeo_dataloader(
-    dataloader, num_samples=3, mode="original", additional_band_pos=None
+    dataiter, num_samples=3, mode="original", additional_band_pos=None
 ):
     """
     Visualize samples of input channels or input images from Dataloader
@@ -143,7 +143,7 @@ def visualize_from_torchgeo_dataloader(
     """
     set_all_seeds(42)
     # Get a batch from the dataloader
-    dataiter = iter(dataloader)
+    # dataiter = iter(dataloader)
     batch = next(dataiter)
 
     for i in range(min(num_samples, batch["image"].shape[0])):
@@ -656,6 +656,9 @@ def plot_loss_graph(metrics_path, loss_graph_path):
     )
 
     plt.tight_layout()
+    directory = os.path.dirname(loss_graph_path)
+    if directory and not os.path.exists(directory):
+        os.makedirs(directory)
     plt.savefig(loss_graph_path, dpi=300, bbox_inches="tight")
     plt.show()
     plt.close(fig)
@@ -816,6 +819,16 @@ def plot_result_analysis(area_groups, recall_df, summary_area_df, summary_polygo
     plt.show()
 
 def plot_classification_osm(final_gdf, osm_classification_path):
+    """
+    Plot the distribution of PUGS from OSM that is classified by different methods
+
+    Parameters:
+    -----------
+    final_gdf : GeoDataFrame
+        The PUGS GeoDataFrame containing classification method information
+    osm_classification_path : str
+        Path to save the classification distribution graph
+    """
     plt.figure(figsize=(12, 6))
     classification_counts = final_gdf["classification_step"].value_counts()
     ax = sns.barplot(x=classification_counts.index, y=classification_counts.values)
