@@ -130,8 +130,8 @@ The result of different model training experiments are shown in the table below.
 | version_4 | <ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul> | BCE | 0.7579 | 0.9082 | 0.8209 | 0.8623 | 0.9597 |
 | version_5 | <ul><li>Sentinel-2 image</li><li>SDT raster</li></ul> | BCE | 0.7517 | 0.8853 | 0.8328 | 0.8582 | 0.9577 |
 | version_6 | <ul><li>Sentinel-2 image</li></ul> | Focal loss | 0.7178 | 0.8655 | 0.8080 | 0.8358 | 0.9512 |
-| version_7 | <ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul> | Focal loss | 0.7440 | 0.8872 | 0.8217 | 0.8532 | 0.9565 |
-| version_8 | <ul><li>Sentinel-2 image</li><li>SDT raster</li></ul> | Focal loss | 0.7195 | 0.8766 | 0.8006 | 0.8369 | 0.9520 |
+| version_7 | <ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul> | Focal loss | 0.7430 | 0.8892 | 0.8189 | 0.8526 | 0.9564 |
+| version_8 | <ul><li>Sentinel-2 image</li><li>SDT raster</li></ul> | Focal loss | 0.7236 | 0.8793 | 0.8034 | 0.8396 | 0.9528 |
 
 *BCE = Binary Cross Entropy*
 
