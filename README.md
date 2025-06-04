@@ -121,17 +121,17 @@ All notebooks are available in [notebooks folder](/notebooks/). The **number at 
 
 ## Results
 The result of different model training experiments are shown in the table below. To see the detail of Model experiment setup, please visit [Model Experiment Setup document](/models/README.md#model-experiment-setup).
-| Version folder | input  | Loss function | Jaccard index (IoU) | Precision | Recall | F1 score | Accuracy |
+| Version folder | input  | Loss function | IoU (Jaccard index) | Precision | Recall | F1 score | Accuracy |
 | -------------- | ------ | ------------- | ------------------- | --------- | ------ | -------- | -------- |
-| version_0 | <ul><li>Sentinel-2 image</li></ul> | Jaccard loss | 0.7682 | 0.8964 | 0.8430 | 0.8689 | 0.9607 |
-| **version_1** | **<ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul>** | **Jaccard loss** | **0.7855** | 0.91 | 0.8518 | **0.88** | 0.9641 |
-| version_2 | <ul><li>Sentinel-2 image</li><li>SDT raster</li></ul> | Jaccard loss | 0.7580 | 0.8865 | 0.8419 | 0.8636 | 0.9590 |
-| version_3 | <ul><li>Sentinel-2 image</li></ul> | BCE | 0.7541 | 0.8850 | 0.8361 | 0.8598 | 0.9579 |
-| version_4 | <ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul> | BCE | 0.7678 | 0.9171 | 0.8251 | 0.8687 | 0.9615 |
-| version_5 | <ul><li>Sentinel-2 image</li><li>SDT raster</li></ul> | BCE | 0.7514 | 0.8970 | 0.8224 | 0.8580 | 0.9580 |
-| version_6 | <ul><li>Sentinel-2 image</li></ul> | Focal loss | 0.7191 | 0.8585 | 0.8158 | 0.8366 | 0.9508 |
-| version_7 | <ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul> | Focal loss | 0.7452 | 0.8909 | 0.8201 | 0.8540 | 0.9567 |
-| version_8 | <ul><li>Sentinel-2 image</li><li>SDT raster</li></ul> | Focal loss | 0.7251 | 0.8794 | 0.8052 | 0.8406 | 0.9529 |
+| version_0 | <ul><li>Sentinel-2 image</li></ul> | Jaccard loss | 0.7712 | 0.9056 | 0.8386 | 0.8708 | 0.9617 |
+| **version_1** | **<ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul>** | **Jaccard loss** | **0.7777** | 0.9168 | 0.8368 | **0.8750** | 0.9632 |
+| version_2 | <ul><li>Sentinel-2 image</li><li>SDT raster</li></ul> | Jaccard loss | 0.7547 | 0.8752 | 0.8458 | 0.8602 | 0.9577 |
+| version_3 | <ul><li>Sentinel-2 image</li></ul> | BCE | 0.7557 | 0.8842 | 0.8386 | 0.8608 | 0.9583 |
+| version_4 | <ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul> | BCE | 0.7579 | 0.9082 | 0.8209 | 0.8623 | 0.9597 |
+| version_5 | <ul><li>Sentinel-2 image</li><li>SDT raster</li></ul> | BCE | 0.7517 | 0.8853 | 0.8328 | 0.8582 | 0.9577 |
+| version_6 | <ul><li>Sentinel-2 image</li></ul> | Focal loss | 0.7178 | 0.8655 | 0.8080 | 0.8358 | 0.9512 |
+| version_7 | <ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul> | Focal loss | 0.7440 | 0.8872 | 0.8217 | 0.8532 | 0.9565 |
+| version_8 | <ul><li>Sentinel-2 image</li><li>SDT raster</li></ul> | Focal loss | 0.7195 | 0.8766 | 0.8006 | 0.8369 | 0.9520 |
 
 *BCE = Binary Cross Entropy*
 
