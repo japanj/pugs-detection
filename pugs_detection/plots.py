@@ -763,7 +763,7 @@ def plot_result_analysis(area_groups, recall_df, summary_area_df, summary_polygo
     )
 
     ax2.set_title(
-        "Distribution of PUGS Polygons in each category", fontsize=14, pad=20
+        "Distribution of PUGS in each category", fontsize=14, pad=20
     )
 
     # 3. Area distribution pie chart (bottom right)
@@ -800,7 +800,7 @@ def plot_result_analysis(area_groups, recall_df, summary_area_df, summary_polygo
     ax3.legend(
         wedges,
         summary_area_df["area_group"].values,
-        title="Green Space Size (ha)",
+        title="PUGS Size (ha)",
         loc="center left",
         bbox_to_anchor=(-0.6, 0.5),
         fontsize=12,
