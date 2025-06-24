@@ -83,7 +83,7 @@ There are four main licenses that applied to the data in this project.
 1. **Copernicus's data policy**
     
    Sentinel-2 data and Urban Atlas Land Cover/Land use 2018 (EUA) data are under Copernicus's data policy.<br>
-   More details about data policy: [Sentinel-2 data policy](https://sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice) and [EUA data policy](https://land.copernicus.eu/en/data-policy)
+   More details about data policy: [Sentinel-2 data policy](https://sentinels.copernicus.eu/documents/247904/690755/Sentinel_Data_Legal_Notice) and [EUA data policy](https://land.copernicus.eu/en/data-policy)
 
 2. **Open Data Commons Open Database License (ODbL)**
 
