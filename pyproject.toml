@@ -4,6 +4,8 @@ version = "0.1.0"
 description = "Public Urban Green Spaces Detection Workflow"
 authors = [
   { name = "Pitchaporn Likitpanjamanon" },
+  { name = "Rosa Aguilar" },
+  { name = "Frank Ostermann" },
 ]
 license = { file = "LICENSE" }
 readme = "README.md"

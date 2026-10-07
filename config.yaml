@@ -1,7 +1,9 @@
 general:
-  os: "linux"
-  seed: 42
+  os: "windows"  #"linux"
+  seed: 11 #50 #51 #100 #101 #150 #42 #7 # 10 #1
   place_name: "Dresden, Germany"
+  proj_lib_path: "../Lib/site-packages/rasterio/proj_data"
+
 
 paths:
   raw_ground_truth_path: "../data/raw/ground truth"
@@ -35,11 +37,14 @@ paths:
   poi_viewpoint_path: "../data/raw/osm/amenity/poi_viewpoint_dresden.geojson"
   footpath_network_path: "../data/raw/osm/network/footpath_network_edges.geojson"
   
-  # Processed OSM data paths
+  # Processed OSM data paths  # by deffault filtered version is used
   processed_osm_path: "../data/processed/osm"
   pugs_vector_path: "../data/processed/osm/public_green_spaces_dresden.geojson"
+  pugs_vector_nofiltered_path: "../data/processed/osm/public_green_spaces_dresden_nofiltered.geojson"    #original version
   pugs_mask_path: "../data/processed/osm/public_green_spaces_dresden.geotiff"
+  pugs_nofiltered_mask_path: "../data/processed/osm/public_green_spaces_dresden_nofiltered.geotiff"
   pugs_sdt_path: "../data/processed/osm/sdt_public_green_spaces_dresden.geotiff"
+  pugs_nofiltered_sdt_path: "../data/processed/osm/sdt_public_green_spaces_dresden_nofiltered.geotiff"
 
   # Raw Sentinel-2 data paths
   raw_sentinel_path: "../data/raw/sentinel-2/cm_sentinel2_l1c_openeo_med_4months_dresden.geotiff"
@@ -56,40 +61,40 @@ paths:
   test_image_path: "../data/processed/tiles/test"
   
   # Model paths
-  logger_path: "../models"
+  logger_path: "../s{seed}/models"
   checkpoint_folder: "trained_models"
   test_result_folder: "test_result"
   
   # Results paths
-  gt_vs_pred_template: "../reports/figures/gt_vs_pred/v{version}"
-  loss_graph_template: "../reports/figures/loss graph/loss_graph_v{version}.png" 
-  fn_area_template: "../results/fn_maps/fn_area_v{version}.geotiff"
-  fp_area_template: "../results/fp_maps/fp_area_v{version}.geotiff"
-  clipped_prediction_template: "../results/clipped_prediction/clipped_pred_v{version}.geotiff"
-  whole_prediction_template: "../results/whole_area_prediction/pred_v{version}.geotiff"
-  test_metrics_template: "../models/test_result/version_{version}/test_metrics.csv"
-  train_metrics_template: "../models/trained_models/version_{version}/metrics.csv"
+  gt_vs_pred_template: "../s{seed}/reports/figures/gt_vs_pred/v{version}"
+  loss_graph_template: "../s{seed}/reports/figures/loss graph/loss_graph_v{version}.png" 
+  fn_area_template: "../s{seed}/results/fn_maps/fn_area_v{version}.geotiff"
+  fp_area_template: "../s{seed}/results/fp_maps/fp_area_v{version}.geotiff"
+  clipped_prediction_template: "../s{seed}/results/clipped_prediction/clipped_pred_v{version}.geotiff"
+  whole_prediction_template: "../s{seed}/results/whole_area_prediction/pred_v{version}.geotiff"
+  test_metrics_template: "../s{seed}/models/test_result/version_{version}/test_metrics.csv"
+  train_metrics_template: "../s{seed}/models/trained_models/version_{version}/metrics.csv"
+  per_instance_recall_template: "../s{seed}/models/test_result/version_{version}/per_instance_recall.csv"
+  per_instance_recall_path_global: "../s{seed}/results/per_instance_recall_analysis.csv"
 
   # Report paths
-  sentinel_pred_raster_path: "../results/clipped_prediction/clipped_pred_v0.geotiff"
-  with_osm_pred_raster_path: "../results/clipped_prediction/clipped_pred_v1.geotiff"
-  analysis_graph_path: "../reports/figures/others/overlap_pct_with_gs_size.png"
+  sentinel_pred_raster_path: "../s{seed}/results/clipped_prediction/clipped_pred_v0.geotiff"
+  with_osm_pred_raster_path: "../s{seed}/results/clipped_prediction/clipped_pred_v1.geotiff"
+  pred_raster_path: "../s{seed}/results/clipped_prediction/clipped_pred_v{version}.geotiff"
+  analysis_graph_path: "../s{seed}/reports/figures/others/overlap_pct_with_gs_size.png"
   dissolved_by_area_group_gt_path: "../data/processed/ground truth/pugs_by_area_group.geojson"
-  osm_classification_path: "../reports/figures/others/osm_pugs_classification_method.png"
+  osm_classification_path: "../s{seed}/reports/figures/others/osm_pugs_classification_method.png"
 data:
   # Sentinel-2 data configuration
   spatial_extent: {"west": 13.5793237, "south": 50.974937, "east": 13.9660626, "north": 51.1777202}
   temporal_extent: ["2024-05-01", "2024-08-31"]
   max_cloud_cover: 5
 
-  # Data splitting
+  # Data splitting - tiles ids
   train_index_list: [2, 3, 9, 11, 12, 13, 15, 16, 18, 20, 23]
   val_index_list: [7, 17, 19]
   test_index_list: [8, 14, 22]
   
-  # selected bands/input
-  band_list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-
   # crs
   crs: 32633
 
@@ -98,19 +103,96 @@ model:
   architecture: "unet"
   backbone: "resnet50"
   weight: "SENTINEL2_ALL_MOCO"
-  
+
   # Training parameters
   batch_size: 16
-  loss_func: "jaccard"  # Options: "bce", "focal", "jaccard"
+  # loss_func: "jaccard"  # Options: "bce", "focal", "jaccard"
   learning_rate: 0.0001
   epochs: 50
   patience: 10  # For early stopping
   
   # Hardware settings
-  training_num_workers: 6
-  validation_num_workers: 2
+  training_num_workers: 8
+  validation_num_workers: 4
+  persistent_workers: "True"   # avoids worker respawn cost every epoch
+  pin_memory: "True"
   test_num_workers: 2
   accelerator: "gpu" # Options: "cpu", "gpu"
-
-  # Model experiment version
+  
+  # Model experiment version - here change for # bands/loss
   version: 1
+
+models:
+  0: 
+    # selected bands/input / 
+    band_list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]  # only sentinel-2 bands
+    # Training parameters
+    loss_func: "jaccard"  # Options: "bce", "focal", "jaccard"
+    # Model experiment version
+    version: 0
+  
+  1: 
+    # selected bands/input / 
+    band_list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]  # sentinel-2 bands + OSM data binary mask
+    # Training parameters - with OSM data binary mask
+    loss_func: "jaccard"  # Options: "bce", "focal", "jaccard"
+    # Model experiment version
+    version: 1
+  
+  2: 
+    # selected bands/input / 
+    band_list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14]  # sentinel-2 bands + OSM data SDT
+    # Training parameters - with OSM data SDT
+    loss_func: "jaccard"  # Options: "bce", "focal", "jaccard"
+    # Model experiment version
+    version: 2
+
+  3: 
+    # selected bands/input / 
+    band_list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]  # only sentinel-2 bands
+    # Training parameters - 
+    loss_func: "bce"  # Options: "bce", "focal", "jaccard"
+    # Model experiment version
+    version: 3
+  
+  4: 
+    # selected bands/input / 
+    band_list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]  # sentinel-2 bands + OSM data binary mask
+    # Training parameters - with OSM data binary mask
+    loss_func: "bce"  # Options: "bce", "focal", "jaccard"
+    # Model experiment version
+    version: 4
+  
+  5: 
+    # selected bands/input / 
+    band_list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14]  # sentinel-2 bands + OSM data SDT
+    # Training parameters - with OSM data SDT
+    loss_func: "bce"  # Options: "bce", "focal", "jaccard"
+    # Model experiment version
+    version: 5
+
+  6: 
+    # selected bands/input / 
+    band_list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]  # only sentinel-2 bands
+    # Training parameters 
+    loss_func: "focal"  # Options: "bce", "focal", "jaccard"
+    # Model experiment version
+    version: 6
+  
+  7: 
+    # selected bands/input / 
+    band_list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]  # sentinel-2 bands + OSM data binary mask
+    # Training parameters - with OSM data binary mask
+    loss_func: "focal"  # Options: "bce", "focal", "jaccard"
+    # Model experiment version
+    version: 7
+  
+  8: 
+    # selected bands/input / 
+    band_list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14]  # sentinel-2 bands + OSM data SDT
+    # Training parameters - with OSM data SDT
+    loss_func: "focal"  # Options: "bce", "focal", "jaccard"
+    # Model experiment version
+    version: 8
+
+

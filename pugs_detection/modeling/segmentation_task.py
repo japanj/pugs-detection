@@ -13,11 +13,13 @@ Date: 01-05-2025
 """
 
 from torchgeo.trainers import SemanticSegmentationTask
+from torchgeo.models import ResNet50_Weights
 import segmentation_models_pytorch as smp
 import torch.nn as nn
 from torch import Tensor
 from torchmetrics import Accuracy, JaccardIndex, MetricCollection
 from typing import Any
+from .losses import JaccardFocalLoss
 
 
 class CustomSegmentationTask(SemanticSegmentationTask):
@@ -34,8 +36,10 @@ class CustomSegmentationTask(SemanticSegmentationTask):
 
     def __init__(self, **kwargs):
         # Remove 'ignore' parameter if it exists in kwargs
+        
         if "ignore" in kwargs:
             del kwargs["ignore"]
+        print("here", kwargs)
         super().__init__(**kwargs)
 
     def configure_losses(self) -> None:
@@ -54,6 +58,22 @@ class CustomSegmentationTask(SemanticSegmentationTask):
             case "focal":
                 self.criterion = smp.losses.FocalLoss(
                     mode="binary", ignore_index=ignore_index, normalized=True
+                )
+            case "jaccard_focal":
+                self.criterion = JaccardFocalLoss(
+                    mode="binary",
+                    jaccard_weight=1,  # unweighted sum of Jaccard and Focal losses
+                    focal_weight=1,
+                    ignore_index=ignore_index,
+                    normalized=True
+                )
+            case "jaccard_2focal":
+                self.criterion = JaccardFocalLoss(
+                    mode="binary",
+                    jaccard_weight=1,
+                    focal_weight=2,  # more weight to focal loss
+                    ignore_index=ignore_index,
+                    normalized=True
                 )
 
     def configure_metrics(self) -> None:

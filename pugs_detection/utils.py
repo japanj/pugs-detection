@@ -45,10 +45,10 @@ def set_all_seeds(seed=42):
     torch.manual_seed(seed)
     random.seed(seed)
     torch.cuda.manual_seed_all(seed)
-    seed_everything(42, workers=True)
+    seed_everything(seed, workers=True)
 
-def get_checkpoint_path(version):
-    checkpoint_dir = f"../models/trained_models/version_{version}/checkpoints"
+def get_checkpoint_path(seed, version):
+    checkpoint_dir = f"../s{seed}/models/trained_models/version_{version}/checkpoints"
     files = os.listdir(checkpoint_dir)
     
     if not files:

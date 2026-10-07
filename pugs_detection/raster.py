@@ -60,6 +60,7 @@ def create_image_tiles(
     train_dir = os.path.join(output_folder_path, "train")
     val_dir = os.path.join(output_folder_path, "val")
     test_dir = os.path.join(output_folder_path, "test")
+
     os.makedirs(train_dir, exist_ok=True)
     os.makedirs(val_dir, exist_ok=True)
     os.makedirs(test_dir, exist_ok=True)
@@ -92,7 +93,14 @@ def create_image_tiles(
 
             # Generate tile index (1-25)
             idx = i * 5 + j
-
+            # Skip clipping/validity computation/writing if the tile already exists
+            tile_name = f"tile_{idx + 1}.geotiff"
+            if any(os.path.exists(os.path.join(d, tile_name))
+                   for d in (train_dir, val_dir, test_dir)):
+                print(f"Tile {idx + 1} already exists. Skipping.")
+                tiles.append([tile_xmin, tile_xmax, tile_ymin, tile_ymax, None])
+                valid_tile_count += 1
+                continue
             try:
                 # Clip the raster to this tile
                 tile_rds = rds.rio.clip_box(

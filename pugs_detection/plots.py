@@ -689,6 +689,7 @@ def plot_result_analysis(area_groups, recall_df, summary_area_df, summary_polygo
     graph_output_path : str
         Path to save the output graph
     """
+   
     colors = sns.color_palette("viridis", n_colors=len(area_groups))
     colors_dict = dict(zip(area_groups, colors))
 
