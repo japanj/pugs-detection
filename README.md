@@ -188,7 +188,7 @@ The license information is divided into three sections:
 3. The model weights, prediction output, and all figures are licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode.en).
 
 ## Contact
-For questions or issues, please open an issue on GitHub or contact m.p.likitpanjamanon@student.utwente.nl
+For questions or issues, please open an issue on GitHub or contact likitpanjamanon.p@gmail.com and r.aguilar@utwente.nl
 
 ## References
 - Byrne, J., & Sipe, N. (2010). Green and open space planning for urban consolidation—A review of the literature and best practice. Urban Research Program. https://research-repository.griffith.edu.au/server/api/core/bitstreams/60289e60-4b96-5c4b-99de-d39d2c8db305/content
