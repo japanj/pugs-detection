@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Aguilar Bolivar"
+  given-names: "Rosa Maria"
+  orcid: "https://orcid.org/0000-0001-9521-2089"
+- family-names: "Likitpanjamanon"
+  given-names: "Pitchaporn"
+- family-names: "Ostermann"
+  given-names: "Frank Olaf"
+  orcid: "https://orcid.org/0000-0002-9317-8291"
+title: "Public Urban Green Spaces (PUGS) Detection Workflow"
+version: 1.0.4
+date-released: 2026-10-08
+url: "https://github.com/japanj/pugs-detection"
