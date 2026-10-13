@@ -1,8 +1,9 @@
 general:
   os: "windows"  #"linux"
-  seed: 11 #50 #51 #100 #101 #150 #42 #7 # 10 #1
+  seed: 150  # options [42, 7, 1, 10, 11, 50, 51, 100, 101, 150]
   place_name: "Dresden, Germany"
   proj_lib_path: "../Lib/site-packages/rasterio/proj_data"
+
 
 
 paths:
@@ -77,6 +78,10 @@ paths:
   per_instance_recall_template: "../s{seed}/models/test_result/version_{version}/per_instance_recall.csv"
   per_instance_recall_path_global: "../s{seed}/results/per_instance_recall_analysis.csv"
 
+  # best models
+  best_sentinel_version: 0  # Set the version of the best Sentinel prediction raster to use for analysis. This is based on the results of the experiments in the previous notebook.
+  best_osm_version: 1  # Set the version of the best OSM prediction raster to use for analysis. This is based on the results of the experiments in the previous notebook.
+
   # Report paths
   sentinel_pred_raster_path: "../s{seed}/results/clipped_prediction/clipped_pred_v0.geotiff"
   with_osm_pred_raster_path: "../s{seed}/results/clipped_prediction/clipped_pred_v1.geotiff"
@@ -120,7 +125,7 @@ model:
   accelerator: "gpu" # Options: "cpu", "gpu"
   
   # Model experiment version - here change for # bands/loss
-  version: 1
+  version: 1  # 0: sentinel-2 bands only, jaccard loss; 1: sentinel-2 + OSM binary mask, jaccard loss; 2: sentinel-2 + OSM SDT, jaccard loss; 3: sentinel-2 bands only, bce loss; 4: sentinel-2 + OSM binary mask, bce loss; 5: sentinel-2 + OSM SDT, bce loss; 6: sentinel-2 bands only, focal loss; 7: sentinel-2 + OSM binary mask, focal loss; 8: sentinel-2 + OSM SDT, focal loss
 
 models:
   0: 
