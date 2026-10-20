@@ -1,6 +1,6 @@
 # Public Urban Green Spaces (PUGS) Detection Workflow
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15713439.svg)](https://doi.org/10.5281/zenodo.15713439)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15614752.svg)](https://doi.org/10.5281/zenodo.15614752)
 
 <a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
