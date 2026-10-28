@@ -14,7 +14,7 @@ The study area in this project is **Dresden, Germany**.
 
 This workflow covers all steps from data acquisition to model evaluation and result analysis. The final output is the **binary mask of PUGS** for the study area.
 
-![Flowchart of the workflow](reports/figures/diagram/workflow_implementation.png)
+![Flowchart of the workflow](reports/others/workflow_implementation.png)
 
 The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbone**. The model uses pre-trained weight from [TorchGeo library](https://github.com/microsoft/torchgeo). See [Model documentation](/models/README.md) for more details about model setup.
 
@@ -27,28 +27,20 @@ The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbon
 │   │                      and processed data generated during data preparation steps
 │   ├── processed       <- The intermediate data from raw data processing.
 │   └── raw             <- The original, immutable data dump.
-│
+├── experiments         <- 10 different seeds experiment result
+├── notebooks           <- Jupyter notebooks are named using the following convention:
+│                          `<step_number>_<short_description>.ipynb`, e.g. `1_data_acquisition_osm`.
 ├── models              <- Trained and serialized (saved) models, model evaluations, and
 │   │                      model hyperparameters log
 │   ├── checkpoints     <- Best model files and training logs for each experiment
 │   └── test_result     <- Model performance metrics from the best model
 │
-├── notebooks           <- Jupyter notebooks are named using the following convention:
-│                          `<step_number>_<short_description>.ipynb`, e.g. `1_data_acquisition_osm`.
-│
-├── results             <- Results from model prediction
-│   ├── clipped_prediction     <- Model prediction results clipped to Dresden administrative boundary 
-│   ├── fn_maps                <- False negative (FN) area maps from model prediction
-│   ├── fp_maps                <- False positive (FP) area maps from model prediction 
-│   └── whole_area_prediction  <- Model prediction results
-│
 ├── reports             <- Generated analysis (e.g. HTML, PDF, LaTeX, etc.)
-│   ├── figures         <- Generated graphics and figures to be used in reporting
-│   └── notebook html   <- Notebooks in HTML format
+│   ├── aggregated_results     <- Summarization of results from 10 different seeds experiment
+│   └── others                 <- Other related report figures
 │   
 ├── pyproject.toml      <- Project metadata
 ├── uv.lock             <- Lockfile that contains information about project's dependencies
-│
 └── pugs_detection      <- Main Python package containing modules and utilities for PUGS detection workflow
 ```
 
@@ -135,27 +127,29 @@ The result of different model training experiments are shown in the table below.
 | version_7 | <ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul> | Focal loss | 0.7430 | 0.8892 | 0.8189 | 0.8526 | 0.9564 |
 | version_8 | <ul><li>Sentinel-2 image</li><li>SDT raster</li></ul> | Focal loss | 0.7236 | 0.8793 | 0.8034 | 0.8396 | 0.9528 |
 
-*BCE = Binary Cross Entropy*
+*BCE = Binary Cross Entropy, The above table is the result from seed 42.*
 
 Based on the results, the **best-performing model** uses Sentinel-2 imagery together with a PUGS binary mask derived from OSM as an input and trained with Jaccard loss function.
+
+**Note:** Nine expermients listed in the table were run with two different random seeds (42 and 150). Then, the evaluation metrics across seeds were averaged and the best two performing models were selected which are the baseline model (using only Sentinel-2 image) and model that has additional data from OSM. These two models were then run with eight additional random seeds, for a total of ten seeds each.
 
 ### Example of the results
 These are examples of model prediction outputs from the best-performing model among all experiments.
 
-![result_viz_1](/reports/figures/gt_vs_pred/v1/region_512_1152.png)
-![result_viz_2](/reports/figures/gt_vs_pred/v1/region_768_1152.png)
+![result_viz_1](/experiments/s42/reports/figures/gt_vs_pred/v1/region_512_1152.png)
+![result_viz_2](/experiments/s42/reports/figures/gt_vs_pred/v1/region_768_1152.png)
 
 For the full details of model prediction output, please visit [results folder](/results/).
 
 ### Further analysis from the model prediction
 
-In the result analysis, the two models are selected based on the highest performance model in baseline (using only Sentinel-2 image) and having additional data from OSM to do the result analysis. These are two selected models:
+In the result analysis, the two models are selected based on the highest performance model in *baseline (using only Sentinel-2 image) and having additional data from OSM* to do the result analysis. These are two selected models:
 | Version folder | Input datasets | Loss function |
 | -------------- | -------------- | ------------- |
 | version_0 | <ul><li>Sentinel-2 image</li></ul> | Jaccard loss |
 | version_1 | <ul><li>Sentinel-2 image</li><li>PUGS binary mask derived from OSM</li></ul> | Jaccard loss |
 
-:mag: **Key Findings**
+**Key Findings**
 - Model performance improves as green space size increases.
 - The model that uses both Sentinel-2 imagery and PUGS binary mask from OSM as input outperforms the one using only Sentinel-2 imagery.
 - Regional parks are easiest to detect and both models achieve approximately 99% of recall.
@@ -177,7 +171,9 @@ In the result analysis, the two models are selected based on the highest perform
 
 >Note: PUGS size categories adapted from (Byrne & Sipe, 2010; Choi et al., 2020; Şenik & Uzun, 2022).
 
-![result_analysis](/reports/figures/others/pugs_size_analysis.png)
+![result_analysis](experiments/s42/reports/figures/others/pugs_size_analysis.png)
+
+*The Recall by PUGS Size Category figure is currently the result of seed 42.*
 
 To validate outputs, please visit [Reproducibility document](/reproducibility.md)
 
