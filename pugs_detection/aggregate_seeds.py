@@ -51,7 +51,8 @@ def summarize(values, ci):
     x = np.asarray(values, dtype=float)
     x = x[~np.isnan(x)]
     n = len(x)
-    mean = x.mean() if n else np.nan
+    mean = np.mean(x) if n else np.nan
+    median = np.median(x) if n else np.nan
     std = x.std(ddof=1) if n > 1 else np.nan
     if n > 1:
         half = stats.t.ppf((1 + ci) / 2, df=n - 1) * std / np.sqrt(n)
@@ -60,6 +61,7 @@ def summarize(values, ci):
     return pd.Series({
         "n_seeds": n,
         "mean": mean,
+        "median": median,
         "std": std,
         "ci_low": mean - half,
         "ci_high": mean + half,
@@ -133,6 +135,7 @@ def main():
 def print_table(summ, keys):
     view = summ[keys + ["n_seeds"]].astype({"n_seeds": int})
     view["mean +/- std"] = [f"{m:.4f} +/- {s:.4f}" for m, s in zip(summ["mean"], summ["std"])]
+    # view["median +/- std"] = [f"{m:.4f} +/- {s:.4f}" for m, s in zip(summ["median"], summ["std"])]
     view["CI"] = [f"[{lo:.4f}, {hi:.4f}]" for lo, hi in zip(summ["ci_low"], summ["ci_high"])]
     view["seeds"] = summ["seeds"]
     with pd.option_context("display.max_rows", None, "display.width", 200):
