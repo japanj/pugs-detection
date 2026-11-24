@@ -25,7 +25,7 @@ For **model training** step, you have two options:
    - New checkpoints will be saved in `models/trained_models/`
 
 2. **Use pre-trained checkpoints** (recommended for exact reproduction)
-   - Pre-trained models are available in `models/trained_models/`
+   - Pre-trained models are available in `models/trained_models/` (The pretrained models can be downloaded from https://doi.org/10.5281/zenodo.15596620. The pre-trained models are only available for seed 42 experiment.)
    - Set `version` in `config.yaml` to match the experiment you want to reproduce
    - You can directly run `7_model_evaluation.ipynb` for model evaluation
 
@@ -40,7 +40,7 @@ Please visit [notebooks documentation](/notebooks/README.md) for the workflow ex
 You can verify your results match the reference outputs by comparing:
 
 ### 1. Validate Model Metrics
-- Compare your metrics in `models/test_result/version_{version}/test_metrics.csv` with reference values
+- Compare your metrics in `experiments/s{seed_number}/models/test_result/version_{version}/test_metrics.csv` with reference values
 - For quick comparison, reference metrics for all model versions are available in the [Results section](/README.md#results), but please note that the metrics is round up in Results section.
 
 ### 2. Validate Result Analysis Chart
@@ -50,12 +50,12 @@ You can verify your results match the reference outputs by comparing:
 - Check the distribution graph in `reports/figures/others/osm_pugs_classification_method.png`
 
 ### 4. Validate the intermediate results
-- For intermediate results verification, reference HTML notebooks are available in `reports/notebook html/`
+- For intermediate results verification, reference notebooks are available in `notebooks` folder
 > Note: The results shown in `6_model_training` and `7_model_evaluation` are from model experiment version 1 (Please refer to [Model experiment setup section](/models/README.md#model-experiment-setup) for the details)
 
 **(Optional) Validate Visual Outputs**
-- Check prediction outputs in `results/clipped_prediction/clipped_pred_v{version}.geotiff`
-- Check visual examples in `reports/figures/gt_vs_pred/v{version}/`
+- Check prediction outputs in `experiments/s{seed_number}/results/clipped_prediction/clipped_pred_v{version}.geotiff`
+- Check visual examples in `experiments/s{seed_number}/reports/figures/gt_vs_pred/v{version}/`
 
 **Note:** `{version}` need to match your `version` setting in `config.yaml`.
 

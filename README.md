@@ -16,7 +16,7 @@ This workflow covers all steps from data acquisition to model evaluation and res
 
 ![Flowchart of the workflow](reports/others/workflow_implementation.png)
 
-The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbone**. The model uses pre-trained weight from [TorchGeo library](https://github.com/microsoft/torchgeo). See [Model documentation](/models/README.md) for more details about model setup.
+The model architecture used for detecting PUGS is **U-Net with ResNet-50 backbone**. The model uses pre-trained weight from [TorchGeo library](https://github.com/microsoft/torchgeo).
 
 ## Project Organization
 ```
@@ -139,7 +139,7 @@ These are examples of model prediction outputs from the best-performing model am
 ![result_viz_1](/experiments/s42/reports/figures/gt_vs_pred/v1/region_512_1152.png)
 ![result_viz_2](/experiments/s42/reports/figures/gt_vs_pred/v1/region_768_1152.png)
 
-For the full details of model prediction output, please visit [results folder](/results/).
+For the full details of model prediction output, please visit [experiments folder](/experiments/) and select specific seed experiment results folder (e.g. [s42/results folder](/experiments/s42/results/)).
 
 ### Further analysis from the model prediction
 
